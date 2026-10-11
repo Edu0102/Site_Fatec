@@ -6,8 +6,54 @@
     <title>Central de Links</title>
     <link rel="stylesheet" href="../css/header.css">
     <script src="../js/header.js" defer></script>
+    <link rel="stylesheet" href="../css/centrallink.css">
+    <script src="../js/centrallink.js" defer></script>
 </head>
 <body>
-    <h1>Esta será a página Central de Links</h1>
+
+<div class="pesquisa">
+    <input type="search" id="pesquisa" placeholder="Pesquisar links..." oninput="filtrarLinks()">
+</div>
+
+<div class="conteudo">
+
+    <aside>
+        <h3>Filtros padrões</h3>
+        <div id="filtros"></div>
+    </aside>
+
+    <main>
+        <div class="acoes">
+            <button onclick="mostrarFormulario()">+ Adicionar link</button>
+        </div>
+
+        <form id="formulario">
+            <h3>Adicionar novo link</h3>
+
+            <label for="titulo">Título</label>
+            <input type="text" id="titulo" required>
+
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" required></textarea>
+
+            <label for="url">Endereço do link</label>
+            <input type="url" id="url" placeholder="https://..." required>
+
+            <label for="assunto">Assunto</label>
+            <input type="text" id="assunto" placeholder="Ex.: Certidões" required>
+
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" placeholder="Ex.: Federal, Consulta Pública" required>
+
+            <button type="submit">Salvar link</button>
+            <button type="button" onclick="mostrarFormulario()">Cancelar</button>
+        </form>
+
+        <div id="mensagem"></div>
+        <div id="listaLinks"></div>
+    </main>
+
+</div>
+
 </body>
 </html>

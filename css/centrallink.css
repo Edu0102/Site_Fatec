@@ -1,0 +1,320 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    color: #000000;
+}
+
+/* CABEÇALHO */
+
+header {
+    height: 86px;
+    background: #20358f;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2%;
+}
+
+.logo {
+    width: 150px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+header h1 {
+    font-size: 28px;
+    margin: 0;
+    text-align: center;
+}
+
+.funcionario {
+    width: 230px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* BARRA DE PESQUISA */
+
+.pesquisa {
+    width: 77%;
+    margin: 13px auto 20px;
+}
+
+#pesquisa {
+    width: 100%;
+    height: 46px;
+    padding: 8px 18px;
+    border: 3px solid #20358f;
+    border-radius: 30px;
+    background: #d6d6d6;
+    font-size: 18px;
+    outline: none;
+}
+
+#pesquisa:focus {
+    background: #eeeeee;
+}
+
+/* ÁREA PRINCIPAL */
+
+.conteudo {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 0 3.5%;
+}
+
+/* FILTROS */
+
+aside {
+    width: 188px;
+    min-width: 188px;
+    min-height: 385px;
+    padding: 10px 14px;
+    background: #d6d6d6;
+    border: 2px solid #000000;
+    border-radius: 9px;
+}
+
+aside h3 {
+    margin: 0 0 17px 10px;
+    font-size: 18px;
+    line-height: 22px;
+}
+
+.filtro {
+    display: flex;
+    align-items: center;
+    margin: 0 0 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.filtro input {
+    width: 19px;
+    height: 19px;
+    margin: 0 9px 0 0;
+    flex-shrink: 0;
+    accent-color: #20358f;
+}
+
+/* LISTA DE LINKS */
+
+main {
+    flex: 1;
+    min-width: 0;
+}
+
+.acoes {
+    margin-bottom: 10px;
+}
+
+/* Botão de adicionar */
+
+button {
+    cursor: pointer;
+    background: #20358f;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #17276c;
+}
+
+/* CARTÕES */
+
+.card {
+    width: 100%;
+    min-height: 76px;
+    border: 1px solid #999999;
+    padding: 5px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.informacoes {
+    flex: 1;
+    min-width: 0;
+}
+
+.informacoes h3 {
+    margin: 5px 0 7px;
+    font-size: 16px;
+    font-weight: normal;
+    line-height: 19px;
+}
+
+.informacoes a {
+    color: #000000;
+    text-decoration: underline;
+}
+
+.informacoes a:hover {
+    color: #20358f;
+}
+
+.informacoes p {
+    margin: 0 0 3px;
+    font-size: 10px;
+    line-height: 13px;
+}
+
+/* DATA E TAGS */
+
+.detalhes {
+    min-width: 210px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.data {
+    text-align: right;
+    font-size: 12px;
+    line-height: 15px;
+}
+
+.tags {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: #20358f;
+    color: #ffffff;
+    font-size: 15px;
+    line-height: 17px;
+    white-space: nowrap;
+}
+
+/* FORMULÁRIO DE CADASTRO */
+
+#formulario {
+    display: none;
+    margin-bottom: 12px;
+    padding: 12px;
+    border: 1px solid #999999;
+}
+
+#formulario h3 {
+    margin-top: 0;
+}
+
+#formulario label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#formulario input,
+#formulario textarea {
+    display: block;
+    width: 100%;
+    margin: 5px 0 12px;
+    padding: 8px;
+    border: 1px solid #999999;
+    border-radius: 3px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+#formulario textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+#mensagem {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+/* CELULAR E TELAS MENORES */
+
+@media (max-width: 700px) {
+    header {
+        height: auto;
+        min-height: 75px;
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .logo {
+        width: auto;
+        font-size: 13px;
+    }
+
+    header h1 {
+        font-size: 19px;
+    }
+
+    .funcionario {
+        width: auto;
+        font-size: 12px;
+    }
+
+    .pesquisa {
+        width: 92%;
+        margin: 15px auto;
+    }
+
+    .conteudo {
+        flex-direction: column;
+        padding: 0 4%;
+        gap: 15px;
+    }
+
+    aside {
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
+    }
+
+    aside h3 {
+        margin-left: 0;
+    }
+
+    main {
+        width: 100%;
+    }
+
+    .card {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .detalhes {
+        min-width: 0;
+        align-items: flex-start;
+    }
+
+    .data {
+        text-align: left;
+    }
+
+    .tags {
+        justify-content: flex-start;
+    }
+}
