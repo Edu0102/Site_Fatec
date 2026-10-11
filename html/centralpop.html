@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Consulte procedimentos, protocolos e documentos dos departamentos da F.R.Cont.">
+    <title>Central de POP's</title>
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/centralpop.css">
+    <script src="../js/header.js" defer></script>
+    <script src="../js/centralpop.js" defer></script>
+</head>
+<body>
+    <main class="pagina-pop">
+        <a class="voltar" href="../index.html">Voltar ao hub inicial</a>
+        <br>
+
+        <section class="cabecalho-pagina" aria-labelledby="titulo-pagina">
+            <span class="sobretitulo">DOCUMENTOS E PROCEDIMENTOS</span>
+            <h2 id="titulo-pagina">Central de POP's</h2>
+            <p>Encontre os procedimentos, protocolos e documentos de cada departamento.</p>
+        </section>
+
+        <section class="painel-admin" aria-labelledby="titulo-admin">
+            <div>
+                <h3 id="titulo-admin">Área de gerenciamento</h3>
+                <p>Ative o modo de gerenciamento para adicionar ou remover documentos neste dispositivo.</p>
+            </div>
+            <label class="alternador" for="modo-admin">
+                <input type="checkbox" id="modo-admin" aria-controls="form-documento">
+                <span class="trilho" aria-hidden="true"></span>
+                <span>Gerenciar documentos</span>
+            </label>
+        </section>
+
+        <nav class="grade-setores" id="grade-setores" aria-label="Departamentos">
+            <button class="setor selecionado" type="button" data-setor="Fiscal" aria-pressed="true">
+                <span class="icone-setor" aria-hidden="true">▤</span>
+                <span class="nome-setor">Departamento Fiscal</span>
+                <span class="contador" data-contador="Fiscal">0 documentos</span>
+            </button>
+            <button class="setor" type="button" data-setor="Pessoal" aria-pressed="false">
+                <span class="icone-setor" aria-hidden="true">♙</span>
+                <span class="nome-setor">Departamento Pessoal</span>
+                <span class="contador" data-contador="Pessoal">0 documentos</span>
+            </button>
+            <button class="setor" type="button" data-setor="Financeiro" aria-pressed="false">
+                <span class="icone-setor" aria-hidden="true">R$</span>
+                <span class="nome-setor">Departamento Financeiro</span>
+                <span class="contador" data-contador="Financeiro">0 documentos</span>
+            </button>
+            <button class="setor" type="button" data-setor="Contábil" aria-pressed="false">
+                <span class="icone-setor" aria-hidden="true">▥</span>
+                <span class="nome-setor">Departamento Contábil</span>
+                <span class="contador" data-contador="Contábil">0 documentos</span>
+            </button>
+            <button class="setor" type="button" data-setor="Regularização" aria-pressed="false">
+                <span class="icone-setor" aria-hidden="true">§</span>
+                <span class="nome-setor">Departamento de Regularização</span>
+                <span class="contador" data-contador="Regularização">0 documentos</span>
+            </button>
+        </nav>
+
+        <section class="conteudo-setor" aria-labelledby="titulo-setor">
+            <div class="titulo-setor">
+                <div>
+                    <span class="sobretitulo">DEPARTAMENTO SELECIONADO</span>
+                    <h2 id="titulo-setor">Departamento Fiscal</h2>
+                </div>
+                <label class="campo-pesquisa">
+                    <span aria-hidden="true">⌕</span>
+                    <input id="pesquisa-documento" type="search" placeholder="Buscar documento..." aria-label="Buscar documentos do departamento">
+                </label>
+            </div>
+
+            <form id="form-documento" class="form-documento" hidden>
+                <h3>Adicionar documento</h3>
+                <div class="campos-form">
+                    <label for="nome-documento">Nome do documento
+                        <input id="nome-documento" name="nome" type="text" maxlength="150" placeholder="Ex.: Procedimento de apuração de impostos" required>
+                    </label>
+                    <label for="categoria-documento">Categoria
+                        <select id="categoria-documento" name="categoria">
+                            <option value="POP">POP</option>
+                            <option value="Protocolo">Protocolo</option>
+                            <option value="Manual">Manual</option>
+                            <option value="Formulário">Formulário</option>
+                            <option value="Outro documento">Outro documento</option>
+                        </select>
+                    </label>
+                    <label class="campo-arquivo" for="arquivo-documento">Arquivo
+                        <input id="arquivo-documento" name="arquivo" type="file" required>
+                    </label>
+                    <label for="observacao-documento">Observações <span>(opcional)</span>
+                        <input id="observacao-documento" name="observacao" type="text" maxlength="250" placeholder="Breve descrição do conteúdo">
+                    </label>
+                </div>
+                <button class="botao-principal" type="submit">＋ Adicionar ao departamento</button>
+                <p class="aviso-local">Os documentos ficam salvos apenas neste navegador e dispositivo. Para compartilhar arquivos com toda a equipe, será necessário um servidor com autenticação e controle de permissões.</p>
+            </form>
+
+            <div class="lista-documentos" id="lista-documentos" aria-live="polite"></div>
+            <p class="vazio" id="mensagem-vazia">Ainda não há documentos cadastrados neste departamento.</p>
+        </section>
+    </main>
+</body>
+</html>
