@@ -6,8 +6,22 @@
     <title>Feedback</title>
     <link rel="stylesheet" href="../css/header.css">
     <script src="../js/header.js" defer></script>
+    <link rel="stylesheet" href="../css/feedback.css">
 </head>
 <body>
-    <h1>Esta será a página Feedback</h1>
+        <main>
+        <form class="formulario">
+            <h2>Gostaria de sugerir alguma mudança ou adição?</h2>
+
+            <label for="assunto">Assunto</label>
+            <input type="text" id="assunto" name="assunto" required>
+
+            <label for="motivo">Motivo e Função</label>
+            <textarea id="motivo" name="motivo"
+                placeholder="Digite aqui..." required></textarea>
+
+            <button type="submit">Enviar</button>
+        </form>
+    </main>
 </body>
 </html>
