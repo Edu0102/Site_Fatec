@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Login</title>
+
+    <style>
+
+        body {
+            background: #082294;
+            font-family: Arial;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .login {
+            background: white;
+            width: 300px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 80%;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #sistema {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login" id="login">
+        <h1>Entrar</h1>
+
+        <form onsubmit="return entrar()">
+            <input type="email" id="email"
+                placeholder="E-mail" required>
+
+            <input type="password" id="senha"
+                placeholder="Senha" required>
+
+            <br>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p id="mensagem"></p>
+    </div>
+
+    <div class="login" id="sistema">
+        <h1>Bem-vindo!</h1>
+        <p>Login realizado com sucesso.</p>
+        <button onclick="sair()">Sair</button>
+    </div>
+
+    <script>
+        function entrar() {
+            var email = document.getElementById("email").value;
+            var senha = document.getElementById("senha").value;
+
+            if (email == "admin@teste.com" && senha == "1234") {
+                document.getElementById("login").style.display = "none";
+                document.getElementById("sistema").style.display = "block";
+            } else {
+                document.getElementById("mensagem").innerHTML =
+                    "E-mail ou senha incorretos!";
+            }
+
+            return false;
+        }
+
+        function sair() {
+            document.getElementById("sistema").style.display = "none";
+            document.getElementById("login").style.display = "block";
+            document.getElementById("email").value = "";
+            document.getElementById("senha").value = "";
+            document.getElementById("mensagem").innerHTML = "";
+        }
+    </script>
+
+</body>
+</html>
