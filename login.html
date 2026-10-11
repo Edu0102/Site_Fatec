@@ -2,94 +2,341 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Seguro</title>
 
     <style>
-
-        body {
-            background: #082294;
-            font-family: Arial;
-            text-align: center;
-            margin-top: 100px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
-        .login {
-            background: white;
-            width: 300px;
-            margin: auto;
-            padding: 25px;
-            border-radius: 15px;
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #101827, #253b67);
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            background: #ffffff;
+            color: #222;
+            width: 100%;
+            max-width: 400px;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 15px 40px #0005;
+        }
+
+        .icone {
+            background: #e5edff;
+            color: #315bd6;
+            width: 65px;
+            height: 65px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            margin: 0 auto 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .descricao {
+            text-align: center;
+            color: #777;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
         }
 
         input {
-            padding: 10px;
-            margin: 10px;
-            width: 80%;
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            outline: none;
+            font-size: 15px;
+            margin-bottom: 20px;
         }
 
-        button {
-            background: #2563eb;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
+        input:focus {
+            border-color: #315bd6;
+            box-shadow: 0 0 0 3px #315bd620;
+        }
+
+        .senha {
+            display: flex;
+            gap: 5px;
+        }
+
+        .senha input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mostrar {
+            height: 44px;
+            padding: 0 10px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            background: #f4f6fa;
             cursor: pointer;
+            margin-bottom: 20px;
         }
 
-        #sistema {
+        .opcoes {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            margin-bottom: 22px;
+            color: #555;
+        }
+
+        .opcoes input {
+            width: auto;
+            margin: 0;
+        }
+
+        .botao {
+            width: 100%;
+            padding: 14px;
+            background: #315bd6;
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .botao:hover {
+            background: #2446ae;
+            transform: translateY(-1px);
+        }
+
+        #mensagem {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 18px;
+            line-height: 1.5;
+        }
+
+        .rodape {
+            text-align: center;
+            margin-top: 25px;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .oculto {
             display: none;
+        }
+
+        .sucesso {
+            text-align: center;
+        }
+
+        .sucesso p {
+            color: #666;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 450px) {
+            .container {
+                padding: 25px 20px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="login" id="login">
-        <h1>Entrar</h1>
+    <div class="container" id="telaLogin">
 
-        <form onsubmit="return entrar()">
-            <input type="email" id="email"
-                placeholder="E-mail" required>
+        <div class="icone">🔐</div>
 
-            <input type="password" id="senha"
-                placeholder="Senha" required>
+        <h1>Bem-vindo!</h1>
+        <p class="descricao">
+            Entre com seus dados para acessar o sistema.
+        </p>
 
-            <br>
+        <form id="formLogin">
 
-            <button type="submit">Login</button>
+            <label for="usuario">E-mail</label>
+            <input
+                type="email"
+                id="usuario"
+                placeholder="seuemail@exemplo.com"
+                autocomplete="username"
+                required
+            >
+
+            <label for="senha">Senha</label>
+
+            <div class="senha">
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                    required
+                    minlength="6"
+                >
+
+                <button
+                    type="button"
+                    class="mostrar"
+                    id="botaoMostrar"
+                    aria-label="Mostrar senha"
+                >Mostrar</button>
+            </div>
+
+            <div class="opcoes">
+                <input type="checkbox" id="lembrar">
+                <label for="lembrar" style="margin: 0;">
+                    Lembrar meu e-mail
+                </label>
+            </div>
+
+            <button type="submit" class="botao">
+                Entrar no sistema
+            </button>
+
         </form>
 
-        <p id="mensagem"></p>
+        <p id="mensagem" role="status" aria-live="polite"></p>
+
+        <div class="rodape">
+            Sistema de autenticação
+        </div>
+
     </div>
 
-    <div class="login" id="sistema">
-        <h1>Bem-vindo!</h1>
-        <p>Login realizado com sucesso.</p>
-        <button onclick="sair()">Sair</button>
+    <div class="container oculto" id="telaSistema">
+
+        <div class="icone">✅</div>
+
+        <div class="sucesso">
+            <h1>Login realizado!</h1>
+
+            <p>
+                Você entrou no sistema com sucesso.
+                Sua sessão está ativa nesta página.
+            </p>
+
+            <button class="botao" id="botaoSair">
+                Sair da conta
+            </button>
+        </div>
+
+        <div class="rodape">
+            Área de acesso
+        </div>
+
     </div>
 
     <script>
-        function entrar() {
-            var email = document.getElementById("email").value;
+        // Dados de teste do sistema
+        var emailCorreto = "admin@teste.com";
+        var senhaCorreta = "Senha123";
+
+        var form = document.getElementById("formLogin");
+        var mensagem = document.getElementById("mensagem");
+
+        // Mostrar ou esconder a senha
+        document.getElementById("botaoMostrar").onclick = function() {
+            var campoSenha = document.getElementById("senha");
+
+            if (campoSenha.type == "password") {
+                campoSenha.type = "text";
+                this.innerHTML = "Esconder";
+                this.setAttribute("aria-label", "Esconder senha");
+            } else {
+                campoSenha.type = "password";
+                this.innerHTML = "Mostrar";
+                this.setAttribute("aria-label", "Mostrar senha");
+            }
+        };
+
+        // Verificar o login
+        form.onsubmit = function(event) {
+            event.preventDefault();
+
+            var email = document.getElementById("usuario").value.trim();
             var senha = document.getElementById("senha").value;
 
-            if (email == "admin@teste.com" && senha == "1234") {
-                document.getElementById("login").style.display = "none";
-                document.getElementById("sistema").style.display = "block";
-            } else {
-                document.getElementById("mensagem").innerHTML =
-                    "E-mail ou senha incorretos!";
-            }
+            if (email == emailCorreto && senha == senhaCorreta) {
 
-            return false;
+                sessionStorage.setItem("logado", "sim");
+
+                mensagem.innerHTML = "";
+                mostrarSistema();
+
+            } else {
+                mensagem.style.color = "#d93025";
+                mensagem.innerHTML = "E-mail ou senha incorretos!";
+            }
+        };
+
+        // Abrir a área do sistema
+        function mostrarSistema() {
+            document.getElementById("telaLogin").classList.add("oculto");
+            document.getElementById("telaSistema").classList.remove("oculto");
         }
 
-        function sair() {
-            document.getElementById("sistema").style.display = "none";
-            document.getElementById("login").style.display = "block";
-            document.getElementById("email").value = "";
-            document.getElementById("senha").value = "";
-            document.getElementById("mensagem").innerHTML = "";
+        // Encerrar a sessão
+        document.getElementById("botaoSair").onclick = function() {
+            sessionStorage.removeItem("logado");
+
+            document.getElementById("telaSistema").classList.add("oculto");
+            document.getElementById("telaLogin").classList.remove("oculto");
+
+            form.reset();
+            mensagem.innerHTML = "";
+        };
+
+        // Verificar se já existe uma sessão nesta aba
+        if (sessionStorage.getItem("logado") == "sim") {
+            mostrarSistema();
+        }
+
+        // Guardar somente o e-mail, se o usuário quiser
+        document.getElementById("lembrar").onchange = function() {
+            var campoEmail = document.getElementById("usuario");
+
+            if (this.checked) {
+                localStorage.setItem("emailSalvo", campoEmail.value);
+            } else {
+                localStorage.removeItem("emailSalvo");
+            }
+        };
+
+        // Recuperar o e-mail salvo
+        var emailSalvo = localStorage.getItem("emailSalvo");
+
+        if (emailSalvo) {
+            document.getElementById("usuario").value = emailSalvo;
+            document.getElementById("lembrar").checked = true;
         }
     </script>
 
