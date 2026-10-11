@@ -37,6 +37,7 @@
     font-size: 28px;
     margin: 0;
     text-align: center;
+    color: white !important;
 }
 
 .header-padrao .header-funcionario {

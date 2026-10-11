@@ -1,13 +1,109 @@
 <!DOCTYPE html>
-<html lang="PT-BR">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checklist</title>
+    <title>Checklist Pessoal</title>
     <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/checklist.css">
     <script src="../js/header.js" defer></script>
+    <script src="../js/checklist.js" defer></script>
 </head>
 <body>
-    <h1>Esta será a página Checklist</h1>
+
+  <main class="container">
+    <section class="page-heading">
+      <div>
+        <h1>Checklist Pessoal</h1>
+        <p class="subtitle">Organize suas tarefas e acompanhe o que já foi concluído.</p>
+      </div>
+    </section>
+
+    <section id="painel-adm" class="admin-panel" hidden>
+      <div>
+        <p class="eyebrow">VISÃO ADMINISTRATIVA</p>
+        <h2>Checklists dos funcionários</h2>
+        <p>Selecione um funcionário para consultar as tarefas registradas neste navegador.</p>
+      </div>
+      <label class="employee-select">Funcionário
+        <select id="funcionario-consulta">
+          <option value="funcionario">Funcionário de demonstração</option>
+          <option value="funcionario2">Segundo funcionário (demonstração)</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="summary-grid" aria-label="Resumo das tarefas">
+      <article class="summary-card">
+        <span class="summary-icon icon-blue">☷</span>
+        <div><span class="summary-label">Total de tarefas</span><strong id="total-tarefas">0</strong></div>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon icon-green">✓</span>
+        <div><span class="summary-label">Concluídas</span><strong id="tarefas-concluidas">0</strong></div>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon icon-orange">◷</span>
+        <div><span class="summary-label">Pendentes</span><strong id="tarefas-pendentes">0</strong></div>
+      </article>
+    </section>
+
+    <div class="content-grid">
+      <section class="panel tasks-panel">
+        <div class="panel-heading">
+          <div>
+            <h2 id="titulo-lista">Minhas tarefas</h2>
+            <p id="subtitulo-lista">Marque os itens conforme concluir.</p>
+          </div>
+          <span class="today-tag">Checklist diário</span>
+        </div>
+
+        <form id="form-tarefa" class="new-task">
+          <label class="sr-only" for="nova-tarefa">Nome da nova tarefa</label>
+          <input id="nova-tarefa" type="text" maxlength="120" placeholder="Ex.: Conferir documentos do cliente..." autocomplete="off">
+          <button class="button button-primary" type="submit">＋ Adicionar tarefa</button>
+        </form>
+        <p id="mensagem-form" class="form-message" role="status"></p>
+
+        <div class="list-head"><span>TAREFA</span><span>STATUS</span></div>
+        <ul id="lista-tarefas" class="task-list"></ul>
+        <div id="lista-vazia" class="empty-state" hidden>
+          <span class="empty-icon">☑</span>
+          <strong>Nenhuma tarefa por aqui</strong>
+          <p>Adicione uma tarefa para começar seu checklist.</p>
+        </div>
+      </section>
+
+      <aside class="side-column">
+        <section class="panel progress-panel">
+          <h2>Seu progresso</h2>
+          <p class="muted">Acompanhe o andamento das tarefas de hoje.</p>
+          <div class="progress-number"><strong id="percentual">0%</strong><span>concluído</span></div>
+          <div class="progress-track" role="progressbar" aria-label="Progresso das tarefas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barra-progresso">
+            <span id="barra-preenchida"></span>
+          </div>
+          <p id="texto-progresso" class="progress-caption">Você ainda não concluiu tarefas.</p>
+          <button id="desmarcar-todas" class="button button-light" type="button">Desmarcar todas</button>
+        </section>
+      </aside>
+    </div>
+
+  </main>
+
+<!--VISUALIZAÇÃO TEMPORARIA ADMIN ALTERNAR VISÕES-->
+
+<!-- Widget Flutuante de Teste (Temporário) -->
+<div class="test-switcher-floating">
+  <span class="test-badge">🛠️ Painel de Teste</span>
+  <button type="button" id="btn-toggle-perfil" class="button-test">Modo: Funcionário</button>
+</div>
+
+<!-- Elemento oculto para manter a compatibilidade com a lógica existente -->
+<select id="usuario-atual" style="display: none;" aria-hidden="true">
+  <option value="funcionario" selected>Funcionário</option>
+  <option value="adm">Admin</option>
+</select>
+
+
 </body>
 </html>
