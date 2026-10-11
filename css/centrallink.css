@@ -1,45 +1,40 @@
+:root {
+    --azul: #203795;
+    --azul-escuro: #102957;
+    --azul-claro: #edf2fc;
+    --texto: #18263b;
+    --texto-suave: #738096;
+    --borda: #e0e6ef;
+    --fundo: #f5f7fb;
+}
 
 * {
     box-sizing: border-box;
 }
 
+* { box-sizing: border-box; }
+
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #ffffff;
-    color: #000000;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
 }
-
-/* CABEÇALHO */
-
-header {
-    height: 86px;
-    background: #20358f;
-    color: white;
-    display: flex;
+.voltar {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 2%;
+    gap: 7px;
+    margin-bottom: 22px;
+    color: var(--azul);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
 }
-
-.logo {
-    width: 150px;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-header h1 {
-    font-size: 28px;
-    margin: 0;
-    text-align: center;
-}
-
-.funcionario {
-    width: 230px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: bold;
+.voltar:hover { text-decoration: underline; }
+.voltar:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 3px solid #b9ccf8;
+    outline-offset: 3px;
 }
 
 /* BARRA DE PESQUISA */

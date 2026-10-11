@@ -301,6 +301,23 @@ select:focus, input:focus {
   white-space: nowrap; 
 }
 
+.voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 22px;
+    color: var(--azul);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+.voltar:hover { text-decoration: underline; }
+.voltar:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 3px solid #b9ccf8;
+    outline-offset: 3px;
+}
+
+
 [hidden] { display: none !important; }
 
 @media (max-width: 850px) {

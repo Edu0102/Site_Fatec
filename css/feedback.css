@@ -1,3 +1,12 @@
+:root {
+    --azul: #203795;
+    --azul-escuro: #102957;
+    --azul-claro: #edf2fc;
+    --texto: #18263b;
+    --texto-suave: #738096;
+    --borda: #e0e6ef;
+    --fundo: #f5f7fb;
+}
 
 * {
     margin: 0;
@@ -5,49 +14,31 @@
     box-sizing: border-box;
 }
 
+* { box-sizing: border-box; }
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: white;
+    margin: 0;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
 }
 
-/* Cabeçalho */
 
-.cabecalho {
-    background-color: #20358f;
-    color: white;
-    height: 120px;
-    display: flex;
+.voltar {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 15px 30px;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 25px;
-    font-weight: bold;
-}
-
-.logo-imagem {
-    width: 65px;
-    height: 65px;
-    border: 4px solid white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 7px;
+    margin-bottom: 22px;
+    color: var(--azul);
     font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
 }
-
-.cabecalho h1 {
-    font-size: 36px;
-}
-
-.funcionario {
-    font-size: 24px;
-    font-weight: bold;
+.voltar:hover { text-decoration: underline; }
+.voltar:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 3px solid #b9ccf8;
+    outline-offset: 3px;
 }
 
 /* Formulário */
@@ -113,46 +104,3 @@ body {
     background-color: #333333;
 }
 
-/* Adaptação para celulares */
-
-@media (max-width: 768px) {
-    .cabecalho {
-        height: auto;
-        flex-wrap: wrap;
-        gap: 15px;
-        padding: 15px;
-    }
-
-    .cabecalho h1 {
-        font-size: 26px;
-    }
-
-    .logo {
-        font-size: 18px;
-    }
-
-    .funcionario {
-        font-size: 16px;
-    }
-
-    .formulario {
-        width: 92%;
-        padding: 25px 20px;
-    }
-
-    .formulario h2 {
-        font-size: 25px;
-    }
-
-    .formulario label {
-        font-size: 20px;
-    }
-
-    .formulario input {
-        width: 100%;
-    }
-
-    .formulario textarea {
-        height: 180px;
-    }
-}

@@ -1,8 +1,21 @@
+:root {
+    --azul: #203795;
+    --azul-escuro: #102957;
+    --azul-claro: #edf2fc;
+    --texto: #18263b;
+    --texto-suave: #738096;
+    --borda: #e0e6ef;
+    --fundo: #f5f7fb;
+}
+
+* { box-sizing: border-box; }
+
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #ffffff;
-    color: #333;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
 }
 
 .hub-container {
