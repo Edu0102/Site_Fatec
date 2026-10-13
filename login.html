@@ -147,20 +147,6 @@
             font-size: 12px;
         }
 
-        .oculto {
-            display: none;
-        }
-
-        .sucesso {
-            text-align: center;
-        }
-
-        .sucesso p {
-            color: #666;
-            margin: 20px 0;
-            line-height: 1.6;
-        }
-
         @media (max-width: 450px) {
             .container {
                 padding: 25px 20px;
@@ -232,29 +218,6 @@
 
     </div>
 
-    <div class="container oculto" id="telaSistema">
-
-        <div class="icone">✅</div>
-
-        <div class="sucesso">
-            <h1>Login realizado!</h1>
-
-            <p>
-                Você entrou no sistema com sucesso.
-                Sua sessão está ativa nesta página.
-            </p>
-
-            <button class="botao" id="botaoSair">
-                Sair da conta
-            </button>
-        </div>
-
-        <div class="rodape">
-            Área de acesso
-        </div>
-
-    </div>
-
     <script>
         // Dados de teste do sistema
         var emailCorreto = "admin@teste.com";
@@ -290,7 +253,7 @@
                 sessionStorage.setItem("logado", "sim");
 
                 mensagem.innerHTML = "";
-                mostrarSistema();
+                window.location.href = "index.html";
 
             } else {
                 mensagem.style.color = "#d93025";
@@ -298,26 +261,9 @@
             }
         };
 
-        // Abrir a área do sistema
-        function mostrarSistema() {
-            document.getElementById("telaLogin").classList.add("oculto");
-            document.getElementById("telaSistema").classList.remove("oculto");
-        }
-
-        // Encerrar a sessão
-        document.getElementById("botaoSair").onclick = function() {
-            sessionStorage.removeItem("logado");
-
-            document.getElementById("telaSistema").classList.add("oculto");
-            document.getElementById("telaLogin").classList.remove("oculto");
-
-            form.reset();
-            mensagem.innerHTML = "";
-        };
-
         // Verificar se já existe uma sessão nesta aba
         if (sessionStorage.getItem("logado") == "sim") {
-            mostrarSistema();
+            window.location.href = "index.html";
         }
 
         // Guardar somente o e-mail, se o usuário quiser
