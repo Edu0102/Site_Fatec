@@ -69,6 +69,23 @@
             border-color: #315bd6;
         }
 
+        .mostrar-senha {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: -10px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .mostrar-senha input {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
         button {
             width: 100%;
             padding: 14px;
@@ -117,10 +134,20 @@
                 placeholder="Mínimo de 6 caracteres"
                 minlength="6" required>
 
+            <label class="mostrar-senha">
+                <input type="checkbox" id="mostrarSenha">
+                Mostrar senha
+            </label>
+
             <label for="confirmar">Confirmar senha</label>
             <input type="password" id="confirmar"
                 placeholder="Digite a senha novamente"
                 minlength="6" required>
+
+            <label class="mostrar-senha">
+                <input type="checkbox" id="mostrarConfirmar">
+                Mostrar senha
+            </label>
 
             <button type="submit">Cadastrar</button>
 
@@ -131,22 +158,34 @@
     </div>
 
     <script>
-    document.getElementById("formCadastro").onsubmit = function(event) {
-        event.preventDefault();
+        // Mostrar ou ocultar a senha
+        document.getElementById("mostrarSenha").onchange = function() {
+            document.getElementById("senha").type =
+                this.checked ? "text" : "password";
+        };
 
-        var senha = document.getElementById("senha").value;
-        var confirmar = document.getElementById("confirmar").value;
-        var mensagem = document.getElementById("mensagem");
+        // Mostrar ou ocultar a confirmação da senha
+        document.getElementById("mostrarConfirmar").onchange = function() {
+            document.getElementById("confirmar").type =
+                this.checked ? "text" : "password";
+        };
 
-        if (senha != confirmar) {
-            mensagem.style.color = "red";
-            mensagem.innerHTML = "As senhas não são iguais!";
-        } else {
-            mensagem.style.color = "red";
-            mensagem.innerHTML =
-                "O banco de dados ainda não está em funcionamento";
-        }
-    };
+        document.getElementById("formCadastro").onsubmit = function(event) {
+            event.preventDefault();
+
+            var senha = document.getElementById("senha").value;
+            var confirmar = document.getElementById("confirmar").value;
+            var mensagem = document.getElementById("mensagem");
+
+            if (senha != confirmar) {
+                mensagem.style.color = "red";
+                mensagem.innerHTML = "As senhas não são iguais!";
+            } else {
+                mensagem.style.color = "red";
+                mensagem.innerHTML =
+                    "O banco de dados ainda não está em funcionamento";
+            }
+        };
     </script>
 
 </body>
