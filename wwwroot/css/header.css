@@ -47,3 +47,13 @@
     font-weight: bold;
 }
 
+.header-padrao .botao-sair {
+    margin-left: 10px;
+    padding: 6px 10px;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+}
+

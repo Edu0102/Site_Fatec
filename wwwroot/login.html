@@ -219,10 +219,6 @@
     </div>
 
     <script>
-        // Dados de teste do sistema
-        var emailCorreto = "admin@teste.com";
-        var senhaCorreta = "Senha123";
-
         var form = document.getElementById("formLogin");
         var mensagem = document.getElementById("mensagem");
 
@@ -242,29 +238,37 @@
         };
 
         // Verificar o login
-        form.onsubmit = function(event) {
+        form.onsubmit = async function(event) {
             event.preventDefault();
 
             var email = document.getElementById("usuario").value.trim();
             var senha = document.getElementById("senha").value;
 
-            if (email == emailCorreto && senha == senhaCorreta) {
-
-                sessionStorage.setItem("logado", "sim");
-
-                mensagem.innerHTML = "";
-                window.location.href = "index.html";
-
-            } else {
+            mensagem.style.color = "#555";
+            mensagem.textContent = "Verificando dados...";
+            try {
+                var resposta = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: email,
+                        password: senha,
+                        remember: document.getElementById("lembrar").checked
+                    })
+                });
+                if (!resposta.ok) throw new Error("Credenciais inválidas");
+                mensagem.textContent = "";
+                window.location.href = "/";
+            } catch (erro) {
                 mensagem.style.color = "#d93025";
-                mensagem.innerHTML = "E-mail ou senha incorretos!";
+                mensagem.textContent = "E-mail ou senha incorretos!";
             }
         };
 
         // Verificar se já existe uma sessão nesta aba
-        if (sessionStorage.getItem("logado") == "sim") {
-            window.location.href = "index.html";
-        }
+        fetch("/api/auth/me").then(function(resposta) {
+            if (resposta.ok) window.location.href = "/";
+        });
 
         // Guardar somente o e-mail, se o usuário quiser
         document.getElementById("lembrar").onchange = function() {

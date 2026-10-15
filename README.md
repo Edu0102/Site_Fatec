@@ -1,5 +1,16 @@
 # Site Fatec
 
+## Login local com ASP.NET e SQLite
+
+O portal também pode ser executado como uma aplicação ASP.NET Core, que protege as páginas existentes com uma sessão por cookie e valida o login em um banco SQLite local. Execute:
+
+```powershell
+cd database
+dotnet run
+```
+
+Abra o endereço mostrado no terminal (normalmente `http://localhost:5293`). Na primeira execução, o arquivo local `portal.db` é criado e recebe o usuário inicial `admin@teste.com` com a senha `Senha123`. Altere ou remova essa conta de demonstração antes de publicar o sistema.
+
 Portal interno desenvolvido com HTML, CSS e JavaScript para reunir ferramentas e materiais de consulta da equipe.
 
 ## Sumário

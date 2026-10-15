@@ -1,0 +1,4 @@
+database/bin/
+database/obj/
+database/portal.db*
+database/keys/
