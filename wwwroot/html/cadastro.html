@@ -58,35 +58,50 @@
 
         input {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             border: 1px solid #ddd;
             border-radius: 9px;
+            outline: none;
+            font-size: 15px;
             margin-bottom: 18px;
         }
 
         input:focus {
-            outline: none;
             border-color: #315bd6;
+            box-shadow: 0 0 0 3px #315bd620;
         }
 
-        .mostrar-senha {
+        /* Campo de senha e botão Mostrar */
+        .senha {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: -10px;
+            gap: 5px;
+            align-items: flex-start;
             margin-bottom: 18px;
-            font-size: 13px;
-            font-weight: normal;
-            cursor: pointer;
         }
 
-        .mostrar-senha input {
-            width: auto;
-            margin: 0;
-            cursor: pointer;
+        .senha input {
+            flex: 1;
+            min-width: 0;
+            margin-bottom: 0;
         }
 
-        button {
+        .mostrar {
+            height: 44px;
+            padding: 0 10px;
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            background: #f4f6fa;
+            cursor: pointer;
+            font-size: 14px;
+            color: #222;
+            white-space: nowrap;
+        }
+
+        .mostrar:hover {
+            background: #e9edf5;
+        }
+
+        button.cadastrar {
             width: 100%;
             padding: 14px;
             background: #315bd6;
@@ -98,13 +113,15 @@
             cursor: pointer;
         }
 
-        button:hover {
+        button.cadastrar:hover {
             background: #2446ae;
         }
 
         #mensagem {
             margin-top: 18px;
+            margin-bottom: 0;
             font-size: 14px;
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -122,54 +139,90 @@
         <form id="formCadastro">
 
             <label for="nome">Nome completo</label>
-            <input type="text" id="nome"
-                placeholder="Digite seu nome" required>
+            <input
+                type="text"
+                id="nome"
+                placeholder="Digite seu nome"
+                autocomplete="name"
+                required
+            >
 
             <label for="email">E-mail / id</label>
-            <input type="email" id="email"
-                placeholder="Digite seu e-mail / id" required>
+            <input
+                type="email"
+                id="email"
+                placeholder="Digite seu e-mail / id"
+                autocomplete="email"
+                required
+            >
 
             <label for="senha">Senha</label>
-            <input type="password" id="senha"
-                placeholder="Mínimo de 6 caracteres"
-                minlength="6" required>
 
-            <label class="mostrar-senha">
-                <input type="checkbox" id="mostrarSenha">
-                Mostrar senha
-            </label>
+            <div class="senha">
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Mínimo de 6 caracteres"
+                    minlength="6"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="mostrar"
+                    onclick="alternarSenha('senha', this)"
+                    aria-label="Mostrar senha"
+                >Mostrar</button>
+            </div>
 
             <label for="confirmar">Confirmar senha</label>
-            <input type="password" id="confirmar"
-                placeholder="Digite a senha novamente"
-                minlength="6" required>
 
-            <label class="mostrar-senha">
-                <input type="checkbox" id="mostrarConfirmar">
-                Mostrar senha
-            </label>
+            <div class="senha">
+                <input
+                    type="password"
+                    id="confirmar"
+                    placeholder="Digite a senha novamente"
+                    minlength="6"
+                    autocomplete="new-password"
+                    required
+                >
 
-            <button type="submit">Cadastrar</button>
+                <button
+                    type="button"
+                    class="mostrar"
+                    onclick="alternarSenha('confirmar', this)"
+                    aria-label="Mostrar confirmação da senha"
+                >Mostrar</button>
+            </div>
+
+            <button type="submit" class="cadastrar">
+                Cadastrar
+            </button>
 
         </form>
 
-        <p id="mensagem"></p>
+        <p id="mensagem" role="status" aria-live="polite"></p>
 
     </div>
 
     <script>
-        // Mostrar ou ocultar a senha
-        document.getElementById("mostrarSenha").onchange = function() {
-            document.getElementById("senha").type =
-                this.checked ? "text" : "password";
-        };
+        // Mostrar ou esconder a senha
+        function alternarSenha(id, botao) {
+            var campoSenha = document.getElementById(id);
 
-        // Mostrar ou ocultar a confirmação da senha
-        document.getElementById("mostrarConfirmar").onchange = function() {
-            document.getElementById("confirmar").type =
-                this.checked ? "text" : "password";
-        };
+            if (campoSenha.type === "password") {
+                campoSenha.type = "text";
+                botao.textContent = "Esconder";
+                botao.setAttribute("aria-label", "Esconder senha");
+            } else {
+                campoSenha.type = "password";
+                botao.textContent = "Mostrar";
+                botao.setAttribute("aria-label", "Mostrar senha");
+            }
+        }
 
+        // Verificar os dados do cadastro
         document.getElementById("formCadastro").onsubmit = function(event) {
             event.preventDefault();
 
@@ -177,13 +230,13 @@
             var confirmar = document.getElementById("confirmar").value;
             var mensagem = document.getElementById("mensagem");
 
-            if (senha != confirmar) {
-                mensagem.style.color = "red";
-                mensagem.innerHTML = "As senhas não são iguais!";
+            if (senha !== confirmar) {
+                mensagem.style.color = "#d93025";
+                mensagem.textContent = "As senhas não são iguais!";
             } else {
-                mensagem.style.color = "red";
-                mensagem.innerHTML =
-                    "O banco de dados ainda não está em funcionamento";
+                mensagem.style.color = "#d93025";
+                mensagem.textContent =
+                    "O banco de dados ainda não está em funcionamento.";
             }
         };
     </script>
