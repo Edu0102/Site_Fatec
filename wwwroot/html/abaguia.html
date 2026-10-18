@@ -1,0 +1,54 @@
+<!--
+    abaguia.html — estrutura do componente de ajuda e tour guiado.
+    Usar em uma página: adicione apenas esta linha antes de </body>:
+        <script src="../js/abaguia.js" defer></script>
+-->
+
+<!-- 1) Elemento flutuante (canto inferior esquerdo) -->
+<div class="abaguia" id="abaguia">
+
+    <!-- Caixa branca com texto curto e botão azul -->
+    <section class="abaguia-caixa" id="abaguia-caixa" aria-labelledby="abaguia-caixa-titulo">
+        <button type="button" class="abaguia-minimizar" data-abaguia-acao="minimizar"
+                aria-label="Minimizar ajuda">&times;</button>
+
+        <h2 class="abaguia-caixa-titulo" id="abaguia-caixa-titulo">Precisa de ajuda?</h2>
+        <p class="abaguia-caixa-texto" data-abaguia="caixa-texto">Faça um tour rápido por esta página.</p>
+
+        <div class="abaguia-caixa-acoes">
+            <button type="button" class="abaguia-botao" data-abaguia-acao="iniciar">Iniciar tour</button>
+            <a class="abaguia-link" data-abaguia="caixa-link" href="#" hidden></a>
+        </div>
+    </section>
+
+    <!-- Botão redondo exibido quando a caixa está minimizada -->
+    <button type="button" class="abaguia-reabrir" id="abaguia-reabrir" data-abaguia-acao="abrir"
+            aria-label="Abrir ajuda desta página" hidden>?</button>
+</div>
+
+<!-- 2) Camadas do tour (ficam acima de todo o conteúdo da página) -->
+<div class="abaguia-tour" id="abaguia-tour" hidden>
+
+    <!-- Camada transparente: impede cliques na página enquanto o tour está aberto -->
+    <div class="abaguia-bloqueio" data-abaguia-acao="bloqueio"></div>
+
+    <!-- Moldura que escurece a página e destaca o elemento do passo atual -->
+    <div class="abaguia-destaque" id="abaguia-destaque" aria-hidden="true"></div>
+
+    <!-- Cartão explicativo de cada passo -->
+    <div class="abaguia-popover" id="abaguia-popover" role="dialog" aria-modal="true"
+         aria-labelledby="abaguia-passo-titulo" aria-describedby="abaguia-passo-texto" tabindex="-1">
+        <p class="abaguia-passo-contador" data-abaguia="contador" aria-live="polite">Passo 1 de 1</p>
+        <h3 class="abaguia-passo-titulo" id="abaguia-passo-titulo">Título do passo</h3>
+        <p class="abaguia-passo-texto" id="abaguia-passo-texto">Texto do passo.</p>
+        <a class="abaguia-link abaguia-passo-link" data-abaguia="passo-link" href="#" hidden></a>
+
+        <div class="abaguia-passo-acoes">
+            <button type="button" class="abaguia-texto-botao" data-abaguia-acao="pular">Pular tour</button>
+            <span class="abaguia-passo-navegacao">
+                <button type="button" class="abaguia-botao abaguia-botao--claro" data-abaguia-acao="voltar">Voltar</button>
+                <button type="button" class="abaguia-botao" data-abaguia-acao="proximo">Próximo</button>
+            </span>
+        </div>
+    </div>
+</div>
