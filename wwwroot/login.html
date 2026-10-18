@@ -1,161 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="stylesheet" href="css/style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Seguro</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #101827, #253b67);
-            padding: 20px;
-            color: #fff;
-        }
-
-        .container {
-            background: #ffffff;
-            color: #222;
-            width: 100%;
-            max-width: 400px;
-            padding: 35px;
-            border-radius: 18px;
-            box-shadow: 0 15px 40px #0005;
-        }
-
-        .icone {
-            background: #e5edff;
-            color: #315bd6;
-            width: 65px;
-            height: 65px;
-            border-radius: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            margin: 0 auto 20px;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .descricao {
-            text-align: center;
-            color: #777;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        input {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            outline: none;
-            font-size: 15px;
-            margin-bottom: 20px;
-        }
-
-        input:focus {
-            border-color: #315bd6;
-            box-shadow: 0 0 0 3px #315bd620;
-        }
-
-        .senha {
-            display: flex;
-            gap: 5px;
-        }
-
-        .senha input {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .mostrar {
-            height: 44px;
-            padding: 0 10px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            background: #f4f6fa;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .opcoes {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            margin-bottom: 22px;
-            color: #555;
-        }
-
-        .opcoes input {
-            width: auto;
-            margin: 0;
-        }
-
-        .botao {
-            width: 100%;
-            padding: 14px;
-            background: #315bd6;
-            color: white;
-            border: none;
-            border-radius: 9px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .botao:hover {
-            background: #2446ae;
-            transform: translateY(-1px);
-        }
-
-        #mensagem {
-            text-align: center;
-            font-size: 14px;
-            margin-top: 18px;
-            line-height: 1.5;
-        }
-
-        .rodape {
-            text-align: center;
-            margin-top: 25px;
-            color: #888;
-            font-size: 12px;
-        }
-
-        @media (max-width: 450px) {
-            .container {
-                padding: 25px 20px;
-            }
-        }
-    </style>
 </head>
 
-<body>
+<body class="page-login">
 
     <div class="container" id="telaLogin">
 
@@ -199,7 +51,7 @@
 
             <div class="opcoes">
                 <input type="checkbox" id="lembrar">
-                <label for="lembrar" style="margin: 0;">
+                <label for="lembrar">
                     Lembrar meu e-mail
                 </label>
             </div>

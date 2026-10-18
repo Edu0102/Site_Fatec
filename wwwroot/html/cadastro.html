@@ -1,132 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="stylesheet" href="../css/style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #101827, #253b67);
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 15px 40px #0005;
-        }
-
-        .icone {
-            font-size: 35px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        p {
-            text-align: center;
-            color: #777;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        input {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            outline: none;
-            font-size: 15px;
-            margin-bottom: 18px;
-        }
-
-        input:focus {
-            border-color: #315bd6;
-            box-shadow: 0 0 0 3px #315bd620;
-        }
-
-        /* Campo de senha e botão Mostrar */
-        .senha {
-            display: flex;
-            gap: 5px;
-            align-items: flex-start;
-            margin-bottom: 18px;
-        }
-
-        .senha input {
-            flex: 1;
-            min-width: 0;
-            margin-bottom: 0;
-        }
-
-        .mostrar {
-            height: 44px;
-            padding: 0 10px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            background: #f4f6fa;
-            cursor: pointer;
-            font-size: 14px;
-            color: #222;
-            white-space: nowrap;
-        }
-
-        .mostrar:hover {
-            background: #e9edf5;
-        }
-
-        button.cadastrar {
-            width: 100%;
-            padding: 14px;
-            background: #315bd6;
-            color: white;
-            border: none;
-            border-radius: 9px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button.cadastrar:hover {
-            background: #2446ae;
-        }
-
-        #mensagem {
-            margin-top: 18px;
-            margin-bottom: 0;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-    </style>
 </head>
 
-<body>
+<body class="page-cadastro">
 
     <div class="container">
 
