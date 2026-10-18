@@ -1,0 +1,327 @@
+/* ---------- Variáveis e base (escopadas, sem tocar no :root da página) ---------- */
+.abaguia,
+.abaguia-tour {
+    --ag-azul: #203795;
+    --ag-azul-hover: #162870;
+    --ag-azul-escuro: #102957;
+    --ag-azul-claro: #edf2fc;
+    --ag-texto: #18263b;
+    --ag-suave: #738096;
+    --ag-borda: #e0e6ef;
+    --ag-foco: #b9ccf8;
+    --ag-z: 100000;
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ag-texto);
+}
+
+.abaguia *,
+.abaguia-tour * {
+    box-sizing: border-box;
+}
+
+/* Garante que [hidden] vença qualquer "display" definido abaixo */
+.abaguia [hidden],
+.abaguia-tour[hidden] {
+    display: none !important;
+}
+
+/* ---------- Elemento flutuante (canto inferior esquerdo) ---------- */
+.abaguia {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: var(--ag-z);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: calc(100vw - 40px);
+}
+
+/* Durante o tour o elemento flutuante sai de cena (evita duplicidade) */
+.abaguia.abaguia--em-tour {
+    visibility: hidden;
+}
+
+.abaguia-caixa {
+    position: relative;
+    width: 280px;
+    max-width: 100%;
+    padding: 18px 18px 16px;
+    background: #fff;
+    border: 1px solid var(--ag-borda);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(16, 41, 87, 0.18);
+}
+
+.abaguia-caixa-titulo {
+    margin: 0 28px 4px 0;
+    color: var(--ag-azul);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.abaguia-caixa-texto {
+    margin: 0 0 14px;
+    color: var(--ag-texto);
+    font-size: 14px;
+}
+
+.abaguia-caixa-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+}
+
+.abaguia-minimizar {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ag-suave);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.abaguia-minimizar:hover {
+    background: var(--ag-azul-claro);
+    color: var(--ag-azul);
+}
+
+/* Botão redondo "?" quando a caixa está minimizada */
+.abaguia-reabrir {
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ag-azul);
+    color: #fff;
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.abaguia-reabrir:hover {
+    background: var(--ag-azul-hover);
+    transform: translateY(-2px);
+}
+
+/* ---------- Botões e links (iguais ao estilo do .btn-feedback do hub) ---------- */
+.abaguia-botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 9px 20px;
+    border: 1px solid var(--ag-azul);
+    border-radius: 30px;
+    background: var(--ag-azul);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.abaguia-botao:hover {
+    background: var(--ag-azul-hover);
+    border-color: var(--ag-azul-hover);
+    transform: translateY(-2px);
+}
+
+.abaguia-botao--claro {
+    background: #fff;
+    color: var(--ag-azul);
+    box-shadow: none;
+}
+
+.abaguia-botao--claro:hover {
+    background: var(--ag-azul-claro);
+    border-color: var(--ag-azul);
+}
+
+.abaguia-botao[disabled] {
+    visibility: hidden; /* mantém o espaço para o layout não "pular" */
+}
+
+.abaguia-link {
+    color: var(--ag-azul);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.abaguia-link:hover {
+    text-decoration: underline;
+}
+
+.abaguia-texto-botao {
+    margin: 0;
+    padding: 6px 2px;
+    border: 0;
+    background: transparent;
+    color: var(--ag-suave);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.abaguia-texto-botao:hover {
+    color: var(--ag-azul);
+    text-decoration: underline;
+}
+
+/* Foco visível por teclado (mesmo tom usado nas outras páginas) */
+.abaguia button:focus-visible,
+.abaguia a:focus-visible,
+.abaguia-tour button:focus-visible,
+.abaguia-tour a:focus-visible {
+    outline: 3px solid var(--ag-foco);
+    outline-offset: 3px;
+}
+
+/* ---------- Tour: camadas ---------- */
+.abaguia-tour {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--ag-z) + 1);
+}
+
+/* Captura cliques para a página não ser usada durante o tour */
+.abaguia-bloqueio {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+}
+
+/* Moldura: o elemento fica "recortado" e todo o resto é escurecido pela sombra */
+.abaguia-destaque {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 12px;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 100vmax rgba(16, 41, 87, 0.66);
+    pointer-events: none;
+}
+
+/* Passos sem elemento-alvo: apenas escurece a tela, sem anel branco */
+.abaguia-destaque.abaguia-destaque--centro {
+    box-shadow: 0 0 0 100vmax rgba(16, 41, 87, 0.66);
+}
+
+/* A animação só roda ao trocar de passo (não durante scroll/resize) */
+.abaguia-destaque.abaguia-destaque--animar {
+    transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+}
+
+/* ---------- Tour: cartão do passo ---------- */
+.abaguia-popover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 340px;
+    max-width: calc(100vw - 24px);
+    padding: 20px 20px 16px;
+    background: #fff;
+    border: 1px solid var(--ag-borda);
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(16, 41, 87, 0.28);
+}
+
+.abaguia-popover:focus {
+    outline: none;
+}
+
+.abaguia-passo-contador {
+    margin: 0 0 6px;
+    color: var(--ag-suave);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.abaguia-passo-titulo {
+    margin: 0 0 8px;
+    color: var(--ag-azul);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.abaguia-passo-texto {
+    margin: 0 0 14px;
+    color: var(--ag-texto);
+    font-size: 14px;
+}
+
+.abaguia-passo-link {
+    display: inline-block;
+    margin-bottom: 14px;
+}
+
+.abaguia-passo-acoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--ag-borda);
+}
+
+.abaguia-passo-navegacao {
+    display: inline-flex;
+    gap: 8px;
+}
+
+/* ---------- Telas pequenas ---------- */
+@media (max-width: 520px) {
+    .abaguia {
+        left: 12px;
+        bottom: 12px;
+        max-width: calc(100vw - 24px);
+    }
+
+    .abaguia-caixa {
+        width: 250px;
+    }
+
+    .abaguia-passo-acoes {
+        flex-wrap: wrap;
+    }
+}
+
+/* ---------- Respeita quem prefere menos movimento ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .abaguia-destaque.abaguia-destaque--animar,
+    .abaguia-botao,
+    .abaguia-reabrir,
+    .abaguia-minimizar {
+        transition: none;
+    }
+
+    .abaguia-botao:hover,
+    .abaguia-reabrir:hover {
+        transform: none;
+    }
+}
