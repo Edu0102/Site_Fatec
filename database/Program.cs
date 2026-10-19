@@ -39,10 +39,26 @@ await using (var scope = app.Services.CreateAsyncScope())
             UserEmail = "admin@teste.com",
             UserName = "Administrador",
             UserPasswordHash = Passwords.Hash("Senha123"),
-            IsAdmin = true
+            UserRole = "admin",
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow,
+            UpdatedAtUtc = DateTime.UtcNow
         });
-        await db.SaveChangesAsync();
     }
+    if (!await db.Users.AnyAsync(user => user.UserEmail == "usuario@teste.com"))
+    {
+        db.Users.Add(new PortalUser
+        {
+            UserEmail = "usuario@teste.com",
+            UserName = "Usuário de teste",
+            UserPasswordHash = Passwords.Hash("Senha123"),
+            UserRole = "basic",
+            IsActive = true,
+            CreatedAtUtc = DateTime.UtcNow,
+            UpdatedAtUtc = DateTime.UtcNow
+        });
+    }
+    await db.SaveChangesAsync();
 }
 
 app.UseAuthentication();
@@ -54,7 +70,7 @@ app.MapPost("/api/auth/login", async (LoginRequest request, HttpContext context,
         return Results.BadRequest(new { message = "E-mail e senha são obrigatórios." });
 
     var user = await db.Users.SingleOrDefaultAsync(item => item.UserEmail == email);
-    if (user is null || !Passwords.Verify(request.Password, user.UserPasswordHash))
+    if (user is null || !user.IsActive || !Passwords.Verify(request.Password, user.UserPasswordHash))
         return Results.Unauthorized();
 
     var claims = new[]
@@ -62,18 +78,49 @@ app.MapPost("/api/auth/login", async (LoginRequest request, HttpContext context,
         new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
         new Claim(ClaimTypes.Name, user.UserName),
         new Claim(ClaimTypes.Email, user.UserEmail),
-        new Claim(ClaimTypes.Role, user.IsAdmin ? "Administrator" : "Basic")
+        new Claim(ClaimTypes.Role, user.UserRole == "admin" ? "Administrator" : "Basic")
     };
     await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
         new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme)),
         new AuthenticationProperties { IsPersistent = request.Remember, ExpiresUtc = DateTimeOffset.UtcNow.AddHours(8) });
-    return Results.Ok(new { name = user.UserName, email = user.UserEmail, isAdmin = user.IsAdmin });
+    return Results.Ok(new { name = user.UserName, email = user.UserEmail, isAdmin = user.UserRole == "admin" });
 });
 
 app.MapPost("/api/auth/logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     return Results.NoContent();
+});
+
+app.MapPost("/api/users", async (RegisterUserRequest request, HttpContext context, PortalDbContext db) =>
+{
+    if (context.User.Identity?.IsAuthenticated != true || !context.User.IsInRole("Administrator"))
+        return Results.Forbid();
+
+    var name = request.Name?.Trim();
+    var email = request.Email?.Trim().ToLowerInvariant();
+    if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(request.Password))
+        return Results.BadRequest(new { message = "Nome, e-mail e senha são obrigatórios." });
+    if (request.Password.Length < 6)
+        return Results.BadRequest(new { message = "A senha deve ter ao menos 6 caracteres." });
+    if (!System.Net.Mail.MailAddress.TryCreate(email, out _))
+        return Results.BadRequest(new { message = "Informe um e-mail válido." });
+    if (await db.Users.AnyAsync(user => user.UserEmail == email))
+        return Results.Conflict(new { message = "Já existe um usuário com este e-mail." });
+
+    var user = new PortalUser
+    {
+        UserName = name,
+        UserEmail = email,
+        UserPasswordHash = Passwords.Hash(request.Password),
+        UserRole = "basic",
+        IsActive = true,
+        CreatedAtUtc = DateTime.UtcNow,
+        UpdatedAtUtc = DateTime.UtcNow
+    };
+    db.Users.Add(user);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/users/{user.UserId}", new { name = user.UserName, email = user.UserEmail });
 });
 
 app.MapGet("/api/auth/me", (HttpContext context) =>
@@ -99,6 +146,19 @@ app.Use(async (context, next) =>
                    path.StartsWithSegments("/js") ||
                    path.StartsWithSegments("/assets") ||
                    path == "/favicon.ico";
+    if (path.StartsWithSegments("/html/cadastro.html") &&
+        (context.User.Identity?.IsAuthenticated != true || !context.User.IsInRole("Administrator")))
+    {
+        if (context.User.Identity?.IsAuthenticated == true)
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        }
+        else
+        {
+            context.Response.Redirect("/login.html");
+        }
+        return;
+    }
     if (!isPublic && context.User.Identity?.IsAuthenticated != true)
     {
         if (path.StartsWithSegments("/api"))
@@ -117,49 +177,25 @@ app.UseStaticFiles(new StaticFileOptions { FileProvider = portalFiles });
 app.Run();
 
 record LoginRequest(string? Email, string? Password, bool Remember);
-
-sealed class PortalUser
-{
-    public int UserId { get; set; }
-    public required string UserName { get; set; }
-    public required string UserEmail { get; set; }
-    public required string UserPasswordHash { get; set; }
-    public bool IsAdmin { get; set; }
-}
+record RegisterUserRequest(string? Name, string? Email, string? Password);
 
 sealed class PortalDbContext(DbContextOptions<PortalDbContext> options) : DbContext(options)
 {
     public DbSet<PortalUser> Users => Set<PortalUser>();
+    public DbSet<Department> Departments => Set<Department>();
+    public DbSet<Pop> Pops => Set<Pop>();
+    public DbSet<UserDepartment> UserDepartments => Set<UserDepartment>();
+    public DbSet<PortalLink> Links => Set<PortalLink>();
+    public DbSet<Feedback> Feedbacks => Set<Feedback>();
+    public DbSet<Checklist> Checklists => Set<Checklist>();
+    public DbSet<StandardCheck> StandardChecks => Set<StandardCheck>();
+    public DbSet<ChecklistItemResult> ChecklistItemResults => Set<ChecklistItemResult>();
+    public DbSet<PopLink> PopLinks => Set<PopLink>();
+    public DbSet<PopDepartment> PopDepartments => Set<PopDepartment>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<PortalUser>(entity =>
-        {
-            entity.ToTable("Users");
-            entity.HasKey(user => user.UserId);
-
-            entity.Property(user => user.UserId)
-                .HasColumnName("user_id")
-                .ValueGeneratedOnAdd();
-            entity.Property(user => user.UserName)
-                .HasColumnName("user_name")
-                .HasMaxLength(120)
-                .IsRequired();
-            entity.Property(user => user.UserEmail)
-                .HasColumnName("user_email")
-                .HasMaxLength(256)
-                .IsRequired();
-            entity.Property(user => user.UserPasswordHash)
-                .HasColumnName("user_password_hash")
-                .HasMaxLength(512)
-                .IsRequired();
-            entity.Property(user => user.IsAdmin)
-                .HasColumnName("user_level")
-                .IsRequired();
-
-            entity.HasIndex(user => user.UserEmail)
-                .IsUnique()
-                .HasDatabaseName("IX_Users_user_email");
-        });
+        modelBuilder.ConfigurePortalSchema();
     }
 }
 

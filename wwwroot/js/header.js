@@ -27,6 +27,13 @@ fetch("/api/auth/me")
         var area = header.querySelector("#usuario-logado");
         area.textContent = user.name;
         var logout = document.createElement("button");
+        if (user.isAdmin) {
+            var register = document.createElement("a");
+            register.className = "botao-cadastrar-usuario";
+            register.href = "/html/cadastro.html";
+            register.textContent = "Cadastrar usuário";
+            area.append(" ", register);
+        }
         logout.type = "button";
         logout.className = "botao-sair";
         logout.textContent = "Sair";
