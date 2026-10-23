@@ -58,6 +58,10 @@ function atualizarResumo(tarefas) {
   document.getElementById("tarefas-concluidas").textContent = concluidas;
   document.getElementById("tarefas-pendentes").textContent = pendentes;
   document.getElementById("percentual").textContent = percentual + "%";
+  document.getElementById("total-tarefas").classList.add("dado-js");
+  document.getElementById("tarefas-concluidas").classList.add("dado-js");
+  document.getElementById("tarefas-pendentes").classList.add("dado-js");
+  document.getElementById("percentual").classList.add("dado-js");
   document.getElementById("barra-preenchida").style.width = percentual + "%";
   document.getElementById("barra-progresso").setAttribute("aria-valuenow", percentual);
   
@@ -90,7 +94,7 @@ function renderizar() {
 
   tarefas.forEach(tarefa => {
     const item = document.createElement("li");
-    item.className = "task-item" + (tarefa.concluida ? " done" : "");
+    item.className = "task-item dado-js" + (tarefa.concluida ? " done" : "");
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -199,11 +203,11 @@ if (btnTogglePerfil && selectUsuarioAtual) {
     if (selectUsuarioAtual.value === "funcionario") {
       selectUsuarioAtual.value = "adm";
       btnTogglePerfil.textContent = "Modo: Administrador";
-      btnTogglePerfil.style.background = "#b42335"; // Vermelho sutil para indicar Admin
+      btnTogglePerfil.classList.add("modo-admin");
     } else {
       selectUsuarioAtual.value = "funcionario";
       btnTogglePerfil.textContent = "Modo: Funcionário";
-      btnTogglePerfil.style.background = ""; // Retorna à cor padrão
+      btnTogglePerfil.classList.remove("modo-admin");
     }
     // Dispara o evento para atualizar o painel adm e a listagem automaticamente
     selectUsuarioAtual.dispatchEvent(new Event("change"));

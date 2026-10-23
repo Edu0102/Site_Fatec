@@ -47,6 +47,23 @@
     font-weight: bold;
 }
 
+.header-padrao .header-funcionario.dado-js {
+    min-height: 38px;
+    padding: 6px 10px;
+}
+
+.header-padrao .header-funcionario.dado-js:empty::before {
+    content: "Nome do funcionário";
+    color: #e5edff;
+    font-size: 13px;
+    font-weight: normal;
+}
+
+.dado-js {
+    border: 1px solid #b42335;
+    border-radius: 6px;
+}
+
 .header-padrao .botao-sair {
     margin-left: 10px;
     padding: 6px 10px;
@@ -73,4 +90,3 @@
 .header-padrao .botao-cadastrar-usuario:hover {
     background: #e5edff;
 }
-

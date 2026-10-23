@@ -38,7 +38,7 @@ function mostrarLinks(lista) {
     }
 
     area.innerHTML = lista.map(link => `
-        <div class="card">
+        <div class="card dado-js">
             <div class="informacoes">
                 <h3>
                     <a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.titulo}</a>
@@ -89,9 +89,7 @@ function filtrarLinks() {
 
 function mostrarFormulario() {
     const formulario = document.getElementById("formulario");
-
-    formulario.style.display =
-        formulario.style.display === "block" ? "none" : "block";
+    formulario.classList.toggle("formulario-visivel");
 }
 
 document.getElementById("formulario").addEventListener("submit", function(event) {
@@ -121,7 +119,7 @@ document.getElementById("formulario").addEventListener("submit", function(event)
     filtrarLinks();
 
     this.reset();
-    this.style.display = "none";
+    this.classList.remove("formulario-visivel");
 
     document.getElementById("mensagem").textContent = "Link adiconado com sucesso!";
 });

@@ -214,6 +214,15 @@ button:hover {
     border: 1px solid #999999;
 }
 
+#formulario.formulario-visivel {
+    display: block;
+}
+
+#listaLinks .card.dado-js {
+    border-color: #b42335;
+    border-radius: 6px;
+}
+
 #formulario h3 {
     margin-top: 0;
 }

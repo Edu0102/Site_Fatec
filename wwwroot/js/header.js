@@ -11,13 +11,14 @@ header.innerHTML = `
 
     <h1></h1>
 
-    <div class="header-funcionario" id="usuario-logado">Carregando...</div>
+    <div class="header-funcionario dado-js" id="usuario-logado"></div>
 `;
 
 header.querySelector("h1").textContent = document.title;
 
 document.body.prepend(header);
 
+/*
 fetch("/api/auth/me")
     .then(function (response) {
         if (!response.ok) throw new Error("Sessão não encontrada");
@@ -44,3 +45,4 @@ fetch("/api/auth/me")
         area.append(" ", logout);
     })
     .catch(function () { window.location.href = "/login.html"; });
+*/

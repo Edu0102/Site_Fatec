@@ -123,6 +123,14 @@
             font-size: 14px;
             line-height: 1.5;
         }
+
+        #mensagem.mensagem-erro {
+            color: #d93025;
+        }
+
+        #mensagem.mensagem-sucesso {
+            color: #188038;
+        }
     </style>
 </head>
 
@@ -231,10 +239,12 @@
             var mensagem = document.getElementById("mensagem");
 
             if (senha !== confirmar) {
-                mensagem.style.color = "#d93025";
+                mensagem.classList.remove("mensagem-sucesso");
+                mensagem.classList.add("mensagem-erro");
                 mensagem.textContent = "As senhas não são iguais!";
             } else {
-                mensagem.style.color = "#d93025";
+                mensagem.classList.remove("mensagem-sucesso");
+                mensagem.classList.add("mensagem-erro");
                 mensagem.textContent =
                     "O banco de dados ainda não está em funcionamento.";
             }
