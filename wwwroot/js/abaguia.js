@@ -254,6 +254,40 @@
     const FOLGA = 14;      // distância entre o elemento destacado e o cartão (px)
     const RESPIRO = 6;     // folga da moldura ao redor do elemento (px)
     const reduzMovimento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Espelha html/abaguia.html, pois navegadores bloqueiam fetch de arquivos file://.
+    const HTML_LOCAL = `
+        <div class="abaguia" id="abaguia">
+            <section class="abaguia-caixa" id="abaguia-caixa" aria-labelledby="abaguia-caixa-titulo">
+                <button type="button" class="abaguia-minimizar" data-abaguia-acao="minimizar"
+                        aria-label="Minimizar ajuda">&times;</button>
+                <h2 class="abaguia-caixa-titulo" id="abaguia-caixa-titulo">Precisa de ajuda?</h2>
+                <p class="abaguia-caixa-texto" data-abaguia="caixa-texto">Faça um tour rápido por esta página.</p>
+                <div class="abaguia-caixa-acoes">
+                    <button type="button" class="abaguia-botao" data-abaguia-acao="iniciar">Iniciar tour</button>
+                    <a class="abaguia-link" data-abaguia="caixa-link" href="#" hidden></a>
+                </div>
+            </section>
+            <button type="button" class="abaguia-reabrir" id="abaguia-reabrir" data-abaguia-acao="abrir"
+                    aria-label="Abrir ajuda desta página" hidden>?</button>
+        </div>
+        <div class="abaguia-tour" id="abaguia-tour" hidden>
+            <div class="abaguia-bloqueio" data-abaguia-acao="bloqueio"></div>
+            <div class="abaguia-destaque" id="abaguia-destaque" aria-hidden="true"></div>
+            <div class="abaguia-popover" id="abaguia-popover" role="dialog" aria-modal="true"
+                 aria-labelledby="abaguia-passo-titulo" aria-describedby="abaguia-passo-texto" tabindex="-1">
+                <p class="abaguia-passo-contador" data-abaguia="contador" aria-live="polite">Passo 1 de 1</p>
+                <h3 class="abaguia-passo-titulo" id="abaguia-passo-titulo">Título do passo</h3>
+                <p class="abaguia-passo-texto" id="abaguia-passo-texto">Texto do passo.</p>
+                <a class="abaguia-link abaguia-passo-link" data-abaguia="passo-link" href="#" hidden></a>
+                <div class="abaguia-passo-acoes">
+                    <button type="button" class="abaguia-texto-botao" data-abaguia-acao="pular">Pular tour</button>
+                    <span class="abaguia-passo-navegacao">
+                        <button type="button" class="abaguia-botao abaguia-botao--claro" data-abaguia-acao="voltar">Voltar</button>
+                        <button type="button" class="abaguia-botao" data-abaguia-acao="proximo">Próximo</button>
+                    </span>
+                </div>
+            </div>
+        </div>`;
 
     const el = {};                 // referências aos elementos do componente
     let passos = [];               // passos válidos do tour atual
@@ -292,10 +326,17 @@
     async function montar() {
         carregarCss();
 
-        const resposta = await fetch(url("html/abaguia.html"));
-        if (!resposta.ok) throw new Error("abaguia.html não encontrado (" + resposta.status + ")");
+        let html;
+        if (window.location.protocol === "file:") {
+            html = HTML_LOCAL;
+        } else {
+            const resposta = await fetch(url("html/abaguia.html"));
+            if (!resposta.ok) throw new Error("abaguia.html não encontrado (" + resposta.status + ")");
+            html = await resposta.text();
+        }
+
         const recipiente = document.createElement("div");
-        recipiente.innerHTML = await resposta.text();
+        recipiente.innerHTML = html;
         // Move os nós para o <body> (sem div extra, para não criar contexto de empilhamento).
         while (recipiente.firstChild) document.body.appendChild(recipiente.firstChild);
 

@@ -33,7 +33,7 @@ function salvarGuias() {
 
 function criarCartao(guia) {
     const cartao = document.createElement("article");
-    cartao.className = "guia-card";
+    cartao.className = "guia-card dado-js";
 
     const titulo = document.createElement("h3");
     titulo.textContent = guia.titulo;

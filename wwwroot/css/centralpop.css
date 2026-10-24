@@ -227,7 +227,9 @@ button, input, select, a { -webkit-tap-highlight-color: transparent; }
     border-radius: 10px;
     transition: border-color .15s ease, background .15s ease;
 }
+.documento.dado-js { border-color: #b42335; }
 .documento:hover { border-color: #cbd7ec; background: #fcfdff; }
+.documento.dado-js:hover { border-color: #8f1d2a; }
 .icone-arquivo {
     display: grid;
     width: 42px;

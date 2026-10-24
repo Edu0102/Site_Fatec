@@ -164,6 +164,11 @@ select:focus, input:focus {
   font-size: 12px; 
 }
 .summary-card strong { color: var(--navy); font-size: 26px; line-height: 1; }
+.summary-card strong.dado-js,
+.progress-number strong.dado-js {
+  display: inline-block;
+  padding: 4px 7px;
+}
 
 .content-grid { 
   display: grid; 
@@ -243,7 +248,13 @@ select:focus, input:focus {
   padding: 12px 8px; 
   border-bottom: 1px solid var(--line); 
 }
+.task-item.dado-js {
+  margin-bottom: 8px;
+  border: 1px solid #b42335;
+  border-radius: 8px;
+}
 .task-item:last-child { border-bottom: 0; }
+.task-item.dado-js:last-child { border-bottom: 1px solid #b42335; }
 
 .task-check { 
   width: 19px; 
@@ -434,6 +445,9 @@ select:focus, input:focus {
 
 .button-test:hover {
     background: var(--blue);
+}
+.button-test.modo-admin {
+    background: #b42335;
 }
 
 .button-test:active {

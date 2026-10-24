@@ -209,6 +209,10 @@ body {
     background: #fff;
 }
 
+.guia-card.dado-js {
+    border-color: #b42335;
+}
+
 .guia-card h3 {
     margin: 0;
     color: var(--navy);

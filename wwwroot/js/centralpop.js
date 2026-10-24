@@ -177,7 +177,7 @@ function renderizarDocumentos() {
 
 function criarLinhaDocumento(documento) {
     const linha = document.createElement("article");
-    linha.className = "documento";
+    linha.className = "documento dado-js";
 
     const icone = document.createElement("div");
     icone.className = "icone-arquivo";
