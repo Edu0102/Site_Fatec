@@ -1,77 +1,25 @@
-using Microsoft.Data.Sqlite;
-
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton(new Database("Data Source=database.db"));
+builder.Services.AddSingleton<UserRepository>();
+
 var app = builder.Build();
 
-var connString = "Data Source=database.db";
-//Inicializa a base de dados, se ela não existir.
-void InitializeDatabase()
-{
-    var schemaPath = Path.Combine(AppContext.BaseDirectory, "schema.sql");
-    var schema = File.ReadAllText(schemaPath);
-
-    using var conn = new SqliteConnection(connString);
-    conn.Open();
-
-    using var cmd = conn.CreateCommand();
-    cmd.CommandText = schema;
-    cmd.ExecuteNonQuery();
-}
-
-InitializeDatabase();
+app.Services.GetRequiredService<Database>().Initialize();
 
 app.MapGet("/", () => "Server is running");
 
-app.MapGet("/db-test", () =>
+app.MapGet("/users", (UserRepository users) =>
+    Results.Ok(users.GetActiveUserNames()));
+
+app.MapPost("/add-user", (NewUser user, UserRepository users) =>
 {
-    using var conn = new SqliteConnection(connString);
-    conn.Open();
+    if (string.IsNullOrWhiteSpace(user.Name) || string.IsNullOrWhiteSpace(user.Email))
+        return Results.BadRequest(new { error = "Name and email are required." });
 
-    using var cmd = conn.CreateCommand();
-    cmd.CommandText = "SELECT COUNT(*) FROM \"User\"";
-    var count = (long)cmd.ExecuteScalar()!;
-
-    return Results.Ok(new { users = count });
-});
-app.MapGet("/db-names", () =>//teste numero 2 pegar nome de usuario se for adm
-{
-    using var conn = new SqliteConnection(connString);
-    conn.Open();
-
-    using var cmd = conn.CreateCommand();
-    cmd.CommandText = "SELECT user_name FROM \"User\" WHERE is_active = 1";//SELECT name FROM sqlite_master WHERE type = 'table'
-    
-    using var reader = cmd.ExecuteReader()!;
-
-    var names = new List<string>();
-    while (reader.Read())
-    {
-        names.Add(reader.GetString(0));
-    }
-
-    return Results.Ok(names);
-});
-app.MapGet("/db-adduser", (string name, string email) =>
-{
-    using var conn = new SqliteConnection(connString);
-    conn.Open();
-
-    using var cmd = conn.CreateCommand();
-    cmd.CommandText = @"
-        INSERT INTO ""USER""
-            (user_name, user_email, user_password_hash, user_role, is_active, created_at_utc, updated_at_utc)
-        VALUES
-            ($name, $email, 'temp-hash', 'basic', 1, $now, $now)";
-
-    cmd.Parameters.AddWithValue("$name", name);
-    cmd.Parameters.AddWithValue("$email", email);
-    cmd.Parameters.AddWithValue("$now", DateTime.UtcNow.ToString("o"));
-
-    var rows = cmd.ExecuteNonQuery();
-
-    return Results.Ok(new{ rowsAdded = rows});   
-    
-
+    return users.TryAdd(user.Name.Trim(), user.Email.Trim())
+        ? Results.Ok(new { message = "User added." })
+        : Results.Conflict(new { error = "This email is already registered." });
 });
 
 app.Run();
