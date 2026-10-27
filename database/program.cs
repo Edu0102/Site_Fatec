@@ -4,6 +4,21 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 var connString = "Data Source=database.db";
+//Inicializa a base de dados, se ela não existir.
+void InitializeDatabase()
+{
+    var schemaPath = Path.Combine(AppContext.BaseDirectory, "schema.sql");
+    var schema = File.ReadAllText(schemaPath);
+
+    using var conn = new SqliteConnection(connString);
+    conn.Open();
+
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = schema;
+    cmd.ExecuteNonQuery();
+}
+
+InitializeDatabase();
 
 app.MapGet("/", () => "Server is running");
 

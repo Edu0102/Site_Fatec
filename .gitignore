@@ -1,3 +1,4 @@
-database/bin/
-database/obj/
-database/.db*/
+*/bin/
+*/obj/
+*/*.db*
+*.db-journal
