@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/paginas.css">
+    <script src="../js/menu-usuario.js"></script>
+    <script src="../js/header.js" defer></script>
+    <script src="../js/guia.js" defer></script>
+</head>
+<body>
+    <header class="header-padrao">
+        <div class="header-logo">
+            <span class="logo-circulo">LOGO</span>
+            <span class="logo-texto">F.R.Cont<br>(logo)</span>
+        </div>
+
+        <h1 class="header-titulo">Guia</h1>
+
+        <div class="header-usuario" id="header-usuario">
+            <button type="button" class="usuario-botao" id="usuario-botao" aria-haspopup="true" aria-expanded="false" aria-controls="usuario-menu">
+                <span class="avatar" id="usuario-foto"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg></span>
+                <span class="usuario-nome" id="usuario-nome">Nome do funcionário</span>
+                <svg class="usuario-seta" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <ul class="usuario-menu" id="usuario-menu" hidden>
+                <li><button type="button" id="menu-tema">Tema escuro</button></li>
+                <li><a href="guia.html">Guia</a></li>
+                <li><a href="feedback.html">Feedback</a></li>
+                <li class="menu-separado"><a class="menu-sair" id="menu-sair" href="../login.html">Logout</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container">
+        <a class="botao-voltar" href="../index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m6-6-6 6 6 6"/></svg>
+            Voltar ao hub
+        </a>
+
+        <section class="page-heading">
+            <h2>Guia</h2>
+            <p class="subtitle">Consulte os guias e orientações internas</p>
+        </section>
+
+        <section id="painel-adm" class="admin-panel" hidden>
+            <div>
+                <p class="eyebrow">VISÃO ADMINISTRATIVA</p>
+                <h3>Adicionar guia</h3>
+                <p>Cadastre um guia para disponibilizá-lo nesta página.</p>
+            </div>
+
+            <form id="form-guia" class="form-stack">
+                <label for="titulo-guia">Título do guia</label>
+                <input id="titulo-guia" name="titulo" type="text" maxlength="100"
+                       placeholder="Ex.: Como emitir uma certidão" required>
+
+                <label for="conteudo-guia">Conteúdo do guia</label>
+                <textarea id="conteudo-guia" name="conteudo" rows="5" maxlength="3000"
+                          placeholder="Escreva as orientações do guia..." required></textarea>
+
+                <div class="form-actions">
+                    <button class="button button-primary" type="submit">Adicionar guia</button>
+                    <button class="button button-light" id="cancelar-guia" type="button">Cancelar</button>
+                </div>
+            </form>
+
+            <p>Modo temporário de teste. Esta opção não representa uma autenticação real.</p>
+        </section>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h3>Guias disponíveis</h3>
+                    <p class="muted">Os guias cadastrados aparecerão abaixo.</p>
+                </div>
+                <span id="contador-guias" class="count-tag">0 guias</span>
+            </div>
+
+            <div id="lista-guias" class="guia-lista"></div>
+            <div id="guias-vazios" class="empty-state">
+                <span class="empty-icon" aria-hidden="true">▤</span>
+                <strong>Nenhum guia cadastrado</strong>
+                <p>Quando um guia for adicionado, ele aparecerá nesta área.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Painel de teste (temporário): alterna entre funcionário e administrador -->
+    <div class="test-switcher-floating">
+        <span class="test-badge">Painel de teste</span>
+        <button type="button" id="btn-toggle-perfil" class="button button-primary button-test">Modo: Funcionário</button>
+    </div>
+
+    <!-- Campo oculto usado pela lógica do JS -->
+    <select id="usuario-atual" hidden aria-hidden="true">
+        <option value="funcionario" selected>Funcionário</option>
+        <option value="adm">Administrador</option>
+    </select>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Pessoal</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/paginas.css">
+    <script src="../js/menu-usuario.js"></script>
+    <script src="../js/header.js" defer></script>
+    <script src="../js/checklist.js" defer></script>
+</head>
+<body>
+    <header class="header-padrao">
+        <div class="header-logo">
+            <span class="logo-circulo">LOGO</span>
+            <span class="logo-texto">F.R.Cont<br>(logo)</span>
+        </div>
+
+        <h1 class="header-titulo">Checklist Pessoal</h1>
+
+        <div class="header-usuario" id="header-usuario">
+            <button type="button" class="usuario-botao" id="usuario-botao" aria-haspopup="true" aria-expanded="false" aria-controls="usuario-menu">
+                <span class="avatar" id="usuario-foto"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg></span>
+                <span class="usuario-nome" id="usuario-nome">Nome do funcionário</span>
+                <svg class="usuario-seta" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <ul class="usuario-menu" id="usuario-menu" hidden>
+                <li><button type="button" id="menu-tema">Tema escuro</button></li>
+                <li><a href="guia.html">Guia</a></li>
+                <li><a href="feedback.html">Feedback</a></li>
+                <li class="menu-separado"><a class="menu-sair" id="menu-sair" href="../login.html">Logout</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container">
+        <a class="botao-voltar" href="../index.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M19 12H5m6-6-6 6 6 6"/></svg>
+            Voltar ao hub
+        </a>
+
+        <section class="page-heading">
+            <h2>Checklist Pessoal</h2>
+            <p class="subtitle">Organize suas tarefas e acompanhe o que já foi concluído.</p>
+        </section>
+
+        <section id="painel-adm" class="admin-panel admin-panel--linha" hidden>
+            <div>
+                <p class="eyebrow">VISÃO ADMINISTRATIVA</p>
+                <h3>Checklists dos funcionários</h3>
+                <p>Selecione um funcionário para consultar as tarefas registradas neste navegador.</p>
+            </div>
+            <label class="employee-select">Funcionário
+                <select id="funcionario-consulta">
+                    <option value="funcionario">Funcionário de demonstração</option>
+                    <option value="funcionario2">Segundo funcionário (demonstração)</option>
+                </select>
+            </label>
+        </section>
+
+        <section class="summary-grid" aria-label="Resumo das tarefas">
+            <article class="summary-card">
+                <span class="summary-icon icon-blue" aria-hidden="true">☷</span>
+                <div><span class="summary-label">Total de tarefas</span><strong id="total-tarefas">0</strong></div>
+            </article>
+            <article class="summary-card">
+                <span class="summary-icon icon-green" aria-hidden="true">✓</span>
+                <div><span class="summary-label">Concluídas</span><strong id="tarefas-concluidas">0</strong></div>
+            </article>
+            <article class="summary-card">
+                <span class="summary-icon icon-orange" aria-hidden="true">◷</span>
+                <div><span class="summary-label">Pendentes</span><strong id="tarefas-pendentes">0</strong></div>
+            </article>
+        </section>
+
+        <div class="content-grid">
+            <section class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3 id="titulo-lista">Minhas tarefas</h3>
+                        <p class="muted" id="subtitulo-lista">Marque os itens conforme concluir.</p>
+                    </div>
+                    <span class="today-tag">Checklist diário</span>
+                </div>
+
+                <form id="form-tarefa" class="new-task">
+                    <label class="sr-only" for="nova-tarefa">Nome da nova tarefa</label>
+                    <input id="nova-tarefa" type="text" maxlength="120" placeholder="Ex.: Conferir documentos do cliente..." autocomplete="off">
+                    <button class="button button-primary" type="submit">＋ Adicionar tarefa</button>
+                </form>
+                <p id="mensagem-form" class="form-message" role="status"></p>
+
+                <div class="list-head"><span>TAREFA</span><span>STATUS</span></div>
+                <ul id="lista-tarefas" class="task-list"></ul>
+                <div id="lista-vazia" class="empty-state" hidden>
+                    <span class="empty-icon" aria-hidden="true">☑</span>
+                    <strong>Nenhuma tarefa por aqui</strong>
+                    <p>Adicione uma tarefa para começar seu checklist.</p>
+                </div>
+            </section>
+
+            <aside class="side-column">
+                <section class="panel">
+                    <h3>Seu progresso</h3>
+                    <p class="muted">Acompanhe o andamento das tarefas de hoje.</p>
+                    <div class="progress-number"><strong id="percentual">0%</strong><span>concluído</span></div>
+                    <div class="progress-track" role="progressbar" aria-label="Progresso das tarefas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barra-progresso">
+                        <span id="barra-preenchida"></span>
+                    </div>
+                    <p id="texto-progresso" class="progress-caption">Você ainda não concluiu tarefas.</p>
+                    <button id="desmarcar-todas" class="button button-light button-bloco" type="button">Desmarcar todas</button>
+                </section>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Painel de teste (temporário): alterna entre funcionário e administrador -->
+    <div class="test-switcher-floating">
+        <span class="test-badge">Painel de teste</span>
+        <button type="button" id="btn-toggle-perfil" class="button button-primary button-test">Modo: Funcionário</button>
+    </div>
+
+    <!-- Campo oculto usado pela lógica do JS -->
+    <select id="usuario-atual" hidden aria-hidden="true">
+        <option value="funcionario" selected>Funcionário</option>
+        <option value="adm">Administrador</option>
+    </select>
+
+</body>
+</html>
