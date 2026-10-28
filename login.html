@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Seguro</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/paginas.css">
+</head>
+<body class="auth">
+
+    <div class="auth-card" id="telaLogin">
+
+        <div class="auth-icone" aria-hidden="true">🔐</div>
+
+        <h1>Bem-vindo!</h1>
+        <p class="auth-descricao">
+            Entre com seus dados para acessar o sistema.
+        </p>
+
+        <form id="formLogin" class="form-stack">
+
+            <label for="usuario">E-mail</label>
+            <input
+                type="email"
+                id="usuario"
+                placeholder="seuemail@exemplo.com"
+                autocomplete="username"
+                required
+            >
+
+            <label for="senha">Senha</label>
+
+            <div class="senha">
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Digite sua senha"
+                    autocomplete="current-password"
+                    required
+                    minlength="6"
+                >
+
+                <button
+                    type="button"
+                    class="button button-light"
+                    id="botaoMostrar"
+                    aria-label="Mostrar senha"
+                >Mostrar</button>
+            </div>
+
+            <div class="opcoes">
+                <input type="checkbox" id="lembrar">
+                <label for="lembrar">Lembrar meu e-mail</label>
+            </div>
+
+            <button type="submit" class="button button-primary button-bloco">
+                Entrar no sistema
+            </button>
+
+        </form>
+
+        <p id="mensagem" class="auth-mensagem" role="status" aria-live="polite"></p>
+
+        <p class="auth-rodape">Sistema de autenticação</p>
+
+    </div>
+
+    <script>
+        var form = document.getElementById("formLogin");
+        var mensagem = document.getElementById("mensagem");
+
+        // Mostrar ou esconder a senha
+        document.getElementById("botaoMostrar").onclick = function() {
+            var campoSenha = document.getElementById("senha");
+
+            if (campoSenha.type == "password") {
+                campoSenha.type = "text";
+                this.innerHTML = "Esconder";
+                this.setAttribute("aria-label", "Esconder senha");
+            } else {
+                campoSenha.type = "password";
+                this.innerHTML = "Mostrar";
+                this.setAttribute("aria-label", "Mostrar senha");
+            }
+        };
+
+        // Verificar o login
+        form.onsubmit = async function(event) {
+            event.preventDefault();
+
+            mensagem.classList.add("mensagem-erro");
+            mensagem.textContent = "Login indisponível: conexão com o servidor desativada.";
+
+            /*
+            try {
+                var resposta = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: document.getElementById("usuario").value.trim(),
+                        password: document.getElementById("senha").value,
+                        remember: document.getElementById("lembrar").checked
+                    })
+                });
+                if (!resposta.ok) throw new Error("Credenciais inválidas");
+                mensagem.classList.remove("mensagem-erro");
+                mensagem.textContent = "";
+                window.location.href = "/";
+            } catch (erro) {
+                mensagem.classList.add("mensagem-erro");
+                mensagem.textContent = "E-mail ou senha incorretos!";
+            }
+            */
+        };
+
+        // Verificar se já existe uma sessão nesta aba
+        /*
+        fetch("/api/auth/me").then(function(resposta) {
+            if (resposta.ok) window.location.href = "/";
+        });
+        */
+
+        // Guardar somente o e-mail, se o usuário quiser
+        document.getElementById("lembrar").onchange = function() {
+            var campoEmail = document.getElementById("usuario");
+
+            if (this.checked) {
+                localStorage.setItem("emailSalvo", campoEmail.value);
+            } else {
+                localStorage.removeItem("emailSalvo");
+            }
+        };
+
+        // Recuperar o e-mail salvo
+        var emailSalvo = localStorage.getItem("emailSalvo");
+
+        if (emailSalvo) {
+            document.getElementById("usuario").value = emailSalvo;
+            document.getElementById("lembrar").checked = true;
+        }
+    </script>
+
+</body>
+</html>

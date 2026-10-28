@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/paginas.css">
+</head>
+<body class="auth">
+
+    <div class="auth-card">
+
+        <div class="auth-icone" aria-hidden="true">👤</div>
+
+        <h1>Criar conta</h1>
+
+        <p class="auth-descricao">Preencha os dados para se cadastrar.</p>
+
+        <form id="formCadastro" class="form-stack">
+
+            <label for="nome">Nome completo</label>
+            <input
+                type="text"
+                id="nome"
+                placeholder="Digite seu nome"
+                autocomplete="name"
+                required
+            >
+
+            <label for="email">E-mail / id</label>
+            <input
+                type="email"
+                id="email"
+                placeholder="Digite seu e-mail / id"
+                autocomplete="email"
+                required
+            >
+
+            <label for="senha">Senha</label>
+
+            <div class="senha">
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Mínimo de 6 caracteres"
+                    minlength="6"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="button button-light"
+                    onclick="alternarSenha('senha', this)"
+                    aria-label="Mostrar senha"
+                >Mostrar</button>
+            </div>
+
+            <label for="confirmar">Confirmar senha</label>
+
+            <div class="senha">
+                <input
+                    type="password"
+                    id="confirmar"
+                    placeholder="Digite a senha novamente"
+                    minlength="6"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="button button-light"
+                    onclick="alternarSenha('confirmar', this)"
+                    aria-label="Mostrar confirmação da senha"
+                >Mostrar</button>
+            </div>
+
+            <button type="submit" class="button button-primary button-bloco">
+                Cadastrar
+            </button>
+
+        </form>
+
+        <p id="mensagem" class="auth-mensagem" role="status" aria-live="polite"></p>
+
+    </div>
+
+    <script>
+        // Mostrar ou esconder a senha
+        function alternarSenha(id, botao) {
+            var campoSenha = document.getElementById(id);
+
+            if (campoSenha.type === "password") {
+                campoSenha.type = "text";
+                botao.textContent = "Esconder";
+                botao.setAttribute("aria-label", "Esconder senha");
+            } else {
+                campoSenha.type = "password";
+                botao.textContent = "Mostrar";
+                botao.setAttribute("aria-label", "Mostrar senha");
+            }
+        }
+
+        // Verificar os dados do cadastro
+        document.getElementById("formCadastro").onsubmit = function(event) {
+            event.preventDefault();
+
+            var senha = document.getElementById("senha").value;
+            var confirmar = document.getElementById("confirmar").value;
+            var mensagem = document.getElementById("mensagem");
+
+            if (senha !== confirmar) {
+                mensagem.classList.remove("mensagem-sucesso");
+                mensagem.classList.add("mensagem-erro");
+                mensagem.textContent = "As senhas não são iguais!";
+            } else {
+                mensagem.classList.remove("mensagem-sucesso");
+                mensagem.classList.add("mensagem-erro");
+                mensagem.textContent =
+                    "O banco de dados ainda não está em funcionamento.";
+            }
+        };
+    </script>
+
+    <script src="../js/cadastro.js"></script>
+</body>
+</html>
