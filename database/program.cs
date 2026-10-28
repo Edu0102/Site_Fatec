@@ -12,6 +12,9 @@ app.MapGet("/", () => "Server is running");
 app.MapGet("/users", (UserRepository users) =>
     Results.Ok(users.GetActiveUserNames()));
 
+app.MapGet("/user-exists", (string email, UserRepository users) =>
+    Results.Ok(new { exists = users.UserExists(email) }));
+
 app.MapPost("/add-user", (NewUser user, UserRepository users) =>
 {
     if (string.IsNullOrWhiteSpace(user.Name) || string.IsNullOrWhiteSpace(user.Email))

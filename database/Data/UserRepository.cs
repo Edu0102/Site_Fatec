@@ -9,7 +9,16 @@ public class UserRepository
     {
         _db = db;
     }
+    public bool UserExists(string email)
+    {
+        using var conn = _db.OpenConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT COUNT(*) FROM \"User\" WHERE user_email = $email";
+        cmd.Parameters.AddWithValue("$email", email);
 
+        var hasEqualEmail= Convert.ToBoolean(cmd.ExecuteScalar());
+        return hasEqualEmail;
+    }
     public List<string> GetActiveUserNames()
     {
         using var conn = _db.OpenConnection();
