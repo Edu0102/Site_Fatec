@@ -17,7 +17,7 @@ public class LinkRepository
         return result;
     }
 
-    public bool TryAdd(string path)
+    public MutationResult TryAdd(string path)
     {
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
@@ -25,11 +25,12 @@ public class LinkRepository
         cmd.CommandText = @"INSERT INTO ""Link"" (link_path, created_at_utc, updated_at_utc) VALUES ($path, $now, $now)";
         cmd.Parameters.AddWithValue("$path", path);
         cmd.Parameters.AddWithValue("$now", now);
-        try { return cmd.ExecuteNonQuery() == 1; }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return false; }
+        try { return cmd.ExecuteNonQuery() == 1 ? MutationResult.Ok : MutationResult.BadRequest; }
+        catch (SqliteException ex) when (ex.SqliteExtendedErrorCode == 787) { return MutationResult.BadRequest; }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return MutationResult.Conflict; }
     }
 
-    public bool TryUpdate(long linkId, string path)
+    public MutationResult TryUpdate(long linkId, string path)
     {
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
@@ -37,7 +38,12 @@ public class LinkRepository
         cmd.Parameters.AddWithValue("$path", path);
         cmd.Parameters.AddWithValue("$now", DateTime.UtcNow.ToString("o"));
         cmd.Parameters.AddWithValue("$linkId", linkId);
-        try { return cmd.ExecuteNonQuery() == 1; }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return false; }
+        try
+        {
+            if (cmd.ExecuteNonQuery() == 0)
+                return MutationResult.NotFound;
+            return MutationResult.Ok;
+        }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return MutationResult.Conflict; }
     }
 }

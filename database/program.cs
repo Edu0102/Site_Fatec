@@ -208,18 +208,25 @@ app.MapPost("/links", (NewLink req, LinkRepository links) =>
 {
     if (string.IsNullOrWhiteSpace(req.Path))
         return Results.BadRequest(new { error = "Path is required." });
-    return links.TryAdd(req.Path.Trim())
-        ? Results.Ok(new { message = "Link created." })
-        : Results.Conflict(new { error = "This link path already exists." });
+    return links.TryAdd(req.Path.Trim()) switch
+    {
+        MutationResult.Ok => Results.Ok(new { message = "Link created." }),
+        MutationResult.Conflict => Results.Conflict(new { error = "This link path already exists." }),
+        _ => Results.BadRequest(new { error = "Link could not be created." })
+    };
 }).RequireAuthorization(policy => policy.RequireRole("admin"));
 
 app.MapPut("/links/{linkId:long}", (long linkId, UpdateLink req, LinkRepository links) =>
 {
     if (string.IsNullOrWhiteSpace(req.Path))
         return Results.BadRequest(new { error = "Path is required." });
-    return links.TryUpdate(linkId, req.Path.Trim())
-        ? Results.Ok(new { message = "Link updated." })
-        : Results.NotFound(new { error = "Link not found or duplicate path." });
+    return links.TryUpdate(linkId, req.Path.Trim()) switch
+    {
+        MutationResult.Ok => Results.Ok(new { message = "Link updated." }),
+        MutationResult.NotFound => Results.NotFound(new { error = "Link not found." }),
+        MutationResult.Conflict => Results.Conflict(new { error = "This link path already exists." }),
+        _ => Results.BadRequest(new { error = "Link could not be updated." })
+    };
 }).RequireAuthorization(policy => policy.RequireRole("admin"));
 
 app.MapGet("/phones", (PhoneRepository phones) => Results.Ok(phones.GetAll()))
@@ -229,18 +236,25 @@ app.MapPost("/phones", (NewPhone req, PhoneRepository phones) =>
 {
     if (string.IsNullOrWhiteSpace(req.PhoneNumber))
         return Results.BadRequest(new { error = "Phone number is required." });
-    return phones.TryAdd(req.PhoneNumber.Trim())
-        ? Results.Ok(new { message = "Phone number created." })
-        : Results.Conflict(new { error = "This phone number already exists." });
+    return phones.TryAdd(req.PhoneNumber.Trim()) switch
+    {
+        MutationResult.Ok => Results.Ok(new { message = "Phone number created." }),
+        MutationResult.Conflict => Results.Conflict(new { error = "This phone number already exists." }),
+        _ => Results.BadRequest(new { error = "Phone number could not be created." })
+    };
 }).RequireAuthorization(policy => policy.RequireRole("admin"));
 
 app.MapPut("/phones/{phoneId:long}", (long phoneId, UpdatePhone req, PhoneRepository phones) =>
 {
     if (string.IsNullOrWhiteSpace(req.PhoneNumber))
         return Results.BadRequest(new { error = "Phone number is required." });
-    return phones.TryUpdate(phoneId, req.PhoneNumber.Trim())
-        ? Results.Ok(new { message = "Phone number updated." })
-        : Results.NotFound(new { error = "Phone number not found or duplicate number." });
+    return phones.TryUpdate(phoneId, req.PhoneNumber.Trim()) switch
+    {
+        MutationResult.Ok => Results.Ok(new { message = "Phone number updated." }),
+        MutationResult.NotFound => Results.NotFound(new { error = "Phone number not found." }),
+        MutationResult.Conflict => Results.Conflict(new { error = "This phone number already exists." }),
+        _ => Results.BadRequest(new { error = "Phone number could not be updated." })
+    };
 }).RequireAuthorization(policy => policy.RequireRole("admin"));
 
 app.MapGet("/pops/{popId:long}/links", (long popId, ClaimsPrincipal user, PopRepository pops, PopLinkRepository popLinks) =>
@@ -255,9 +269,13 @@ app.MapGet("/pops/{popId:long}/links", (long popId, ClaimsPrincipal user, PopRep
 }).RequireAuthorization();
 
 app.MapPost("/pop-links", (AssignPopLink req, PopLinkRepository popLinks) =>
-    popLinks.TryAssign(req.PopId, req.LinkId)
-        ? Results.Ok(new { message = "Link assigned to POP." })
-        : Results.BadRequest(new { error = "POP or link does not exist, or already assigned." }))
+    popLinks.TryAssign(req.PopId, req.LinkId) switch
+    {
+        MutationResult.Ok => Results.Ok(new { message = "Link assigned to POP." }),
+        MutationResult.Conflict => Results.Conflict(new { error = "This link is already assigned to the POP." }),
+        MutationResult.BadRequest => Results.BadRequest(new { error = "POP or link does not exist." }),
+        _ => Results.NotFound(new { error = "POP or link not found." })
+    })
     .RequireAuthorization(policy => policy.RequireRole("admin"));
 
 app.MapGet("/pops/{popId:long}/phones", (long popId, ClaimsPrincipal user, PopRepository pops, PopPhoneRepository popPhones) =>
@@ -272,9 +290,13 @@ app.MapGet("/pops/{popId:long}/phones", (long popId, ClaimsPrincipal user, PopRe
 }).RequireAuthorization();
 
 app.MapPost("/pop-phones", (AssignPopPhone req, PopPhoneRepository popPhones) =>
-    popPhones.TryAssign(req.PopId, req.PhoneId)
-        ? Results.Ok(new { message = "Phone number assigned to POP." })
-        : Results.BadRequest(new { error = "POP or phone number does not exist, or already assigned." }))
+    popPhones.TryAssign(req.PopId, req.PhoneId) switch
+    {
+        MutationResult.Ok => Results.Ok(new { message = "Phone number assigned to POP." }),
+        MutationResult.Conflict => Results.Conflict(new { error = "This phone number is already assigned to the POP." }),
+        MutationResult.BadRequest => Results.BadRequest(new { error = "POP or phone number does not exist." }),
+        _ => Results.NotFound(new { error = "POP or phone number not found." })
+    })
     .RequireAuthorization(policy => policy.RequireRole("admin"));
 
 app.MapGet("/pops/{popId:long}/departments", (long popId, ClaimsPrincipal user, PopRepository pops, PopDepartmentRepository popDepartments) =>
@@ -291,9 +313,13 @@ app.MapGet("/pops/{popId:long}/departments", (long popId, ClaimsPrincipal user, 
 app.MapPost("/pop-departments", (AssignPopDepartment req, PopDepartmentRepository popDepartments) =>
 {
     var accessType = string.IsNullOrWhiteSpace(req.AccessType) ? "read" : req.AccessType.Trim();
-    return popDepartments.TryAssign(req.PopId, req.DepartmentId, accessType)
-        ? Results.Ok(new { message = "Department assigned to POP." })
-        : Results.BadRequest(new { error = "POP or department does not exist, or already assigned." });
+    return popDepartments.TryAssign(req.PopId, req.DepartmentId, accessType) switch
+    {
+        MutationResult.Ok => Results.Ok(new { message = "Department assigned to POP." }),
+        MutationResult.Conflict => Results.Conflict(new { error = "This department is already assigned to the POP." }),
+        MutationResult.BadRequest => Results.BadRequest(new { error = "POP or department does not exist." }),
+        _ => Results.NotFound(new { error = "POP or department not found." })
+    };
 }).RequireAuthorization(policy => policy.RequireRole("admin"));
 
 app.Run();

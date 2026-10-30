@@ -46,7 +46,8 @@ public class UserDepartmentRepository
                 JOIN ""Department"" d ON d.department_id = ud.department_id
                 WHERE ud.user_id = $userId
                 AND ud.revoked_at_utc IS NULL
-                ORDER BY d.department_name";
+                ORDER BY d.department_name
+                AND (ud.expires_at_utc IS NULL OR ud.expires_at_utc > $now)";
         cmd.Parameters.AddWithValue("$userId", userId);
         var departments = new List<DepartmentRecord>();
         using var reader = cmd.ExecuteReader();

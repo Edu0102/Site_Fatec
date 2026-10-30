@@ -5,15 +5,16 @@ public class PopPhoneRepository
     private readonly Database _db;
     public PopPhoneRepository(Database db) { _db = db; }
 
-    public bool TryAssign(long popId, long phoneId)
+    public MutationResult TryAssign(long popId, long phoneId)
     {
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"INSERT INTO ""PopPhone"" (pop_id, phone_id) VALUES ($popId, $phoneId)";
         cmd.Parameters.AddWithValue("$popId", popId);
         cmd.Parameters.AddWithValue("$phoneId", phoneId);
-        try { return cmd.ExecuteNonQuery() == 1; }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19 || ex.SqliteExtendedErrorCode == 787) { return false; }
+        try { return cmd.ExecuteNonQuery() == 1 ? MutationResult.Ok : MutationResult.BadRequest; }
+        catch (SqliteException ex) when (ex.SqliteExtendedErrorCode == 787) { return MutationResult.BadRequest; }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return MutationResult.Conflict; }
     }
 
     public List<PhoneRecord> GetPhonesForPop(long popId)

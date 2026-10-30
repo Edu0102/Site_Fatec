@@ -5,7 +5,7 @@ public class PopDepartmentRepository
     private readonly Database _db;
     public PopDepartmentRepository(Database db) { _db = db; }
 
-    public bool TryAssign(long popId, long departmentId, string accessType)
+    public MutationResult TryAssign(long popId, long departmentId, string accessType)
     {
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
@@ -14,8 +14,9 @@ public class PopDepartmentRepository
         cmd.Parameters.AddWithValue("$popId", popId);
         cmd.Parameters.AddWithValue("$departmentId", departmentId);
         cmd.Parameters.AddWithValue("$accessType", accessType);
-        try { return cmd.ExecuteNonQuery() == 1; }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19 || ex.SqliteExtendedErrorCode == 787) { return false; }
+        try { return cmd.ExecuteNonQuery() == 1 ? MutationResult.Ok : MutationResult.BadRequest; }
+        catch (SqliteException ex) when (ex.SqliteExtendedErrorCode == 787) { return MutationResult.BadRequest; }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return MutationResult.Conflict; }
     }
 
     public List<DepartmentRecord> GetDepartmentsForPop(long popId)

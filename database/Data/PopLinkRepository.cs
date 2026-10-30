@@ -5,15 +5,16 @@ public class PopLinkRepository
     private readonly Database _db;
     public PopLinkRepository(Database db) { _db = db; }
 
-    public bool TryAssign(long popId, long linkId)
+    public MutationResult TryAssign(long popId, long linkId)
     {
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"INSERT INTO ""PopLink"" (pop_id, link_id) VALUES ($popId, $linkId)";
         cmd.Parameters.AddWithValue("$popId", popId);
         cmd.Parameters.AddWithValue("$linkId", linkId);
-        try { return cmd.ExecuteNonQuery() == 1; }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19 || ex.SqliteExtendedErrorCode == 787) { return false; }
+        try { return cmd.ExecuteNonQuery() == 1 ? MutationResult.Ok : MutationResult.BadRequest; }
+        catch (SqliteException ex) when (ex.SqliteExtendedErrorCode == 787) { return MutationResult.BadRequest; }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return MutationResult.Conflict; }
     }
 
     public List<LinkRecord> GetLinksForPop(long popId)
