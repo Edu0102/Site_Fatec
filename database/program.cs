@@ -2,9 +2,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddSingleton(new Database("Data Source=database.db"));
+builder.Services.AddSingleton(new Database("Data Source=database.db;Foreign Keys=True"));
 builder.Services.AddSingleton<UserRepository>();
+builder.Services.AddSingleton<DepartmentRepository>();
+builder.Services.AddSingleton<UserDepartmentRepository>();
 
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
@@ -97,4 +98,39 @@ app.MapGet("/users", (UserRepository users) =>
 app.MapGet("/admin-only", () => Results.Ok(new { secret = "admins only" }))
     .RequireAuthorization(policy => policy.RequireRole("admin"));
 
+app.MapGet("/departments", (DepartmentRepository departments) =>
+    Results.Ok(departments.GetAll()))
+    .RequireAuthorization();
+
+app.MapPost("/departments", (NewDepartment dept, DepartmentRepository departments) =>
+{
+    if (string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Code))
+        return Results.BadRequest(new { error = "Name and code are required." });
+
+    var code = dept.Code.Trim().ToUpperInvariant();
+
+    return departments.TryAdd(dept.Name.Trim(), code)
+        ? Results.Ok(new { message = "Department created." })
+        : Results.Conflict(new { error = "This department code already exists." });
+})
+.RequireAuthorization(policy => policy.RequireRole("admin"));
+app.MapPost("/user-departments", (AssignDepartment req, UserDepartmentRepository repo) =>
+{
+    var access = string.IsNullOrWhiteSpace(req.AccessType) ? "member" : req.AccessType.Trim();
+
+    return repo.Assign(req.UserId, req.DepartmentId, access)
+        ? Results.Ok(new { message = "User assigned to department." })
+        : Results.BadRequest(new { error = "User or department does not exist." });
+})
+.RequireAuthorization(policy => policy.RequireRole("admin"));
+
+app.MapGet("/me/departments", (ClaimsPrincipal user, UserDepartmentRepository repo) =>
+{
+    var idText = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    if (!long.TryParse(idText, out var userId))
+        return Results.Unauthorized();
+
+    return Results.Ok(repo.GetDepartmentsForUser(userId));
+})
+.RequireAuthorization();
 app.Run();

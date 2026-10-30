@@ -28,9 +28,6 @@ public List<DepartmentRecord> GetAll()
     return result;
     }
 
-
-/*public bool TryAdd(string name, string code) {}  // false when the code already exists
-}*/
     public bool TryAdd(string name, string code)
     {
         using var conn = _db.OpenConnection();

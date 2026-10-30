@@ -77,7 +77,7 @@ public class UserRepository
             INSERT INTO ""User""
                 (user_name, user_email, user_password_hash, user_role, is_active, created_at_utc, updated_at_utc)
             VALUES
-                ($name, $email, $hash, 'user', 1, $now, $now)";
+                ($name, $email, $hash, 'basic', 1, $now, $now)";
 
         cmd.Parameters.AddWithValue("$name", name);
         cmd.Parameters.AddWithValue("$email", email);

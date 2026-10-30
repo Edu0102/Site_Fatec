@@ -18,3 +18,14 @@ CREATE TABLE IF NOT EXISTS "Department"(
 	"updated_at_utc"	TEXT,
 	PRIMARY KEY("department_id" AUTOINCREMENT)
 );
+CREATE TABLE IF NOT EXISTS "UserDepartment" (
+    "user_department_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "user_id"            INTEGER NOT NULL,
+    "department_id"      INTEGER NOT NULL,
+    "access_type"        TEXT,
+    "valid_from_utc"     TEXT,
+    "expires_at_utc"     TEXT,
+    "revoked_at_utc"     TEXT,
+    FOREIGN KEY ("user_id") REFERENCES "User"("user_id"),
+    FOREIGN KEY ("department_id") REFERENCES "Department"("department_id")
+);
