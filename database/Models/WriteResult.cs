@@ -2,6 +2,7 @@
 public enum WriteResult
 {
     Ok,
-    NotFound,   // the row (or a row it points to) does not exist
-    Conflict    // the write would create a duplicate
+    NotFound,    // the row (or a row it points to) does not exist
+    Conflict,    // the write would create a duplicate
+    Forbidden    // the user is not allowed to do this
 }

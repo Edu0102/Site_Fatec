@@ -3,10 +3,12 @@ using Microsoft.Data.Sqlite;
 public class PopRepository
 {
     private readonly Database _db;
+    private readonly AccessGuard _guard;
 
-    public PopRepository(Database db)
+    public PopRepository(Database db, AccessGuard guard)
     {
         _db = db;
+        _guard = guard;
     }
 
     private static PopRecord ReadPop(SqliteDataReader reader)
@@ -91,15 +93,18 @@ public class PopRepository
         return reader.Read() ? ReadPop(reader) : null;
     }
 
-    public bool TryAdd(string title, string? description, string? filePath, string? version, string status, long userId)
+    public WriteResult TryAdd(long actorUserId, string title, string? description, string? filePath, string? version, string status)
     {
+        if (!_guard.IsActiveAdmin(actorUserId))
+            return WriteResult.Forbidden;
+
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
         var now = DateTime.UtcNow.ToString("o");
         cmd.CommandText = @"INSERT INTO ""Pop""
             (created_by, updated_by, pop_title, pop_description, pop_file_path, pop_version, pop_status, created_at_utc, updated_at_utc)
             VALUES ($userId, $userId, $title, $description, $filePath, $version, $status, $now, $now)";
-        cmd.Parameters.AddWithValue("$userId", userId);
+        cmd.Parameters.AddWithValue("$userId", actorUserId);
         cmd.Parameters.AddWithValue("$title", title);
         cmd.Parameters.AddWithValue("$description", description ?? (object)DBNull.Value);
         cmd.Parameters.AddWithValue("$filePath", filePath ?? (object)DBNull.Value);
@@ -107,19 +112,23 @@ public class PopRepository
         cmd.Parameters.AddWithValue("$status", status);
         cmd.Parameters.AddWithValue("$now", now);
 
-        try { return cmd.ExecuteNonQuery() == 1; }
-        catch (SqliteException ex) when (ex.SqliteExtendedErrorCode == 787) { return false; }
+        try { return cmd.ExecuteNonQuery() == 1 ? WriteResult.Ok : WriteResult.NotFound; }
+        catch (SqliteException ex) when (ex.IsUnique()) { return WriteResult.Conflict; }
+        catch (SqliteException ex) when (ex.IsForeignKey()) { return WriteResult.NotFound; }
     }
 
-    public bool TryUpdate(long popId, string title, string? description, string? filePath, string? version, string status, long userId)
+    public WriteResult TryUpdate(long actorUserId, long popId, string title, string? description, string? filePath, string? version, string status)
     {
+        if (!_guard.IsActiveAdmin(actorUserId))
+            return WriteResult.Forbidden;
+
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"UPDATE ""Pop""
             SET updated_by = $userId, pop_title = $title, pop_description = $description,
                 pop_file_path = $filePath, pop_version = $version, pop_status = $status, updated_at_utc = $now
             WHERE pop_id = $popId";
-        cmd.Parameters.AddWithValue("$userId", userId);
+        cmd.Parameters.AddWithValue("$userId", actorUserId);
         cmd.Parameters.AddWithValue("$title", title);
         cmd.Parameters.AddWithValue("$description", description ?? (object)DBNull.Value);
         cmd.Parameters.AddWithValue("$filePath", filePath ?? (object)DBNull.Value);
@@ -128,19 +137,25 @@ public class PopRepository
         cmd.Parameters.AddWithValue("$now", DateTime.UtcNow.ToString("o"));
         cmd.Parameters.AddWithValue("$popId", popId);
 
-        try { return cmd.ExecuteNonQuery() == 1; }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return false; }
+        try { return cmd.ExecuteNonQuery() == 1 ? WriteResult.Ok : WriteResult.NotFound; }
+        catch (SqliteException ex) when (ex.IsUnique()) { return WriteResult.Conflict; }
+        catch (SqliteException ex) when (ex.IsForeignKey()) { return WriteResult.NotFound; }
     }
 
-    public bool TryArchive(long popId, long userId)
+    public WriteResult TryArchive(long actorUserId, long popId)
     {
+        if (!_guard.IsActiveAdmin(actorUserId))
+            return WriteResult.Forbidden;
+
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"UPDATE ""Pop"" SET updated_by = $userId, pop_status = 'archived', updated_at_utc = $now
             WHERE pop_id = $popId";
-        cmd.Parameters.AddWithValue("$userId", userId);
+        cmd.Parameters.AddWithValue("$userId", actorUserId);
         cmd.Parameters.AddWithValue("$now", DateTime.UtcNow.ToString("o"));
         cmd.Parameters.AddWithValue("$popId", popId);
-        return cmd.ExecuteNonQuery() == 1;
+        try { return cmd.ExecuteNonQuery() == 1 ? WriteResult.Ok : WriteResult.NotFound; }
+        catch (SqliteException ex) when (ex.IsUnique()) { return WriteResult.Conflict; }
+        catch (SqliteException ex) when (ex.IsForeignKey()) { return WriteResult.NotFound; }
     }
 }

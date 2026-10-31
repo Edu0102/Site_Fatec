@@ -3,10 +3,12 @@ using Microsoft.Data.Sqlite;
 public class DepartmentRepository
 {
     private readonly Database _db;
+    private readonly AccessGuard _guard;
 
-    public DepartmentRepository(Database db)
+    public DepartmentRepository(Database db, AccessGuard guard)
     {
         _db = db;
+        _guard = guard;
     }
 public List<DepartmentRecord> GetAll()
 {
@@ -28,8 +30,11 @@ public List<DepartmentRecord> GetAll()
     return result;
     }
 
-    public bool TryAdd(string name, string code)
+    public WriteResult TryAdd(long actorUserId, string name, string code)
     {
+        if (!_guard.IsActiveAdmin(actorUserId))
+            return WriteResult.Forbidden;
+
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
@@ -45,11 +50,11 @@ public List<DepartmentRecord> GetAll()
         try
         {
             cmd.ExecuteNonQuery();
-            return true;
+            return WriteResult.Ok;
         }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19)
+        catch (SqliteException ex) when (ex.IsUnique())
         {
-            return false;
+            return WriteResult.Conflict;
         }
     }
 }

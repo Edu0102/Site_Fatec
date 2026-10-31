@@ -3,15 +3,19 @@ using Microsoft.Data.Sqlite;
 public class UserDepartmentRepository
 {
     private readonly Database _db;
+    private readonly AccessGuard _guard;
 
-    public UserDepartmentRepository(Database db)
+    public UserDepartmentRepository(Database db, AccessGuard guard)
     {
         _db = db;
+        _guard = guard;
     }
 
-    // Returns false when the user or the department does not exist.
-    public bool Assign(long userId, long departmentId, string accessType)
+    public WriteResult Assign(long actorUserId, long userId, long departmentId, string accessType)
     {
+        if (!_guard.IsActiveAdmin(actorUserId))
+            return WriteResult.Forbidden;
+
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"
@@ -28,11 +32,15 @@ public class UserDepartmentRepository
         try
         {
             cmd.ExecuteNonQuery();
-            return true;
+            return WriteResult.Ok;
         }
-        catch (SqliteException ex) when (ex.SqliteExtendedErrorCode == 787)
+        catch (SqliteException ex) when (ex.IsForeignKey())
         {
-            return false;   // 787 = foreign key violation
+            return WriteResult.NotFound;
+        }
+        catch (SqliteException ex) when (ex.IsUnique())
+        {
+            return WriteResult.Conflict;
         }
     }
     
