@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Dropdown</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            color: white;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: linear-gradient(135deg, #101827, #253b67);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .menu-container {
+            position: relative;
+        }
+
+        .menu-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .menu-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            width: 220px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px #0005;
+            z-index: 10;
+        }
+
+        .menu.ativo {
+            display: block;
+            animation: aparecer 0.25s ease;
+        }
+
+        .menu a {
+            display: block;
+            padding: 14px 18px;
+            color: #1e293b;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .menu a:hover {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .submenu-titulo {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .submenu {
+            display: none;
+            background: #f1f5f9;
+        }
+
+        .submenu.ativo {
+            display: block;
+        }
+
+        .submenu a {
+            padding-left: 35px;
+        }
+
+        main {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        main h1 {
+            font-size: 42px;
+            margin-bottom: 20px;
+        }
+
+        main p {
+            font-size: 18px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            main h1 {
+                font-size: 30px;
+            }
+
+            .menu {
+                width: 200px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header>
+        <div class="logo"></div>
+        <div class="menu-container">
+            <button class="menu-btn" id="botaoMenu"
+                aria-expanded="false" aria-controls="menu">
+                ☰ Menu ▼
+            </button>
+
+            <nav class="menu" id="menu">
+                <a href="#hub inicial">• Hub inicial</a>
+                <a href="#checklist">• Checklist</a>
+                <a href="#central links">• Central links</a>
+                <a href="#guia">• Guia</a>
+                <a href="#feedback">• Feedback</a>
+            </nav>
+        </div>
+    </header>
+
+    <script>
+        const botaoMenu = document.getElementById("botaoMenu");
+        const menu = document.getElementById("menu");
+
+        
+
+        botaoMenu.addEventListener("click", function () {
+            menu.classList.toggle("ativo");
+
+            const aberto = menu.classList.contains("ativo");
+            botaoMenu.setAttribute("aria-expanded", aberto);
+
+            if (!aberto) {
+                submenu.classList.remove("ativo");
+                botaoSubmenu.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        botaoSubmenu.addEventListener("click", function (evento) {
+            evento.preventDefault();
+
+            submenu.classList.toggle("ativo");
+
+            const aberto = submenu.classList.contains("ativo");
+            botaoSubmenu.setAttribute("aria-expanded", aberto);
+        });
+
+        document.addEventListener("click", function (evento) {
+            if (!evento.target.closest(".menu-container")) {
+                menu.classList.remove("ativo");
+                submenu.classList.remove("ativo");
+
+                botaoMenu.setAttribute("aria-expanded", "false");
+                botaoSubmenu.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        document.addEventListener("keydown", function (evento) {
+            if (evento.key === "Escape") {
+                menu.classList.remove("ativo");
+                submenu.classList.remove("ativo");
+
+                botaoMenu.setAttribute("aria-expanded", "false");
+                botaoSubmenu.setAttribute("aria-expanded", "false");
+
+                botaoMenu.focus();
+            }
+        });
+    </script>
+
+</body>
+</html>
+
