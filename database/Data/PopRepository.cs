@@ -46,6 +46,7 @@ public class PopRepository
                     WHERE pd.pop_id = p.pop_id
                     AND ud.user_id = $userId
                     AND ud.revoked_at_utc IS NULL
+                    AND (ud.valid_from_utc IS NULL OR ud.valid_from_utc <= $now)
                     AND (ud.expires_at_utc IS NULL OR ud.expires_at_utc > $now)
                 )
                 ORDER BY p.pop_id DESC";
@@ -79,6 +80,7 @@ public class PopRepository
                     WHERE pd.pop_id = p.pop_id
                     AND ud.user_id = $userId
                     AND ud.revoked_at_utc IS NULL
+                    AND (ud.valid_from_utc IS NULL OR ud.valid_from_utc <= $now)
                     AND (ud.expires_at_utc IS NULL OR ud.expires_at_utc > $now)
                 )";
             cmd.Parameters.AddWithValue("$userId", userId);

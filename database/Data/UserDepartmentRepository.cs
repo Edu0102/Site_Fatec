@@ -35,22 +35,25 @@ public class UserDepartmentRepository
             return false;   // 787 = foreign key violation
         }
     }
-
-    // YOUR TURN: write this one
+    
     public List<DepartmentRecord> GetDepartmentsForUser(long userId)
-    {
-        using var conn = _db.OpenConnection();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"SELECT d.department_id, d.department_name, d.department_code, d.is_active
-                FROM ""UserDepartment"" ud
-                JOIN ""Department"" d ON d.department_id = ud.department_id
-                WHERE ud.user_id = $userId
-                AND ud.revoked_at_utc IS NULL
-                ORDER BY d.department_name
-                AND (ud.expires_at_utc IS NULL OR ud.expires_at_utc > $now)";
-        cmd.Parameters.AddWithValue("$userId", userId);
-        var departments = new List<DepartmentRecord>();
-        using var reader = cmd.ExecuteReader();
+{
+    var departments = new List<DepartmentRecord>();
+    using var conn = _db.OpenConnection();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = @"
+        SELECT d.department_id, d.department_name, d.department_code, d.is_active
+        FROM ""UserDepartment"" ud
+        JOIN ""Department"" d ON d.department_id = ud.department_id
+        WHERE ud.user_id = $userId
+          AND ud.revoked_at_utc IS NULL
+          AND (ud.valid_from_utc IS NULL OR ud.valid_from_utc <= $now)
+          AND (ud.expires_at_utc IS NULL OR ud.expires_at_utc > $now)
+        ORDER BY d.department_name";
+    cmd.Parameters.AddWithValue("$userId", userId);
+    cmd.Parameters.AddWithValue("$now", DateTime.UtcNow.ToString("o"));
+
+    using var reader = cmd.ExecuteReader();
     while (reader.Read())
     {
         departments.Add(new DepartmentRecord(
@@ -58,7 +61,7 @@ public class UserDepartmentRepository
             reader.IsDBNull(1) ? "" : reader.GetString(1),
             reader.IsDBNull(2) ? "" : reader.GetString(2),
             !reader.IsDBNull(3) && reader.GetInt64(3) == 1));
-         }
-         return departments;
     }
+    return departments;
+}
 }

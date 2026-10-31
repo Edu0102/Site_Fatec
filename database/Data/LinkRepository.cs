@@ -17,7 +17,7 @@ public class LinkRepository
         return result;
     }
 
-    public MutationResult TryAdd(string path)
+    public WriteResult TryAdd(string path)
     {
         using var conn = _db.OpenConnection();
         using var cmd = conn.CreateCommand();
@@ -25,25 +25,29 @@ public class LinkRepository
         cmd.CommandText = @"INSERT INTO ""Link"" (link_path, created_at_utc, updated_at_utc) VALUES ($path, $now, $now)";
         cmd.Parameters.AddWithValue("$path", path);
         cmd.Parameters.AddWithValue("$now", now);
-        try { return cmd.ExecuteNonQuery() == 1 ? MutationResult.Ok : MutationResult.BadRequest; }
-        catch (SqliteException ex) when (ex.SqliteExtendedErrorCode == 787) { return MutationResult.BadRequest; }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return MutationResult.Conflict; }
+        try { return cmd.ExecuteNonQuery() == 1 ? WriteResult.Ok : WriteResult.NotFound; }
+        catch (SqliteException ex) when (ex.SqliteExtendedErrorCode == 787) { return WriteResult.NotFound; }
+        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return WriteResult.Conflict; }
     }
 
-    public MutationResult TryUpdate(long linkId, string path)
+    // Ok, NotFound (no such link) or Conflict (another link already has this path).
+public WriteResult Update(long linkId, string path)
+{
+    using var conn = _db.OpenConnection();
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = @"UPDATE ""Link"" SET link_path = $path, updated_at_utc = $now WHERE link_id = $linkId";
+    cmd.Parameters.AddWithValue("$path", path);
+    cmd.Parameters.AddWithValue("$now", DateTime.UtcNow.ToString("o"));
+    cmd.Parameters.AddWithValue("$linkId", linkId);
+
+    try
     {
-        using var conn = _db.OpenConnection();
-        using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"UPDATE ""Link"" SET link_path = $path, updated_at_utc = $now WHERE link_id = $linkId";
-        cmd.Parameters.AddWithValue("$path", path);
-        cmd.Parameters.AddWithValue("$now", DateTime.UtcNow.ToString("o"));
-        cmd.Parameters.AddWithValue("$linkId", linkId);
-        try
-        {
-            if (cmd.ExecuteNonQuery() == 0)
-                return MutationResult.NotFound;
-            return MutationResult.Ok;
-        }
-        catch (SqliteException ex) when (ex.SqliteErrorCode == 19) { return MutationResult.Conflict; }
+        var rows = cmd.ExecuteNonQuery();
+        return rows == 1 ? WriteResult.Ok : WriteResult.NotFound;
     }
+    catch (SqliteException ex) when (ex.IsUnique())
+    {
+        return WriteResult.Conflict;
+    }
+}
 }

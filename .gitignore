@@ -2,3 +2,4 @@
 */obj/
 */*.db*
 *.db-journal
+*Endpoints
