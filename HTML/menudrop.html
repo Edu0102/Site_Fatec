@@ -6,9 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu Dropdown</title>
-
-<link rel="stylesheet" href="style.css">
-
+   <link rel="stylesheet" href="../CSS/style.css">
 </head>
 
 <body>
@@ -30,58 +28,8 @@
             </nav>
         </div>
     </header>
-
-    <script>
-        const botaoMenu = document.getElementById("botaoMenu");
-        const menu = document.getElementById("menu");
-
-        
-
-        botaoMenu.addEventListener("click", function () {
-            menu.classList.toggle("ativo");
-
-            const aberto = menu.classList.contains("ativo");
-            botaoMenu.setAttribute("aria-expanded", aberto);
-
-            if (!aberto) {
-                submenu.classList.remove("ativo");
-                botaoSubmenu.setAttribute("aria-expanded", "false");
-            }
-        });
-
-        botaoSubmenu.addEventListener("click", function (evento) {
-            evento.preventDefault();
-
-            submenu.classList.toggle("ativo");
-
-            const aberto = submenu.classList.contains("ativo");
-            botaoSubmenu.setAttribute("aria-expanded", aberto);
-        });
-
-        document.addEventListener("click", function (evento) {
-            if (!evento.target.closest(".menu-container")) {
-                menu.classList.remove("ativo");
-                submenu.classList.remove("ativo");
-
-                botaoMenu.setAttribute("aria-expanded", "false");
-                botaoSubmenu.setAttribute("aria-expanded", "false");
-            }
-        });
-
-        document.addEventListener("keydown", function (evento) {
-            if (evento.key === "Escape") {
-                menu.classList.remove("ativo");
-                submenu.classList.remove("ativo");
-
-                botaoMenu.setAttribute("aria-expanded", "false");
-                botaoSubmenu.setAttribute("aria-expanded", "false");
-
-                botaoMenu.focus();
-            }
-        });
-    </script>
-
-    <script src="script.js"></script>
+    
+  <script src="../JS/script.js"></script>
 
 </body>
 </html>

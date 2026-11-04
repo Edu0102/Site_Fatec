@@ -1,7 +1,7 @@
 
 const botaoMenu = document.getElementById("botaoMenu");
 const menu = document.getElementById("menu");
-
+alert("JavaScript conectado!");
 botaoMenu.addEventListener("click", function () {
 
     menu.classList.toggle("ativo");
