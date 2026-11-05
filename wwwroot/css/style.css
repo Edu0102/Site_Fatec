@@ -1,0 +1,713 @@
+/* ==========================================================================
+   style.css — folha compartilhada por TODAS as páginas
+
+   Sumário
+    1. Variáveis (tema claro)
+    2. Tema escuro
+    3. Base
+    4. Layout (container e cabeçalho de página)
+    5. Header padrão
+    6. Menu do funcionário (dropdown)
+    7. Botão voltar
+    8. Botões
+    9. Formulários
+   10. Painéis
+   11. Etiquetas
+   12. Estado vazio
+   13. Painel de teste
+   14. Modal (alterar foto)
+   15. Telas pequenas
+   ========================================================================== */
+
+
+/* 1. VARIÁVEIS ------------------------------------------------------------ */
+:root {
+    /* Cores */
+    --cor-primaria: #203795;
+    --cor-primaria-hover: #162870;
+    --cor-sobre-primaria: #ffffff;
+    --cor-header: #203795;
+    --cor-titulo: #102957;
+    --cor-link: #203795;
+    --cor-destaque: #edf2fc;
+    --cor-destaque-borda: #d5e0f5;
+    --cor-texto: #18263b;
+    --cor-texto-suave: #5f6c80;
+    --cor-fundo: #f5f7fb;
+    --cor-superficie: #ffffff;
+    --cor-borda: #e0e6ef;
+    --cor-borda-forte: #c4cfe0;
+    --cor-foco: #b9ccf8;
+    --cor-grupo: #d3d9ee;
+    --cor-sucesso: #18764f;
+    --cor-sucesso-suave: #e9f7f0;
+    --cor-alerta: #a76512;
+    --cor-alerta-suave: #fff4e5;
+    --cor-perigo: #b42335;
+    --cor-perigo-suave: #fff0f1;
+    --gradiente-auth: linear-gradient(135deg, #101827, #253b67);
+
+    /* Tipografia (fontes nativas do sistema) */
+    --fonte: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    /* Espaçamentos (escala de 4px) */
+    --esp-1: 0.25rem;
+    --esp-2: 0.5rem;
+    --esp-3: 0.75rem;
+    --esp-4: 1rem;
+    --esp-5: 1.5rem;
+    --esp-6: 2rem;
+    --esp-7: 3rem;
+
+    /* Margem lateral das páginas */
+    --margem-lateral: 1rem;
+    --largura-max: 75rem;
+
+    /* Bordas arredondadas */
+    --raio-sm: 0.5rem;
+    --raio-md: 0.75rem;
+    --raio-lg: 1.25rem;
+    --raio-pill: 999px;
+
+    /* Sombras */
+    --sombra-sm: 0 1px 3px rgb(16 41 87 / 10%);
+    --sombra-md: 0 6px 18px rgb(16 41 87 / 16%);
+    --sombra-lg: 0 16px 40px rgb(0 0 0 / 30%);
+}
+
+@media (min-width: 48rem) {
+    :root { --margem-lateral: 1.5rem; }
+}
+
+
+/* 2. TEMA ESCURO ---------------------------------------------------------- */
+/* Ativado pelo menu-usuario.js: <html data-tema="escuro"> */
+:root[data-tema="escuro"] {
+    color-scheme: dark;
+
+    --cor-primaria: #3f5fd0;
+    --cor-primaria-hover: #5273e3;
+    --cor-header: #16224f;
+    --cor-titulo: #dbe4fb;
+    --cor-link: #9bb2f2;
+    --cor-destaque: #1f2a4d;
+    --cor-destaque-borda: #2e3c6b;
+    --cor-texto: #e4e9f5;
+    --cor-texto-suave: #9ba8c2;
+    --cor-fundo: #0e1527;
+    --cor-superficie: #172038;
+    --cor-borda: #273354;
+    --cor-borda-forte: #3a4973;
+    --cor-foco: #5b78d6;
+    --cor-grupo: #1c2748;
+    --cor-sucesso: #4cc38a;
+    --cor-sucesso-suave: #173a2c;
+    --cor-alerta: #f0b060;
+    --cor-alerta-suave: #3d2d12;
+    --cor-perigo: #ff8a96;
+    --cor-perigo-suave: #40191f;
+
+    --sombra-sm: 0 1px 3px rgb(0 0 0 / 40%);
+    --sombra-md: 0 6px 18px rgb(0 0 0 / 50%);
+}
+
+
+/* 3. BASE ----------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 100%; /* 16px; respeita a configuração do navegador */
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-family: var(--fonte);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    margin: 0 0 var(--esp-2);
+    color: var(--cor-titulo);
+    line-height: 1.25;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.125rem; }
+
+p { margin: 0 0 var(--esp-3); }
+
+a { color: var(--cor-link); }
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button { cursor: pointer; }
+
+:focus-visible {
+    outline: 3px solid var(--cor-foco);
+    outline-offset: 3px;
+}
+
+[hidden] { display: none !important; }
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+
+/* 4. LAYOUT --------------------------------------------------------------- */
+.container {
+    flex: 1;
+    width: 100%;
+    max-width: var(--largura-max);
+    margin-inline: auto;
+    padding: var(--esp-5) var(--margem-lateral) var(--esp-7);
+}
+
+.page-heading { margin-bottom: var(--esp-5); }
+
+.page-heading h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    letter-spacing: -0.02em;
+}
+
+.subtitle,
+.muted {
+    margin: 0;
+    color: var(--cor-texto-suave);
+}
+
+.eyebrow {
+    margin: 0 0 var(--esp-1);
+    color: var(--cor-link);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+
+/* 5. HEADER PADRÃO -------------------------------------------------------- */
+.header-padrao {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--esp-4);
+    min-height: 5rem;
+    /* Alinha o conteúdo do header com o container da página */
+    padding: var(--esp-3) max(var(--margem-lateral), calc((100% - var(--largura-max)) / 2 + var(--margem-lateral)));
+    background: var(--cor-header);
+    color: #fff;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.logo-circulo {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border: 0.1875rem solid #fff;
+    border-radius: 50%;
+    font-size: 0.75rem;
+}
+
+.header-titulo {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.125rem, 2.5vw, 1.75rem);
+    text-align: center;
+}
+
+.header-usuario {
+    position: relative;
+    justify-self: end;
+}
+
+
+/* 6. MENU DO FUNCIONÁRIO (DROPDOWN) --------------------------------------- */
+.usuario-botao {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+    padding: var(--esp-1) var(--esp-3) var(--esp-1) var(--esp-1);
+    border: 0;
+    border-radius: var(--raio-pill);
+    background: transparent;
+    color: #fff;
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+
+.usuario-botao:hover,
+.usuario-botao[aria-expanded="true"] {
+    background: rgb(255 255 255 / 16%);
+}
+
+.usuario-botao:focus-visible { outline-color: #fff; }
+
+.avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: hidden;
+    border: 0.125rem solid #fff;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 20%) center / cover no-repeat;
+    transition: box-shadow 0.2s;
+}
+
+.avatar svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    fill: currentColor;
+}
+
+.avatar--com-foto svg { display: none; }
+
+/* Com o menu aberto, a foto vira um botão (abre o modal de troca) */
+.usuario-botao[aria-expanded="true"] .avatar:hover {
+    box-shadow: 0 0 0 0.25rem rgb(255 255 255 / 35%);
+}
+
+.usuario-nome {
+    max-width: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.usuario-seta {
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.2s;
+}
+
+.usuario-botao[aria-expanded="true"] .usuario-seta { transform: rotate(180deg); }
+
+.usuario-menu {
+    position: absolute;
+    top: calc(100% + var(--esp-2));
+    right: 0;
+    z-index: 50;
+    min-width: 13rem;
+    margin: 0;
+    padding: var(--esp-2);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+    background: var(--cor-superficie);
+    box-shadow: var(--sombra-md);
+    list-style: none;
+}
+
+.usuario-menu a,
+.usuario-menu button {
+    display: block;
+    width: 100%;
+    padding: 0.625rem var(--esp-3);
+    border: 0;
+    border-radius: var(--raio-sm);
+    background: transparent;
+    color: var(--cor-texto);
+    font-weight: 600;
+    text-align: left;
+    text-decoration: none;
+}
+
+.usuario-menu a:hover,
+.usuario-menu button:hover {
+    background: var(--cor-destaque);
+    color: var(--cor-link);
+}
+
+.usuario-menu .menu-separado {
+    margin-top: var(--esp-2);
+    padding-top: var(--esp-2);
+    border-top: 1px solid var(--cor-borda);
+}
+
+.usuario-menu .menu-sair { color: var(--cor-perigo); }
+
+.usuario-menu .menu-sair:hover {
+    background: var(--cor-perigo-suave);
+    color: var(--cor-perigo);
+}
+
+
+/* 7. BOTÃO VOLTAR --------------------------------------------------------- */
+.botao-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--esp-2);
+    min-height: 2.75rem;
+    margin-bottom: var(--esp-5);
+    padding: var(--esp-2) 1.125rem var(--esp-2) var(--esp-4);
+    border: 2px solid var(--cor-primaria);
+    border-radius: var(--raio-pill);
+    color: var(--cor-link);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.botao-voltar svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    transition: transform 0.2s;
+}
+
+.botao-voltar:hover {
+    background: var(--cor-primaria);
+    color: var(--cor-sobre-primaria);
+}
+
+.botao-voltar:hover svg { transform: translateX(-0.25rem); }
+
+
+/* 8. BOTÕES --------------------------------------------------------------- */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--esp-2);
+    min-height: 2.75rem;
+    padding: var(--esp-2) 1.125rem;
+    border: 1px solid transparent;
+    border-radius: var(--raio-sm);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background-color 0.15s, transform 0.15s;
+}
+
+.button:active { transform: translateY(1px); }
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.button-primary {
+    background: var(--cor-primaria);
+    color: var(--cor-sobre-primaria);
+}
+
+.button-primary:hover:not(:disabled) { background: var(--cor-primaria-hover); }
+
+.button-light {
+    border-color: var(--cor-borda-forte);
+    background: var(--cor-superficie);
+    color: var(--cor-link);
+}
+
+.button-light:hover:not(:disabled) { background: var(--cor-destaque); }
+
+.button-bloco { width: 100%; }
+
+
+/* 9. FORMULÁRIOS ---------------------------------------------------------- */
+:where(input:not([type="checkbox"], [type="radio"], [type="file"]), select, textarea) {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--cor-borda-forte);
+    border-radius: var(--raio-sm);
+    background: var(--cor-superficie);
+    color: var(--cor-texto);
+}
+
+:where(input, select, textarea):focus { border-color: var(--cor-primaria); }
+
+::placeholder {
+    color: var(--cor-texto-suave);
+    opacity: 1;
+}
+
+textarea {
+    min-height: 7.5rem;
+    resize: vertical;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    flex: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    accent-color: var(--cor-primaria);
+}
+
+/* Formulário em coluna: rótulo acima do campo */
+.form-stack {
+    display: grid;
+    gap: var(--esp-2);
+}
+
+.form-stack label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.form-stack label:not(:first-child) { margin-top: var(--esp-2); }
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-3);
+    margin-top: var(--esp-3);
+}
+
+.form-message {
+    min-height: 1.5rem;
+    margin: var(--esp-2) 0 var(--esp-3);
+    color: var(--cor-perigo);
+    font-size: 0.875rem;
+}
+
+/* Classes aplicadas pelo JS do login e do cadastro */
+.mensagem-erro { color: var(--cor-perigo); }
+.mensagem-sucesso { color: var(--cor-sucesso); }
+
+
+/* 10. PAINÉIS ------------------------------------------------------------- */
+.panel {
+    padding: var(--esp-5);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+    background: var(--cor-superficie);
+    box-shadow: var(--sombra-sm);
+}
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--esp-4);
+    margin-bottom: var(--esp-4);
+}
+
+.panel-heading h3 { margin-bottom: var(--esp-1); }
+.panel-heading p { margin: 0; }
+
+/* Painel da visão administrativa (hidden até o JS ativar) */
+.admin-panel {
+    display: grid;
+    gap: var(--esp-4);
+    margin-bottom: var(--esp-5);
+    padding: var(--esp-5);
+    border: 1px solid var(--cor-destaque-borda);
+    border-radius: var(--raio-md);
+    background: var(--cor-destaque);
+}
+
+.admin-panel--linha {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+}
+
+.admin-panel h3 { margin-bottom: var(--esp-1); }
+
+.admin-panel p {
+    margin: 0;
+    color: var(--cor-texto-suave);
+    font-size: 0.875rem;
+}
+
+
+/* 11. ETIQUETAS ----------------------------------------------------------- */
+.tag,
+.count-tag,
+.today-tag,
+.etiqueta-tipo,
+.status {
+    display: inline-block;
+    padding: var(--esp-1) 0.625rem;
+    border-radius: var(--raio-pill);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.tag {
+    background: var(--cor-primaria);
+    color: var(--cor-sobre-primaria);
+}
+
+.count-tag,
+.today-tag,
+.etiqueta-tipo {
+    background: var(--cor-destaque);
+    color: var(--cor-link);
+}
+
+.status.pending {
+    background: var(--cor-alerta-suave);
+    color: var(--cor-alerta);
+}
+
+.status.done {
+    background: var(--cor-sucesso-suave);
+    color: var(--cor-sucesso);
+}
+
+
+/* 12. ESTADO VAZIO -------------------------------------------------------- */
+.empty-state {
+    padding: var(--esp-6) var(--esp-4);
+    color: var(--cor-texto-suave);
+    text-align: center;
+}
+
+.empty-icon {
+    display: block;
+    margin-bottom: var(--esp-2);
+    color: var(--cor-link);
+    font-size: 2rem;
+}
+
+.empty-state strong {
+    display: block;
+    color: var(--cor-titulo);
+}
+
+.empty-state p {
+    margin: var(--esp-1) 0 0;
+    font-size: 0.875rem;
+}
+
+
+/* 13. PAINEL DE TESTE (temporário: alternar funcionário/administrador) ---- */
+.test-switcher-floating {
+    position: fixed;
+    right: var(--esp-4);
+    bottom: var(--esp-4);
+    z-index: 40;
+    display: grid;
+    gap: var(--esp-2);
+    padding: var(--esp-3);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+    background: var(--cor-superficie);
+    box-shadow: var(--sombra-md);
+}
+
+.test-badge {
+    color: var(--cor-texto-suave);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.button-test {
+    min-height: 2.5rem;
+    font-size: 0.8125rem;
+}
+
+.button-test.modo-admin { background: var(--cor-perigo); }
+
+
+/* 14. MODAL (alterar foto) ------------------------------------------------ */
+.modal {
+    width: min(26rem, calc(100% - 2rem));
+    padding: 0; /* o respiro fica em .modal-conteudo para o clique no fundo funcionar */
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    background: var(--cor-superficie);
+    color: var(--cor-texto);
+    box-shadow: var(--sombra-lg);
+}
+
+.modal::backdrop { background: rgb(10 20 45 / 60%); }
+
+.modal-conteudo {
+    display: grid;
+    gap: var(--esp-3);
+    padding: var(--esp-5);
+}
+
+.modal-conteudo h2 { margin: 0; }
+
+.modal-previa {
+    display: grid;
+    place-items: center;
+    width: 7rem;
+    height: 7rem;
+    margin-inline: auto;
+    overflow: hidden;
+    border: 3px solid var(--cor-primaria);
+    border-radius: 50%;
+    background: var(--cor-destaque) center / cover no-repeat;
+    color: var(--cor-link);
+}
+
+.modal-previa svg {
+    width: 3.5rem;
+    height: 3.5rem;
+    fill: currentColor;
+}
+
+.modal-previa--com-foto svg { display: none; }
+
+.modal-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--esp-3);
+}
+
+
+/* 15. TELAS PEQUENAS ------------------------------------------------------ */
+@media (max-width: 40rem) {
+    .header-padrao { grid-template-columns: auto 1fr auto; }
+    .logo-texto { display: none; }
+    .admin-panel--linha { grid-template-columns: 1fr; }
+    .panel { padding: var(--esp-4); }
+    .test-switcher-floating {
+        right: var(--esp-2);
+        bottom: var(--esp-2);
+    }
+}
+
+@media (max-width: 30rem) {
+    .usuario-nome { display: none; }
+    .usuario-botao { padding-right: var(--esp-2); }
+}
