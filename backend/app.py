@@ -27,6 +27,9 @@ def create_app(test_config=None):
     app.teardown_appcontext(db.close_db)
     db.init_db(app)
 
+    from routes import auth
+    app.register_blueprint(auth.bp)
+
     @app.get("/")
     def root():
         """Health check, same text as the C# version."""

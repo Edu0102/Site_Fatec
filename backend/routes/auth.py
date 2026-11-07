@@ -1,0 +1,48 @@
+from flask import Blueprint, jsonify, session
+
+from auth import NOT_AUTHENTICATED, login_required
+from repositories import users
+from routes import json_field
+from security import hash_password, verify_password
+
+bp = Blueprint("auth", __name__)
+
+
+@bp.post("/register")
+def register():
+    """Create a basic user after validating name, email and password."""
+    name, email, password = json_field("name"), json_field("email"), json_field("password")
+    if not name.strip() or not email.strip() or not password.strip():
+        return jsonify(error="Name, email and password are required."), 400
+    if len(password) < 8:
+        return jsonify(error="Password must have at least 8 characters."), 400
+    if users.add(name.strip(), email.strip().lower(), hash_password(password)):
+        return jsonify(message="User registered.")
+    return jsonify(error="This email is already registered."), 409
+
+
+@bp.post("/login")
+def login():
+    """Start a session; every failure gives the same 401."""
+    user = users.get_by_email(json_field("email").strip().lower())
+    if user is None or user["is_active"] != 1 or not verify_password(json_field("password"), user["user_password_hash"]):
+        return jsonify(NOT_AUTHENTICATED), 401
+    session.clear()
+    session.permanent = True
+    session.update(user_id=user["user_id"], name=user["user_name"] or "",
+                   email=user["user_email"] or "", role=user["user_role"] or "user")
+    return jsonify(message="Logged in.")
+
+
+@bp.post("/logout")
+def logout():
+    """End the session (works even when not logged in)."""
+    session.clear()
+    return jsonify(message="Logged out.")
+
+
+@bp.get("/me")
+@login_required
+def me():
+    """Who is logged in, from the session cookie."""
+    return jsonify(name=session["name"], email=session["email"], role=session["role"])
