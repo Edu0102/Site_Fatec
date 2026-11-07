@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS "User" (
 	"is_active"	INTEGER,
 	"created_at_utc"	TEXT,
 	"updated_at_utc"	TEXT,
+	"user_session_version"	INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY("user_id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "Department"(
@@ -79,4 +80,51 @@ CREATE TABLE IF NOT EXISTS "PopDepartment" (
     UNIQUE ("pop_id", "department_id"),
     FOREIGN KEY ("pop_id") REFERENCES "Pop"("pop_id"),
     FOREIGN KEY ("department_id") REFERENCES "Department"("department_id")
+);
+CREATE TABLE IF NOT EXISTS "StandardCheck" (
+    "standard_check_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "pop_id" INTEGER NOT NULL,
+    "check_text" TEXT NOT NULL,
+    "check_order" INTEGER NOT NULL,
+    FOREIGN KEY ("pop_id") REFERENCES "Pop"("pop_id")
+);
+CREATE TABLE IF NOT EXISTS "Checklist" (
+    "checklist_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "pop_id" INTEGER NOT NULL,
+    "user_id" INTEGER NOT NULL,
+    "checklist_description" TEXT,
+    "created_at_utc" TEXT,
+    "completed_at_utc" TEXT,
+    FOREIGN KEY ("pop_id") REFERENCES "Pop"("pop_id"),
+    FOREIGN KEY ("user_id") REFERENCES "User"("user_id")
+);
+CREATE TABLE IF NOT EXISTS "ChecklistItemResult" (
+    "checklist_item_result_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "checklist_id" INTEGER NOT NULL,
+    "standard_check_id" INTEGER NOT NULL,
+    "is_checked" INTEGER NOT NULL DEFAULT 0,
+    UNIQUE ("checklist_id", "standard_check_id"),
+    FOREIGN KEY ("checklist_id") REFERENCES "Checklist"("checklist_id"),
+    FOREIGN KEY ("standard_check_id") REFERENCES "StandardCheck"("standard_check_id")
+);
+CREATE TABLE IF NOT EXISTS "Feedback" (
+    "feedback_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "user_id" INTEGER NOT NULL,
+    "pop_id" INTEGER,
+    "answered_by" INTEGER,
+    "feedback_description" TEXT NOT NULL,
+    "feedback_status" TEXT NOT NULL DEFAULT 'open' CHECK ("feedback_status" IN ('open','answered','closed')),
+    "feedback_answer" TEXT,
+    "created_at_utc" TEXT,
+    "answered_at_utc" TEXT,
+    FOREIGN KEY ("user_id") REFERENCES "User"("user_id"),
+    FOREIGN KEY ("pop_id") REFERENCES "Pop"("pop_id"),
+    FOREIGN KEY ("answered_by") REFERENCES "User"("user_id")
+);
+CREATE TABLE IF NOT EXISTS "UserPhoto" (
+    "user_id" INTEGER PRIMARY KEY,
+    "photo_data" BLOB NOT NULL,
+    "photo_content_type" TEXT NOT NULL CHECK ("photo_content_type" IN ('image/jpeg','image/png','image/webp')),
+    "updated_at_utc" TEXT,
+    FOREIGN KEY ("user_id") REFERENCES "User"("user_id")
 );

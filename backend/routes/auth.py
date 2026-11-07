@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, session
 
-from auth import NOT_AUTHENTICATED, login_required
+from auth import NOT_AUTHENTICATED, current_user, login_required
 from repositories import users
 from routes import json_field
 from security import hash_password, verify_password
@@ -29,14 +29,15 @@ def login():
         return jsonify(NOT_AUTHENTICATED), 401
     session.clear()
     session.permanent = True
-    session.update(user_id=user["user_id"], name=user["user_name"] or "",
-                   email=user["user_email"] or "", role=user["user_role"] or "user")
+    session.update(user_id=user["user_id"], sv=user["user_session_version"])
     return jsonify(message="Logged in.")
 
 
 @bp.post("/logout")
 def logout():
-    """End the session (works even when not logged in)."""
+    """End the session and invalidate copies of the cookie (works even when not logged in)."""
+    if current_user() is not None:
+        users.bump_session_version(session["user_id"])
     session.clear()
     return jsonify(message="Logged out.")
 
@@ -45,4 +46,6 @@ def logout():
 @login_required
 def me():
     """Who is logged in, from the session cookie."""
-    return jsonify(name=session["name"], email=session["email"], role=session["role"])
+    user = current_user()
+    return jsonify(id=user["user_id"], name=user["user_name"] or "", email=user["user_email"] or "",
+                   role=user["user_role"] or "user")

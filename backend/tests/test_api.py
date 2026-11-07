@@ -23,7 +23,7 @@ def test_missing_secret_key(monkeypatch):
         create_app({"DATABASE": ":memory:"})
 
 
-from tests.conftest import login, register, set_user
+from tests.conftest import login, login_admin, register, set_user
 
 REQUIRED = {"error": "Name, email and password are required."}
 
@@ -101,7 +101,7 @@ def test_me(client):
     register(client)
     login(client)
     r = client.get("/me")
-    assert r.status_code == 200 and r.json == {"name": "Ana", "email": "ana@test.com", "role": "basic"}
+    assert r.status_code == 200 and r.json == {"id": 1, "name": "Ana", "email": "ana@test.com", "role": "basic"}
 
 
 def test_logout(client):
@@ -133,13 +133,6 @@ def test_admin_only(app, client):
     login(client)  # role is read at login, like the C# claims
     r = client.get("/admin-only")
     assert r.status_code == 200 and r.json == {"secret": "admins only"}
-
-
-def login_admin(app, client, email="ana@test.com"):
-    # Register a user, promote it to admin in the DB, then log in
-    register(client, email=email)
-    set_user(app, email, user_role="admin")
-    login(client, email=email)
 
 
 def test_departments_list(app, client):
@@ -175,7 +168,7 @@ def test_stale_admin_cookie(app, client):
     login_admin(app, client)
     set_user(app, "ana@test.com", user_role="basic")
     assert client.post("/departments", json={"name": "IT", "code": "TI"}).status_code == 403
-    assert client.get("/admin-only").status_code == 200  # trusts the cookie role, same as C#
+    assert client.get("/admin-only").status_code == 403  # role is read from the database on every request
 
 
 def test_lone_surrogate_is_rejected(client):
@@ -189,3 +182,31 @@ def test_lone_surrogate_is_rejected(client):
 def test_cookie_samesite_lax(client):
     register(client)
     assert "SameSite=Lax" in login(client).headers["Set-Cookie"]
+
+
+def test_cookie_holds_only_id_and_version(app, client):
+    register(client)
+    login(client)
+    payload = app.session_interface.get_signing_serializer(app).loads(client.get_cookie("site_auth").value)
+    assert {k for k in payload if not k.startswith("_")} == {"user_id", "sv"}  # "_permanent" is Flask's own flag
+    assert "ana@test.com" not in str(payload)
+
+
+def test_deactivated_user_loses_session(app, client):
+    register(client)
+    login(client)
+    set_user(app, "ana@test.com", is_active=0)
+    assert client.get("/me").status_code == 401
+
+
+def test_logout_kills_copied_cookie(app, client):
+    register(client)
+    login(client)
+    copied = client.get_cookie("site_auth").value
+    client.post("/logout")
+    thief = app.test_client()
+    thief.set_cookie("site_auth", copied)
+    r = thief.get("/me")
+    assert r.status_code == 401 and r.json == {"error": "Not authenticated."}
+    login(client)  # logging in again still works
+    assert client.get("/me").status_code == 200

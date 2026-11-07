@@ -25,4 +25,13 @@ def init_db(app):
     with open(os.path.join(app.root_path, "schema.sql"), encoding="utf-8") as f:
         schema = f.read()
     with app.app_context():
-        get_db().executescript(schema)
+        db = get_db()
+        db.executescript(schema)
+        _add_missing_columns(db)
+
+
+def _add_missing_columns(db):
+    """Add columns that CREATE TABLE IF NOT EXISTS can't add to an older database file."""
+    if "user_session_version" not in {r[1] for r in db.execute('PRAGMA table_info("User")')}:
+        db.execute('ALTER TABLE "User" ADD COLUMN user_session_version INTEGER NOT NULL DEFAULT 0')
+        db.commit()

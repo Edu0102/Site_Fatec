@@ -7,8 +7,20 @@ from repositories import utc_now
 def get_by_email(email):
     """Return the user row for an email, or None."""
     return get_db().execute(
-        'SELECT user_id, user_name, user_email, user_password_hash, user_role, is_active '
-        'FROM "User" WHERE user_email = ?', (email,)).fetchone()
+        'SELECT user_id, user_name, user_email, user_password_hash, user_role, is_active, user_session_version FROM "User" WHERE user_email = ?', (email,)).fetchone()
+
+
+def get_by_id(user_id):
+    """Return the user row for an id, or None."""
+    return get_db().execute(
+        'SELECT user_id, user_name, user_email, user_password_hash, user_role, is_active, user_session_version FROM "User" WHERE user_id = ?', (user_id,)).fetchone()
+
+
+def bump_session_version(user_id):
+    """Invalidate every cookie issued to this user so far."""
+    db = get_db()
+    db.execute('UPDATE "User" SET user_session_version = user_session_version + 1 WHERE user_id = ?', (user_id,))
+    db.commit()
 
 
 def add(name, email, password_hash):
