@@ -176,3 +176,16 @@ def test_stale_admin_cookie(app, client):
     set_user(app, "ana@test.com", user_role="basic")
     assert client.post("/departments", json={"name": "IT", "code": "TI"}).status_code == 403
     assert client.get("/admin-only").status_code == 200  # trusts the cookie role, same as C#
+
+
+def test_lone_surrogate_is_rejected(client):
+    raw = r'{"name":"a","email":"s@x.com","password":"abcdefgh\ud800"}'
+    r = client.post("/register", data=raw, content_type="application/json")
+    assert r.status_code == 400 and r.json == REQUIRED
+    raw = r'{"email":"s\ud800@x.com","password":"abcdefgh"}'
+    assert client.post("/login", data=raw, content_type="application/json").status_code == 401
+
+
+def test_cookie_samesite_lax(client):
+    register(client)
+    assert "SameSite=Lax" in login(client).headers["Set-Cookie"]

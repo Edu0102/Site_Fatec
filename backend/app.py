@@ -16,6 +16,7 @@ def create_app(test_config=None):
         DATABASE=os.path.join(app.root_path, "database.db"),
         SESSION_COOKIE_NAME="site_auth",
         SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE="Lax",  # ASP.NET cookie default
         PERMANENT_SESSION_LIFETIME=timedelta(hours=8),
         SESSION_REFRESH_EACH_REQUEST=True,
     )
