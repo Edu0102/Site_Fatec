@@ -27,8 +27,9 @@ def create_app(test_config=None):
     app.teardown_appcontext(db.close_db)
     db.init_db(app)
 
-    from routes import auth
+    from routes import auth, users
     app.register_blueprint(auth.bp)
+    app.register_blueprint(users.bp)
 
     @app.get("/")
     def root():

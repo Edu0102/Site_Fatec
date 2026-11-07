@@ -110,3 +110,25 @@ def test_logout(client):
     login(client)
     assert client.post("/logout").status_code == 200
     assert client.get("/me").status_code == 401
+
+
+def test_users_list(app, client):
+    assert client.get("/users").status_code == 401
+    register(client)
+    register(client, email="bob@test.com", name="Bob")
+    set_user(app, "bob@test.com", is_active=0)
+    login(client)
+    r = client.get("/users")
+    assert r.status_code == 200 and r.json == ["Ana"]
+
+
+def test_admin_only(app, client):
+    assert client.get("/admin-only").status_code == 401
+    register(client)
+    login(client)
+    r = client.get("/admin-only")
+    assert r.status_code == 403 and r.json == {"error": "Forbidden."}
+    set_user(app, "ana@test.com", user_role="admin")
+    login(client)  # role is read at login, like the C# claims
+    r = client.get("/admin-only")
+    assert r.status_code == 200 and r.json == {"secret": "admins only"}
