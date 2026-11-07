@@ -2,4 +2,8 @@
 */obj/
 */*.db*
 *.db-journal
-*Endpoints
+*Endpoints.env
+database.db
+.venv/
+.superpowers/
+__pycache__/
