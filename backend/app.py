@@ -27,9 +27,10 @@ def create_app(test_config=None):
     app.teardown_appcontext(db.close_db)
     db.init_db(app)
 
-    from routes import auth, users
+    from routes import auth, departments, users
     app.register_blueprint(auth.bp)
     app.register_blueprint(users.bp)
+    app.register_blueprint(departments.bp)
 
     @app.get("/")
     def root():

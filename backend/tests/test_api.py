@@ -132,3 +132,46 @@ def test_admin_only(app, client):
     login(client)  # role is read at login, like the C# claims
     r = client.get("/admin-only")
     assert r.status_code == 200 and r.json == {"secret": "admins only"}
+
+
+def login_admin(app, client, email="ana@test.com"):
+    # Register a user, promote it to admin in the DB, then log in
+    register(client, email=email)
+    set_user(app, email, user_role="admin")
+    login(client, email=email)
+
+
+def test_departments_list(app, client):
+    assert client.get("/departments").status_code == 401
+    login_admin(app, client)
+    r = client.get("/departments")
+    assert r.status_code == 200 and r.json == []
+    client.post("/departments", json={"name": " IT ", "code": " ti "})
+    assert client.get("/departments").json == [{"id": 1, "name": "IT", "code": "TI", "isActive": True}]
+
+
+def test_department_create(app, client):
+    login_admin(app, client)
+    r = client.post("/departments", json={"name": "IT", "code": "TI"})
+    assert r.status_code == 200 and r.json == {"message": "Department created."}
+    for code in ["TI", "Ti"]:
+        r = client.post("/departments", json={"name": "Other", "code": code})
+        assert r.status_code == 409 and r.json == {"error": "This department code already exists."}
+    for body in [{"name": "  ", "code": "X"}, {"name": "X", "code": " "}, {}]:
+        r = client.post("/departments", json=body)
+        assert r.status_code == 400 and r.json == {"error": "Name and code are required."}
+
+
+def test_department_create_forbidden(client):
+    assert client.post("/departments", json={"name": "No", "code": "NO"}).status_code == 401
+    register(client)
+    login(client)
+    r = client.post("/departments", json={"name": "No", "code": "NO"})
+    assert r.status_code == 403 and r.json == {"error": "Forbidden."}
+
+
+def test_stale_admin_cookie(app, client):
+    login_admin(app, client)
+    set_user(app, "ana@test.com", user_role="basic")
+    assert client.post("/departments", json={"name": "IT", "code": "TI"}).status_code == 403
+    assert client.get("/admin-only").status_code == 200  # trusts the cookie role, same as C#
