@@ -18,6 +18,7 @@ def test_schema_created(app):
 
 def test_missing_secret_key(monkeypatch):
     monkeypatch.delenv("SECRET_KEY", raising=False)
+    monkeypatch.setattr("app.load_dotenv", lambda: None)  # ignore a real backend/.env
     with pytest.raises(RuntimeError, match="SECRET_KEY"):
         create_app({"DATABASE": ":memory:"})
 
