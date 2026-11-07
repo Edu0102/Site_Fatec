@@ -2,7 +2,8 @@
 */obj/
 */*.db*
 *.db-journal
-*Endpoints.env
+*Endpoints
+.env
 database.db
 .venv/
 .superpowers/
