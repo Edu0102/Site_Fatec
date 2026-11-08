@@ -24,3 +24,19 @@ def assign_user():
 def my_departments():
     """The logged-in user's current departments."""
     return jsonify(user_departments.list_for_user(session["user_id"]))
+
+
+@bp.get("/departments/<int:department_id>/members")
+@role_required("admin")
+def department_members(department_id):
+    """Admins see who is currently in a department."""
+    return jsonify(user_departments.members(department_id))
+
+
+@bp.delete("/departments/<int:department_id>/members/<int:user_id>")
+@role_required("admin")
+def remove_member(department_id, user_id):
+    """Admins take someone out of a department; they lose its POPs at once."""
+    if not user_departments.remove(user_id, department_id):
+        return jsonify(error="This user is not in the department."), 404
+    return jsonify(message="User removed from department.")

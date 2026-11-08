@@ -10,7 +10,8 @@ import db
 def create_app(test_config=None):
     """Build the Flask app: config, database and routes."""
     load_dotenv()
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "wwwroot"),
+                static_url_path="")  # the pages and /api share one address, so the login cookie works
     app.config.update(
         SECRET_KEY=os.environ.get("SECRET_KEY"),
         DATABASE=os.path.join(app.root_path, "database.db"),
@@ -42,8 +43,8 @@ def create_app(test_config=None):
 
     @app.get("/")
     def root():
-        """Health check, same text as the C# version."""
-        return "Server is running"
+        """The portal's home page."""
+        return app.send_static_file("index.html")
 
     return app
 

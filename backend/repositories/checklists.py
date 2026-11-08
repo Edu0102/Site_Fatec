@@ -78,3 +78,10 @@ def delete(user_id, checklist_id):
         cur = db.execute('DELETE FROM "Checklist" WHERE checklist_id = ? AND user_id = ? AND completed_at_utc IS NULL',
                          (checklist_id, user_id))
     return "ok" if cur.rowcount else _owned_state(checklist_id, user_id) or "conflict"
+
+
+def list_all():
+    """Every checklist, newest first, without items (admin follow-up)."""
+    rows = get_db().execute('SELECT checklist_id, pop_id, user_id, checklist_description, created_at_utc, completed_at_utc '
+                            'FROM "Checklist" ORDER BY checklist_id DESC')
+    return [_to_dict(r) for r in rows]

@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, session
 
-from auth import login_required, role_required
+from auth import current_user, login_required, role_required
 from repositories import users
 from routes import json_body, json_bool, json_field
-from security import hash_password
+from security import hash_password, verify_password
 
 bp = Blueprint("users", __name__)
 
@@ -50,3 +50,24 @@ def update_user(user_id):
     changed = users.update(user_id, role, None if is_active is None else int(is_active),
                            hash_password(password) if password else None, is_active is not None or password is not None)
     return (jsonify(message="User updated."), 200) if changed else (jsonify(error="User not found."), 404)
+
+
+@bp.get("/admin/users")
+@role_required("admin")
+def admin_list_users():
+    """Admins see every account with id, email, role and active flag."""
+    return jsonify(users.list_all())
+
+
+@bp.put("/me/password")
+@login_required
+def change_my_password():
+    """Change your own password; other devices are logged out, this one stays in."""
+    current, new = json_field("currentPassword"), json_field("newPassword")
+    if not verify_password(current, current_user()["user_password_hash"]):
+        return jsonify(error="Current password is wrong."), 400
+    if len(new) < 8:
+        return jsonify(error="Password must have at least 8 characters."), 400
+    users.update(session["user_id"], None, None, hash_password(new), True)
+    session["sv"] = users.get_by_id(session["user_id"])["user_session_version"]
+    return jsonify(message="Password changed.")

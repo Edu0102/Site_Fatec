@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, session
 
-from auth import current_user, login_required
+from auth import current_user, login_required, role_required
 from repositories import checklists, pops
 from routes import POP_UNAVAILABLE, json_bool, json_field, to_http
 
@@ -60,3 +60,10 @@ def complete_checklist(checklist_id):
 def delete_checklist(checklist_id):
     """The owner throws away a checklist that is not completed yet."""
     return to_http(checklists.delete(session["user_id"], checklist_id), "Checklist deleted.", "Checklist not found.", COMPLETED)
+
+
+@bp.get("/checklists")
+@role_required("admin")
+def all_checklists():
+    """Admins list every checklist to follow up or report."""
+    return jsonify(checklists.list_all())

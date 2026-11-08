@@ -249,18 +249,14 @@
         form.onsubmit = async function(event) {
             event.preventDefault();
 
-            mensagem.classList.add("mensagem-erro");
-            mensagem.textContent = "Login indisponível: conexão com o servidor desativada.";
-
-            /*
             try {
+                // "Lembrar" só guarda o e-mail neste navegador; a sessão sempre dura 8 h desde o último uso
                 var resposta = await fetch("/api/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         email: document.getElementById("usuario").value.trim(),
-                        password: document.getElementById("senha").value,
-                        remember: document.getElementById("lembrar").checked
+                        password: document.getElementById("senha").value
                     })
                 });
                 if (!resposta.ok) throw new Error("Credenciais inválidas");
@@ -271,15 +267,12 @@
                 mensagem.classList.add("mensagem-erro");
                 mensagem.textContent = "E-mail ou senha incorretos!";
             }
-            */
         };
 
         // Verificar se já existe uma sessão nesta aba
-        /*
         fetch("/api/auth/me").then(function(resposta) {
             if (resposta.ok) window.location.href = "/";
         });
-        */
 
         // Guardar somente o e-mail, se o usuário quiser
         document.getElementById("lembrar").onchange = function() {

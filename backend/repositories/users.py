@@ -62,3 +62,10 @@ def update(user_id, role, is_active, password_hash, end_sessions):
         (role, is_active, password_hash, 1 if end_sessions else 0, utc_now(), user_id))
     db.commit()
     return cur.rowcount > 0
+
+
+def list_all():
+    """Every account for the admin screen, by name (never the password hash)."""
+    rows = get_db().execute(
+        'SELECT user_id, user_name, user_email, user_role, is_active FROM "User" ORDER BY user_name, user_id').fetchall()
+    return [{"id": r[0], "name": r[1] or "", "email": r[2] or "", "role": r[3] or "user", "isActive": r[4] == 1} for r in rows]

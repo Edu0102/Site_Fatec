@@ -18,7 +18,6 @@ header.querySelector("h1").textContent = document.title;
 
 document.body.prepend(header);
 
-/*
 fetch("/api/auth/me")
     .then(function (response) {
         if (!response.ok) throw new Error("Sessão não encontrada");
@@ -28,7 +27,7 @@ fetch("/api/auth/me")
         var area = header.querySelector("#usuario-logado");
         area.textContent = user.name;
         var logout = document.createElement("button");
-        if (user.isAdmin) {
+        if (user.role === "admin") {
             var register = document.createElement("a");
             register.className = "botao-cadastrar-usuario";
             register.href = "/html/cadastro.html";
@@ -45,4 +44,3 @@ fetch("/api/auth/me")
         area.append(" ", logout);
     })
     .catch(function () { window.location.href = "/login.html"; });
-*/
