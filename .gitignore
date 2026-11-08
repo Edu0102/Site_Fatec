@@ -1,8 +1,5 @@
-*/bin/
-*/obj/
 */*.db*
 *.db-journal
-*Endpoints
 .env
 database.db
 .venv/

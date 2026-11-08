@@ -16,13 +16,21 @@ def client(app):
 
 
 def register(client, email="ana@test.com", password="mypassword123", name="Ana"):
-    # POST /register with the given fields
-    return client.post("/register", json={"name": name, "email": email, "password": password})
+    # Create an active basic user straight in the database (signing up over HTTP is admin-only)
+    from repositories import users
+    from security import hash_password
+    with client.application.app_context():
+        users.add(name, email.strip().lower(), hash_password(password))
+
+
+def sign_up(client, email="ana@test.com", password="mypassword123", name="Ana"):
+    # POST /api/users (the client must be logged in as an admin)
+    return client.post("/api/users", json={"name": name, "email": email, "password": password})
 
 
 def login(client, email="ana@test.com", password="mypassword123"):
     # POST /login with the given credentials
-    return client.post("/login", json={"email": email, "password": password})
+    return client.post("/api/auth/login", json={"email": email, "password": password})
 
 
 def login_basic(client, email="ana@test.com", name="Ana"):

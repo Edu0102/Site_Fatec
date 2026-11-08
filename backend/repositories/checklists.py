@@ -67,3 +67,14 @@ def complete(user_id, checklist_id):
         cur = db.execute('UPDATE "Checklist" SET completed_at_utc = ? WHERE checklist_id = ? AND user_id = ? '
                          'AND completed_at_utc IS NULL', (utc_now(), checklist_id, user_id))
     return "ok" if cur.rowcount else _owned_state(checklist_id, user_id) or "conflict"
+
+
+def delete(user_id, checklist_id):
+    """Delete the user's own open checklist and its items: "ok", "not_found" or "conflict" (completed)."""
+    db = get_db()
+    with db:
+        db.execute('DELETE FROM "ChecklistItemResult" WHERE checklist_id IN (SELECT checklist_id FROM "Checklist" '
+                   'WHERE checklist_id = ? AND user_id = ? AND completed_at_utc IS NULL)', (checklist_id, user_id))
+        cur = db.execute('DELETE FROM "Checklist" WHERE checklist_id = ? AND user_id = ? AND completed_at_utc IS NULL',
+                         (checklist_id, user_id))
+    return "ok" if cur.rowcount else _owned_state(checklist_id, user_id) or "conflict"

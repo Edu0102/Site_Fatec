@@ -1,1 +1,0 @@
-public record NewUser(string Name, string Email, string Password);

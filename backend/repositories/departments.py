@@ -28,3 +28,18 @@ def add(actor_user_id, name, code):
         if e.sqlite_errorcode == sqlite3.SQLITE_CONSTRAINT_UNIQUE:
             return "conflict"
         raise
+
+
+def update(department_id, name, code, is_active):
+    """Rename / recode / (de)activate a department: "ok", "not_found" or "conflict" (code taken)."""
+    db = get_db()
+    try:
+        cur = db.execute(
+            'UPDATE "Department" SET department_name = ?, department_code = ?, is_active = ?, updated_at_utc = ? '
+            'WHERE department_id = ?', (name, code, 1 if is_active else 0, utc_now(), department_id))
+        db.commit()
+    except sqlite3.IntegrityError as e:
+        if e.sqlite_errorcode == sqlite3.SQLITE_CONSTRAINT_UNIQUE:
+            return "conflict"
+        raise
+    return "ok" if cur.rowcount else "not_found"

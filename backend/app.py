@@ -29,14 +29,11 @@ def create_app(test_config=None):
     app.teardown_appcontext(db.close_db)
     db.init_db(app)
 
-    from routes import auth, checklists, departments, feedback, photos, standard_checks, users
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(users.bp)
-    app.register_blueprint(departments.bp)
-    app.register_blueprint(standard_checks.bp)
-    app.register_blueprint(checklists.bp)
-    app.register_blueprint(feedback.bp)
-    app.register_blueprint(photos.bp)
+    from routes import (auth, checklists, departments, feedback, links, phones, photos, pop_departments, pop_links,
+                        pop_phones, pops, standard_checks, user_departments, users)
+    for module in (auth, users, departments, user_departments, pops, pop_departments, standard_checks, checklists,
+                   feedback, photos, links, pop_links, phones, pop_phones):
+        app.register_blueprint(module.bp, url_prefix="/api")
 
     @app.errorhandler(413)
     def too_large(e):

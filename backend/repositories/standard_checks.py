@@ -28,3 +28,21 @@ def add(actor_user_id, pop_id, check_text, check_order):
         if e.sqlite_errorcode == sqlite3.SQLITE_CONSTRAINT_FOREIGNKEY:
             return "not_found", None
         raise
+
+
+def update(check_id, check_text, check_order):
+    """Change a check's text and order; False if it doesn't exist."""
+    db = get_db()
+    cur = db.execute('UPDATE "StandardCheck" SET check_text = ?, check_order = ? WHERE standard_check_id = ?',
+                     (check_text, check_order, check_id))
+    db.commit()
+    return cur.rowcount > 0
+
+
+def delete(check_id):
+    """Delete a check and its ticks in every checklist, in one transaction; False if it doesn't exist."""
+    db = get_db()
+    with db:
+        db.execute('DELETE FROM "ChecklistItemResult" WHERE standard_check_id = ?', (check_id,))
+        cur = db.execute('DELETE FROM "StandardCheck" WHERE standard_check_id = ?', (check_id,))
+    return cur.rowcount > 0

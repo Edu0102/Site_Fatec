@@ -21,5 +21,5 @@ def test_old_database_gets_session_version_column(tmp_path):
     assert con.execute('SELECT user_session_version FROM "User"').fetchone() == (0,)
     con.close()
     client = app.test_client()
-    assert client.post("/login", json={"email": "old@test.com", "password": "mypassword123"}).status_code == 200
-    assert client.get("/me").json["name"] == "Old"
+    assert client.post("/api/auth/login", json={"email": "old@test.com", "password": "mypassword123"}).status_code == 200
+    assert client.get("/api/auth/me").json["name"] == "Old"

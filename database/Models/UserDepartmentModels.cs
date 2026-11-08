@@ -1,1 +1,0 @@
-public record AssignDepartment(long UserId, long DepartmentId, string? AccessType);

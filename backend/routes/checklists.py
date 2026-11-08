@@ -53,3 +53,10 @@ def set_item(checklist_id, standard_check_id):
 def complete_checklist(checklist_id):
     """Mark the user's own checklist as completed."""
     return to_http(checklists.complete(session["user_id"], checklist_id), "Checklist completed.", "Checklist not found.", COMPLETED)
+
+
+@bp.delete("/checklists/<int:checklist_id>")
+@login_required
+def delete_checklist(checklist_id):
+    """The owner throws away a checklist that is not completed yet."""
+    return to_http(checklists.delete(session["user_id"], checklist_id), "Checklist deleted.", "Checklist not found.", COMPLETED)

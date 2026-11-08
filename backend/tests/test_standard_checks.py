@@ -4,7 +4,7 @@ from tests.conftest import give_access, login_admin, login_basic, make_pop
 
 
 def url(pop_id):
-    return f"/pops/{pop_id}/standard-checks"
+    return f"/api/pops/{pop_id}/standard-checks"
 
 
 def test_unauthenticated(app, client):

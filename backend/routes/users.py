@@ -1,7 +1,9 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, session
 
 from auth import login_required, role_required
 from repositories import users
+from routes import json_body, json_bool, json_field
+from security import hash_password
 
 bp = Blueprint("users", __name__)
 
@@ -13,8 +15,38 @@ def list_users():
     return jsonify(users.active_names())
 
 
-@bp.get("/admin-only")
+@bp.post("/users")
 @role_required("admin")
-def admin_only():
-    """Sample admin-only endpoint."""
-    return jsonify(secret="admins only")
+def create_user():
+    """Admins create a basic user after validating name, email and password."""
+    name, email, password = json_field("name"), json_field("email"), json_field("password")
+    if not name.strip() or not email.strip() or not password.strip():
+        return jsonify(error="Name, email and password are required."), 400
+    if len(password) < 8:
+        return jsonify(error="Password must have at least 8 characters."), 400
+    if users.add(name.strip(), email.strip().lower(), hash_password(password)):
+        return jsonify(message="User registered.")
+    return jsonify(error="This email is already registered."), 409
+
+
+@bp.put("/users/<int:user_id>")
+@role_required("admin")
+def update_user(user_id):
+    """Admins change a user's role, active flag or password; never their own role or active flag."""
+    body = json_body()
+    if not {"role", "isActive", "password"} & set(body):
+        return jsonify(error="Nothing to change."), 400
+    role = json_field("role").strip().lower() if "role" in body else None
+    if role is not None and role not in ("admin", "basic"):
+        return jsonify(error="Role must be admin or basic."), 400
+    is_active = json_bool("isActive") if "isActive" in body else None
+    if "isActive" in body and is_active is None:
+        return jsonify(error="isActive must be true or false."), 400
+    password = json_field("password") if "password" in body else None
+    if password is not None and len(password) < 8:
+        return jsonify(error="Password must have at least 8 characters."), 400
+    if user_id == session["user_id"] and (role is not None or is_active is not None):
+        return jsonify(error="You can't change your own role or active status."), 409
+    changed = users.update(user_id, role, None if is_active is None else int(is_active),
+                           hash_password(password) if password else None, is_active is not None or password is not None)
+    return (jsonify(message="User updated."), 200) if changed else (jsonify(error="User not found."), 404)

@@ -50,3 +50,15 @@ def is_active_admin(user_id):
         'SELECT COUNT(*) FROM "User" WHERE user_id = ? AND user_role = \'admin\' AND is_active = 1',
         (user_id,)).fetchone()
     return row[0] > 0
+
+
+def update(user_id, role, is_active, password_hash, end_sessions):
+    """Change only the given fields (None = keep); end_sessions logs the user out everywhere. False if no such user."""
+    db = get_db()
+    cur = db.execute(
+        'UPDATE "User" SET user_role = COALESCE(?, user_role), is_active = COALESCE(?, is_active), '
+        'user_password_hash = COALESCE(?, user_password_hash), user_session_version = user_session_version + ?, '
+        'updated_at_utc = ? WHERE user_id = ?',
+        (role, is_active, password_hash, 1 if end_sessions else 0, utc_now(), user_id))
+    db.commit()
+    return cur.rowcount > 0

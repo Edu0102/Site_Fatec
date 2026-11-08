@@ -10,14 +10,14 @@ TOO_BIG = {"error": "Photo must be at most 2 MB."}
 
 def upload(client, data, name="me.png"):
     # PUT /me/photo as a browser form with one file field
-    return client.put("/me/photo", data={"photo": (io.BytesIO(data), name)}, content_type="multipart/form-data")
+    return client.put("/api/me/photo", data={"photo": (io.BytesIO(data), name)}, content_type="multipart/form-data")
 
 
 def test_unauthenticated(client):
     assert upload(client, PNG).status_code == 401
-    assert client.get("/users/1/photo").status_code == 401
-    assert client.delete("/me/photo").status_code == 401
-    assert client.delete("/users/1/photo").status_code == 401
+    assert client.get("/api/users/1/photo").status_code == 401
+    assert client.delete("/api/me/photo").status_code == 401
+    assert client.delete("/api/users/1/photo").status_code == 401
 
 
 def test_upload_and_read(client):
@@ -25,7 +25,7 @@ def test_upload_and_read(client):
     login(client)
     r = upload(client, PNG)
     assert r.status_code == 200 and r.json == {"message": "Photo saved."}
-    r = client.get("/users/1/photo")
+    r = client.get("/api/users/1/photo")
     assert r.status_code == 200 and r.data == PNG and r.mimetype == "image/png"
     assert r.headers["X-Content-Type-Options"] == "nosniff"
 
@@ -35,10 +35,10 @@ def test_replace_photo(client):
     login(client)
     upload(client, PNG)
     assert upload(client, JPEG, "me.jpg").status_code == 200
-    r = client.get("/users/1/photo")
+    r = client.get("/api/users/1/photo")
     assert r.data == JPEG and r.mimetype == "image/jpeg"
     assert upload(client, WEBP, "me.webp").status_code == 200
-    assert client.get("/users/1/photo").mimetype == "image/webp"
+    assert client.get("/api/users/1/photo").mimetype == "image/webp"
 
 
 def test_type_comes_from_bytes_not_name(client):
@@ -53,9 +53,9 @@ def test_type_comes_from_bytes_not_name(client):
 def test_missing_file(client):
     register(client)
     login(client)
-    r = client.put("/me/photo", data={}, content_type="multipart/form-data")
+    r = client.put("/api/me/photo", data={}, content_type="multipart/form-data")
     assert r.status_code == 400 and r.json == {"error": "Photo is required."}
-    r = client.put("/me/photo", json={"photo": "abc"})
+    r = client.put("/api/me/photo", json={"photo": "abc"})
     assert r.status_code == 400 and r.json == {"error": "Photo is required."}
 
 
@@ -73,12 +73,12 @@ def test_size_limit(client):
 def test_delete_own(client):
     register(client)
     login(client)
-    r = client.delete("/me/photo")
+    r = client.delete("/api/me/photo")
     assert r.status_code == 404 and r.json == {"error": "Photo not found."}
     upload(client, PNG)
-    r = client.delete("/me/photo")
+    r = client.delete("/api/me/photo")
     assert r.status_code == 200 and r.json == {"message": "Photo deleted."}
-    assert client.get("/users/1/photo").status_code == 404
+    assert client.get("/api/users/1/photo").status_code == 404
 
 
 def test_others_can_see_but_only_admin_deletes(app, client):
@@ -87,10 +87,10 @@ def test_others_can_see_but_only_admin_deletes(app, client):
     upload(client, PNG)
     register(client, email="b@test.com", name="Bia")
     login(client, email="b@test.com")
-    assert client.get("/users/1/photo").data == PNG
-    r = client.delete("/users/1/photo")
+    assert client.get("/api/users/1/photo").data == PNG
+    r = client.delete("/api/users/1/photo")
     assert r.status_code == 403 and r.json == {"error": "Forbidden."}
     set_user(app, "b@test.com", user_role="admin")
-    r = client.delete("/users/1/photo")
+    r = client.delete("/api/users/1/photo")
     assert r.status_code == 200 and r.json == {"message": "Photo deleted."}
-    assert client.delete("/users/1/photo").status_code == 404
+    assert client.delete("/api/users/1/photo").status_code == 404

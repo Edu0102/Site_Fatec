@@ -3,25 +3,12 @@ from flask import Blueprint, jsonify, session
 from auth import NOT_AUTHENTICATED, current_user, login_required
 from repositories import users
 from routes import json_field
-from security import hash_password, verify_password
+from security import verify_password
 
 bp = Blueprint("auth", __name__)
 
 
-@bp.post("/register")
-def register():
-    """Create a basic user after validating name, email and password."""
-    name, email, password = json_field("name"), json_field("email"), json_field("password")
-    if not name.strip() or not email.strip() or not password.strip():
-        return jsonify(error="Name, email and password are required."), 400
-    if len(password) < 8:
-        return jsonify(error="Password must have at least 8 characters."), 400
-    if users.add(name.strip(), email.strip().lower(), hash_password(password)):
-        return jsonify(message="User registered.")
-    return jsonify(error="This email is already registered."), 409
-
-
-@bp.post("/login")
+@bp.post("/auth/login")
 def login():
     """Start a session; every failure gives the same 401."""
     user = users.get_by_email(json_field("email").strip().lower())
@@ -33,7 +20,7 @@ def login():
     return jsonify(message="Logged in.")
 
 
-@bp.post("/logout")
+@bp.post("/auth/logout")
 def logout():
     """End the session and invalidate copies of the cookie (works even when not logged in)."""
     if current_user() is not None:
@@ -42,7 +29,7 @@ def logout():
     return jsonify(message="Logged out.")
 
 
-@bp.get("/me")
+@bp.get("/auth/me")
 @login_required
 def me():
     """Who is logged in, from the session cookie."""

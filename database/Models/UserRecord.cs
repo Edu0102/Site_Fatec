@@ -1,1 +1,0 @@
-public record UserRecord(long Id, string Name, string Email, string PasswordHash, string Role, bool IsActive);

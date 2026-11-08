@@ -23,26 +23,41 @@ def test_missing_secret_key(monkeypatch):
         create_app({"DATABASE": ":memory:"})
 
 
-from tests.conftest import login, login_admin, register, set_user
+from tests.conftest import login, login_admin, login_basic, register, set_user, sign_up
 
 REQUIRED = {"error": "Name, email and password are required."}
 
 
-def test_register_ok(client):
-    r = register(client)
+def as_root(app, client):
+    # Log in as an admin whose email doesn't clash with the users the sign-up tests create
+    return login_admin(app, client, email="root@test.com", name="Root")
+
+
+def test_sign_up_needs_admin(app, client):
+    assert sign_up(client).status_code == 401
+    login_basic(client, email="b@test.com")
+    r = sign_up(client)
+    assert r.status_code == 403 and r.json == {"error": "Forbidden."}
+
+
+def test_register_ok(app, client):
+    as_root(app, client)
+    r = sign_up(client)
     assert r.status_code == 200 and r.json == {"message": "User registered."}
 
 
-def test_register_duplicate(client):
-    register(client)
-    r = register(client)
+def test_register_duplicate(app, client):
+    as_root(app, client)
+    sign_up(client)
+    r = sign_up(client)
     assert r.status_code == 409 and r.json == {"error": "This email is already registered."}
 
 
-def test_register_short_password(client):
-    r = register(client, password="1234567")
+def test_register_short_password(app, client):
+    as_root(app, client)
+    r = sign_up(client, password="1234567")
     assert r.status_code == 400 and r.json == {"error": "Password must have at least 8 characters."}
-    assert register(client, password="       x").status_code == 200
+    assert sign_up(client, password="       x").status_code == 200
 
 
 @pytest.mark.parametrize("body", [
@@ -52,19 +67,22 @@ def test_register_short_password(client):
     {"name": None, "email": "a@b.c", "password": "mypassword123"},
     [1, 2],
 ])
-def test_register_missing_fields(client, body):
-    r = client.post("/register", json=body)
+def test_register_missing_fields(app, client, body):
+    as_root(app, client)
+    r = client.post("/api/users", json=body)
     assert r.status_code == 400 and r.json == REQUIRED
 
 
-def test_register_non_json_body(client):
-    r = client.post("/register", data="hello", content_type="text/plain")
+def test_register_non_json_body(app, client):
+    as_root(app, client)
+    r = client.post("/api/users", data="hello", content_type="text/plain")
     assert r.status_code == 400 and r.json == REQUIRED
 
 
-def test_email_normalized(client):
-    register(client, email="  Ana@Test.COM ")
-    assert register(client, email="ana@test.com").status_code == 409
+def test_email_normalized(app, client):
+    as_root(app, client)
+    sign_up(client, email="  Ana@Test.COM ")
+    assert sign_up(client, email="ana@test.com").status_code == 409
     assert login(client, email="ANA@test.com").status_code == 200
 
 
@@ -87,96 +105,85 @@ def test_login_failures_identical(app, client):
         login(client, email="nobody@test.com"),
         login(client, email="off@test.com"),
         login(client, email="bad@test.com"),
-        client.post("/login", json={}),
-        client.post("/login", json={"email": 1, "password": 2}),
-        client.post("/login", data="x", content_type="text/plain"),
+        client.post("/api/auth/login", json={}),
+        client.post("/api/auth/login", json={"email": 1, "password": 2}),
+        client.post("/api/auth/login", data="x", content_type="text/plain"),
     ]
     assert {r.status_code for r in responses} == {401}
     assert len({r.get_data() for r in responses}) == 1
 
 
 def test_me(client):
-    r = client.get("/me")
+    r = client.get("/api/auth/me")
     assert r.status_code == 401 and r.json == {"error": "Not authenticated."}
     register(client)
     login(client)
-    r = client.get("/me")
+    r = client.get("/api/auth/me")
     assert r.status_code == 200 and r.json == {"id": 1, "name": "Ana", "email": "ana@test.com", "role": "basic"}
 
 
 def test_logout(client):
-    r = client.post("/logout")
+    r = client.post("/api/auth/logout")
     assert r.status_code == 200 and r.json == {"message": "Logged out."}
     register(client)
     login(client)
-    assert client.post("/logout").status_code == 200
-    assert client.get("/me").status_code == 401
+    assert client.post("/api/auth/logout").status_code == 200
+    assert client.get("/api/auth/me").status_code == 401
 
 
 def test_users_list(app, client):
-    assert client.get("/users").status_code == 401
+    assert client.get("/api/users").status_code == 401
     register(client)
     register(client, email="bob@test.com", name="Bob")
     set_user(app, "bob@test.com", is_active=0)
     login(client)
-    r = client.get("/users")
+    r = client.get("/api/users")
     assert r.status_code == 200 and r.json == ["Ana"]
 
 
-def test_admin_only(app, client):
-    assert client.get("/admin-only").status_code == 401
-    register(client)
-    login(client)
-    r = client.get("/admin-only")
-    assert r.status_code == 403 and r.json == {"error": "Forbidden."}
-    set_user(app, "ana@test.com", user_role="admin")
-    login(client)  # role is read at login, like the C# claims
-    r = client.get("/admin-only")
-    assert r.status_code == 200 and r.json == {"secret": "admins only"}
-
-
 def test_departments_list(app, client):
-    assert client.get("/departments").status_code == 401
+    assert client.get("/api/departments").status_code == 401
     login_admin(app, client)
-    r = client.get("/departments")
+    r = client.get("/api/departments")
     assert r.status_code == 200 and r.json == []
-    client.post("/departments", json={"name": " IT ", "code": " ti "})
-    assert client.get("/departments").json == [{"id": 1, "name": "IT", "code": "TI", "isActive": True}]
+    client.post("/api/departments", json={"name": " IT ", "code": " ti "})
+    assert client.get("/api/departments").json == [{"id": 1, "name": "IT", "code": "TI", "isActive": True}]
 
 
 def test_department_create(app, client):
     login_admin(app, client)
-    r = client.post("/departments", json={"name": "IT", "code": "TI"})
+    r = client.post("/api/departments", json={"name": "IT", "code": "TI"})
     assert r.status_code == 200 and r.json == {"message": "Department created."}
     for code in ["TI", "Ti"]:
-        r = client.post("/departments", json={"name": "Other", "code": code})
+        r = client.post("/api/departments", json={"name": "Other", "code": code})
         assert r.status_code == 409 and r.json == {"error": "This department code already exists."}
     for body in [{"name": "  ", "code": "X"}, {"name": "X", "code": " "}, {}]:
-        r = client.post("/departments", json=body)
+        r = client.post("/api/departments", json=body)
         assert r.status_code == 400 and r.json == {"error": "Name and code are required."}
 
 
 def test_department_create_forbidden(client):
-    assert client.post("/departments", json={"name": "No", "code": "NO"}).status_code == 401
+    assert client.post("/api/departments", json={"name": "No", "code": "NO"}).status_code == 401
     register(client)
     login(client)
-    r = client.post("/departments", json={"name": "No", "code": "NO"})
+    r = client.post("/api/departments", json={"name": "No", "code": "NO"})
     assert r.status_code == 403 and r.json == {"error": "Forbidden."}
 
 
 def test_stale_admin_cookie(app, client):
     login_admin(app, client)
     set_user(app, "ana@test.com", user_role="basic")
-    assert client.post("/departments", json={"name": "IT", "code": "TI"}).status_code == 403
-    assert client.get("/admin-only").status_code == 403  # role is read from the database on every request
+    assert client.post("/api/departments", json={"name": "IT", "code": "TI"}).status_code == 403
+    assert client.delete("/api/users/1/photo").status_code == 403  # role is read from the database on every request
 
 
-def test_lone_surrogate_is_rejected(client):
+def test_lone_surrogate_is_rejected(app, client):
+    as_root(app, client)
     raw = r'{"name":"a","email":"s@x.com","password":"abcdefgh\ud800"}'
-    r = client.post("/register", data=raw, content_type="application/json")
+    r = client.post("/api/users", data=raw, content_type="application/json")
     assert r.status_code == 400 and r.json == REQUIRED
     raw = r'{"email":"s\ud800@x.com","password":"abcdefgh"}'
-    assert client.post("/login", data=raw, content_type="application/json").status_code == 401
+    assert client.post("/api/auth/login", data=raw, content_type="application/json").status_code == 401
 
 
 def test_cookie_samesite_lax(client):
@@ -196,17 +203,17 @@ def test_deactivated_user_loses_session(app, client):
     register(client)
     login(client)
     set_user(app, "ana@test.com", is_active=0)
-    assert client.get("/me").status_code == 401
+    assert client.get("/api/auth/me").status_code == 401
 
 
 def test_logout_kills_copied_cookie(app, client):
     register(client)
     login(client)
     copied = client.get_cookie("site_auth").value
-    client.post("/logout")
+    client.post("/api/auth/logout")
     thief = app.test_client()
     thief.set_cookie("site_auth", copied)
-    r = thief.get("/me")
+    r = thief.get("/api/auth/me")
     assert r.status_code == 401 and r.json == {"error": "Not authenticated."}
     login(client)  # logging in again still works
-    assert client.get("/me").status_code == 200
+    assert client.get("/api/auth/me").status_code == 200
