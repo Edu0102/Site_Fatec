@@ -12,11 +12,6 @@ document.getElementById("formCadastro").onsubmit = async function (event) {
         return;
     }
 
-    message.classList.remove("mensagem-sucesso");
-    message.classList.add("mensagem-erro");
-    message.textContent = "Cadastro indisponível: conexão com o servidor desativada.";
-
-    /*
     try {
         var response = await fetch("/api/users", {
             method: "POST",
@@ -28,7 +23,7 @@ document.getElementById("formCadastro").onsubmit = async function (event) {
             })
         });
         var data = await response.json().catch(function () { return {}; });
-        if (!response.ok) throw new Error(data.message || "Não foi possível criar o usuário.");
+        if (!response.ok) throw new Error(data.error || "Não foi possível criar o usuário.");
         message.classList.remove("mensagem-erro");
         message.classList.add("mensagem-sucesso");
         message.textContent = "Usuário cadastrado com sucesso.";
@@ -38,5 +33,4 @@ document.getElementById("formCadastro").onsubmit = async function (event) {
         message.classList.add("mensagem-erro");
         message.textContent = error.message;
     }
-    */
 };
