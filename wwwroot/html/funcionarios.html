@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funcionários</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/paginas.css">
+    <link rel="stylesheet" href="../css/funcionarios.css">
+    <script src="../js/menu-usuario.js"></script>
+    <script src="../js/header.js" defer></script>
+    <script src="../js/funcionarios.js" defer></script>
+</head>
+<body class="pagina-funcionarios">
+    <header class="header-padrao">
+        <div class="header-logo">
+            <span class="logo-circulo">LOGO</span>
+            <span class="logo-texto">F.R.Cont</span>
+        </div>
+
+        <h1 class="header-titulo">Funcionários</h1>
+
+        <div class="header-usuario" id="header-usuario">
+            <button type="button" class="usuario-botao" id="usuario-botao" aria-haspopup="true" aria-expanded="false" aria-controls="usuario-menu">
+                <span class="avatar" id="usuario-foto"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg></span>
+                <span class="usuario-info">
+                    <span class="usuario-nome" id="usuario-nome">Nome do funcionário</span>
+                    <span class="usuario-cargo" id="usuario-cargo">Cargo do funcionário</span>
+                </span>
+                <svg class="usuario-seta" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <ul class="usuario-menu" id="usuario-menu" hidden>
+                <li><button type="button" id="menu-tema">Tema escuro</button></li>
+                <li><a href="#">Tutorial</a></li>
+                <li><a href="feedback.html">Feedback</a></li>
+                <li class="menu-separado"><a class="menu-sair" id="menu-sair" href="../login.html">Logout</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ================= VISTA 1: LISTA ================= -->
+        <section id="vista-lista">
+            <a href="../index.html" class="botao-voltar">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m15 6-6 6 6 6"/></svg>
+                Voltar ao hub
+            </a>
+
+            <div class="func-topo">
+                <div class="page-heading">
+                    <p class="eyebrow">ADMINISTRAÇÃO</p>
+                    <h2>Funcionários</h2>
+                    <p class="subtitle">Cadastro, setores e acessos da equipe.</p>
+                </div>
+                <button type="button" class="button button-primary" data-abrir="modal-adicionar">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar funcionário
+                </button>
+            </div>
+
+            <div class="summary-grid summary-grid--4">
+                <div class="summary-card">
+                    <span class="summary-icon icon-blue"><i class="bi bi-people" aria-hidden="true"></i></span>
+                    <div><span class="summary-label">Total</span><strong id="resumo-total">24</strong></div>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-icon icon-green"><i class="bi bi-person-check" aria-hidden="true"></i></span>
+                    <div><span class="summary-label">Ativos</span><strong id="resumo-ativos">21</strong></div>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-icon icon-orange"><i class="bi bi-airplane" aria-hidden="true"></i></span>
+                    <div><span class="summary-label">Desativados</span><strong id="resumo-desativados">3</strong></div>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-icon icon-blue"><i class="bi bi-clock-history" aria-hidden="true"></i></span>
+                    <div><span class="summary-label">Acesso temporário</span><strong id="resumo-temporarios">2</strong></div>
+                </div>
+            </div>
+
+            <div class="abas" role="tablist">
+                <button type="button" class="aba aba--ativa" role="tab" aria-selected="true" data-aba="painel-funcionarios">Funcionários</button>
+                <button type="button" class="aba" role="tab" aria-selected="false" data-aba="painel-setores">Setores</button>
+            </div>
+
+            <!-- Aba Funcionários -->
+            <div class="panel" id="painel-funcionarios">
+                <div class="filtros-func">
+                    <label class="campo-pesquisa">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <span class="sr-only">Buscar funcionário</span>
+                        <input type="search" id="busca-funcionario" placeholder="Buscar por nome ou e-mail">
+                    </label>
+                    <label class="sr-only" for="filtro-setor">Setor</label>
+                    <select id="filtro-setor">
+                        <option value="">Todos os setores</option>
+                        <option>Setor A</option>
+                        <option>Setor B</option>
+                        <option>Setor C</option>
+                    </select>
+                    <label class="sr-only" for="filtro-status">Status</label>
+                    <select id="filtro-status">
+                        <option value="">Todos os status</option>
+                        <option value="ativo">Ativo</option>
+                        <option value="desativado">Desativado</option>
+                    </select>
+                </div>
+
+                <div class="tabela-rolagem">
+                    <table class="func-tabela">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Cargos</th>
+                                <th>Setores fixos</th>
+                                <th>Acesso temporário</th>
+                                <th>Status</th>
+                                <th><span class="sr-only">Ações</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-funcionarios">
+                            <tr data-id="1" data-setores="Setor A|Setor B|Setor C" data-status="ativo">
+                                <td><div class="func-pessoa"><span class="func-avatar">NS</span><div><strong>Nome Sobrenome</strong><small>email@dominio.com</small></div></div></td>
+                                <td>Cargo 1, Cargo 2</td>
+                                <td><span class="chip">Setor A</span><span class="chip">Setor B</span></td>
+                                <td><span class="chip chip--temp"><i class="bi bi-clock" aria-hidden="true"></i> Setor C · até 15/11</span></td>
+                                <td><span class="status done">Ativo</span></td>
+                                <td class="func-acoes">
+                                    <button type="button" class="button button-light button-pequeno" data-ver="1">Ver ficha</button>
+                                    <details class="menu-acoes">
+                                        <summary aria-label="Mais ações"><i class="bi bi-three-dots-vertical" aria-hidden="true"></i></summary>
+                                        <ul>
+                                            <li><button type="button" data-abrir="modal-senha">Redefinir senha</button></li>
+                                            <li><button type="button" data-abrir="modal-desativar">Desativar (férias)</button></li>
+                                            <li><button type="button" class="menu-perigo" data-abrir="modal-excluir">Excluir funcionário</button></li>
+                                        </ul>
+                                    </details>
+                                </td>
+                            </tr>
+                            <tr data-id="2" data-setores="Setor A" data-status="ativo">
+                                <td><div class="func-pessoa"><span class="func-avatar">NS</span><div><strong>Nome Sobrenome</strong><small>email@dominio.com</small></div></div></td>
+                                <td>Cargo</td>
+                                <td><span class="chip">Setor A</span></td>
+                                <td class="vazio-celula">—</td>
+                                <td><span class="status done">Ativo</span></td>
+                                <td class="func-acoes">
+                                    <button type="button" class="button button-light button-pequeno" data-ver="2">Ver ficha</button>
+                                    <details class="menu-acoes">
+                                        <summary aria-label="Mais ações"><i class="bi bi-three-dots-vertical" aria-hidden="true"></i></summary>
+                                        <ul>
+                                            <li><button type="button" data-abrir="modal-senha">Redefinir senha</button></li>
+                                            <li><button type="button" data-abrir="modal-desativar">Desativar (férias)</button></li>
+                                            <li><button type="button" class="menu-perigo" data-abrir="modal-excluir">Excluir funcionário</button></li>
+                                        </ul>
+                                    </details>
+                                </td>
+                            </tr>
+                            <tr data-id="3" data-setores="Setor B" data-status="desativado">
+                                <td><div class="func-pessoa"><span class="func-avatar">NS</span><div><strong>Nome Sobrenome</strong><small>email@dominio.com</small></div></div></td>
+                                <td>Cargo</td>
+                                <td><span class="chip">Setor B</span></td>
+                                <td class="vazio-celula">—</td>
+                                <td><span class="status pending">Desativado</span></td>
+                                <td class="func-acoes">
+                                    <button type="button" class="button button-light button-pequeno" data-ver="3">Ver ficha</button>
+                                    <details class="menu-acoes">
+                                        <summary aria-label="Mais ações"><i class="bi bi-three-dots-vertical" aria-hidden="true"></i></summary>
+                                        <ul>
+                                            <li><button type="button" data-abrir="modal-senha">Redefinir senha</button></li>
+                                            <li><button type="button">Reativar</button></li>
+                                            <li><button type="button" class="menu-perigo" data-abrir="modal-excluir">Excluir funcionário</button></li>
+                                        </ul>
+                                    </details>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="lista-vazia" hidden>
+                    <i class="bi bi-search empty-icon" aria-hidden="true"></i>
+                    <strong>Nenhum funcionário encontrado</strong>
+                    <p>Tente outro nome ou limpe os filtros.</p>
+                </div>
+            </div>
+
+            <!-- Aba Setores (somente visualização) -->
+            <div id="painel-setores" hidden>
+                <div class="setores-grade" id="lista-setores">
+                    <article class="setor-card">
+                        <div class="setor-card-topo">
+                            <span class="icone-setor"><i class="bi bi-diagram-3" aria-hidden="true"></i></span>
+                            <div><h3>Setor A</h3><span class="muted">5 funcionários</span></div>
+                        </div>
+                        <ul class="setor-membros">
+                            <li>Nome Sobrenome</li><li>Nome Sobrenome</li><li>Nome Sobrenome</li>
+                        </ul>
+                    </article>
+                    <article class="setor-card">
+                        <div class="setor-card-topo">
+                            <span class="icone-setor"><i class="bi bi-diagram-3" aria-hidden="true"></i></span>
+                            <div><h3>Setor B</h3><span class="muted">3 funcionários</span></div>
+                        </div>
+                        <ul class="setor-membros">
+                            <li>Nome Sobrenome</li><li>Nome Sobrenome</li><li>Nome Sobrenome</li>
+                        </ul>
+                    </article>
+                    <article class="setor-card">
+                        <div class="setor-card-topo">
+                            <span class="icone-setor"><i class="bi bi-diagram-3" aria-hidden="true"></i></span>
+                            <div><h3>Setor C</h3><span class="muted">4 funcionários</span></div>
+                        </div>
+                        <ul class="setor-membros">
+                            <li>Nome Sobrenome</li><li>Nome Sobrenome <span class="chip chip--temp">temporário</span></li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= VISTA 2: FICHA ================= -->
+        <section id="vista-ficha" hidden>
+            <button type="button" class="botao-voltar" id="voltar-lista">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m15 6-6 6 6 6"/></svg>
+                Voltar à lista
+            </button>
+
+            <div class="ficha">
+                <!-- Coluna esquerda -->
+                <aside class="ficha-lateral">
+                    <div class="panel ficha-perfil">
+                        <span class="func-avatar func-avatar--grande" id="ficha-iniciais">NS</span>
+                        <h2 id="ficha-nome">Nome Sobrenome</h2>
+                        <span class="status done" id="ficha-status">Ativo</span>
+                        <ul class="ficha-contato">
+                            <li><i class="bi bi-envelope" aria-hidden="true"></i><span id="ficha-email">email@dominio.com</span></li>
+                            <li><i class="bi bi-telephone" aria-hidden="true"></i><span id="ficha-telefone">(00) 00000-0000</span></li>
+                        </ul>
+                    </div>
+                    <div class="ficha-botoes">
+                        <button type="button" class="button button-light" data-abrir="modal-editar"><i class="bi bi-pencil" aria-hidden="true"></i> Editar dados</button>
+                        <button type="button" class="button button-light" data-abrir="modal-senha"><i class="bi bi-key" aria-hidden="true"></i> Redefinir senha</button>
+                        <button type="button" class="button button-light" data-abrir="modal-desativar"><i class="bi bi-pause-circle" aria-hidden="true"></i> Desativar (férias)</button>
+                        <button type="button" class="button button-perigo" data-abrir="modal-excluir"><i class="bi bi-trash" aria-hidden="true"></i> Excluir funcionário</button>
+                    </div>
+                </aside>
+
+                <!-- Coluna direita -->
+                <div class="ficha-principal">
+                    <section class="panel">
+                        <div class="panel-heading"><div><h3>Cargos</h3><p class="muted">Um funcionário pode ter mais de um cargo.</p></div></div>
+                        <div id="ficha-cargos"><span class="chip">Cargo 1</span><span class="chip">Cargo 2</span></div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-heading"><div><h3>Setores fixos</h3><p class="muted">Setores aos quais o funcionário pertence.</p></div></div>
+                        <div class="chips-remover" id="ficha-setores-fixos">
+                            <span class="chip chip--remover">Setor A <button type="button" aria-label="Remover do Setor A"><i class="bi bi-x-lg" aria-hidden="true"></i></button></span>
+                            <span class="chip chip--remover">Setor B <button type="button" aria-label="Remover do Setor B"><i class="bi bi-x-lg" aria-hidden="true"></i></button></span>
+                        </div>
+                        <div class="linha-form">
+                            <label class="sr-only" for="atribuir-setor">Setor</label>
+                            <select id="atribuir-setor"><option value="">Escolha um setor</option><option>Setor C</option></select>
+                            <button type="button" class="button button-light">Atribuir setor</button>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-heading"><div><h3>Acesso temporário</h3><p class="muted">Dá acesso total a outro setor e expira sozinho na data final.</p></div></div>
+
+                        <ul class="lista-temp" id="lista-temp">
+                            <li>
+                                <div><strong>Setor C</strong><span class="muted">09/11/2026 até 15/11/2026</span></div>
+                                <button type="button" class="button button-light button-pequeno button-perigo-claro">Revogar</button>
+                            </li>
+                        </ul>
+
+                        <div class="form-temp">
+                            <h4>Conceder novo acesso</h4>
+                            <div class="form-stack">
+                                <label for="temp-setor">Setor</label>
+                                <select id="temp-setor"><option value="">Escolha um setor</option><option>Setor C</option></select>
+
+                                <span class="rotulo">Período</span>
+                                <div class="presets" id="temp-presets" role="radiogroup" aria-label="Período do acesso">
+                                    <label class="preset"><input type="radio" name="temp-periodo" value="0"><span>Hoje</span></label>
+                                    <label class="preset"><input type="radio" name="temp-periodo" value="7"><span>1 semana</span></label>
+                                    <label class="preset"><input type="radio" name="temp-periodo" value="15"><span>15 dias</span></label>
+                                    <label class="preset"><input type="radio" name="temp-periodo" value="30"><span>30 dias</span></label>
+                                    <label class="preset"><input type="radio" name="temp-periodo" value="custom"><span>Personalizado</span></label>
+                                </div>
+
+                                <div class="datas">
+                                    <div><label for="temp-inicio">De</label><input type="date" id="temp-inicio"></div>
+                                    <div><label for="temp-fim">Até</label><input type="date" id="temp-fim"></div>
+                                </div>
+                                <p class="form-message" id="temp-mensagem" role="alert"></p>
+                            </div>
+                            <button type="button" class="button button-primary" id="temp-conceder">Conceder acesso</button>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-heading"><div><h3>Colegas dos mesmos setores</h3><p class="muted">Quem divide setor com este funcionário.</p></div></div>
+                        <div class="colegas">
+                            <div class="colegas-grupo"><h4>Setor A <span class="count-tag">5</span></h4><ul><li>Nome Sobrenome</li><li>Nome Sobrenome</li><li>Nome Sobrenome</li></ul></div>
+                            <div class="colegas-grupo"><h4>Setor B <span class="count-tag">3</span></h4><ul><li>Nome Sobrenome</li><li>Nome Sobrenome</li></ul></div>
+                        </div>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <div><h3>Tarefas</h3><p class="muted">Resumo do checklist de hoje.</p></div>
+                            <a href="checklist.html" class="button button-light button-pequeno">Ver checklist</a>
+                        </div>
+                        <div class="progress-number"><strong>6</strong><span>de 10 concluídas</span></div>
+                        <div class="progress-track"><span style="width:60%"></span></div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ================= MODAIS ================= -->
+    <dialog class="modal modal--larga" id="modal-adicionar">
+        <div class="modal-conteudo">
+            <h2>Adicionar funcionário</h2>
+            <div class="form-stack">
+                <label for="novo-nome">Nome</label>
+                <input type="text" id="novo-nome" placeholder="Nome e sobrenome">
+                <label for="novo-email">E-mail</label>
+                <input type="email" id="novo-email" placeholder="nome@empresa.com">
+                <label for="novo-telefone">Telefone</label>
+                <input type="tel" id="novo-telefone" placeholder="(00) 00000-0000">
+                <label for="novo-cargos">Cargos</label>
+                <input type="text" id="novo-cargos" placeholder="Separe por vírgula">
+                <span class="rotulo">Setores fixos</span>
+                <div class="checks">
+                    <label class="opcoes"><input type="checkbox" name="novo-setor" value="Setor A"> Setor A</label>
+                    <label class="opcoes"><input type="checkbox" name="novo-setor" value="Setor B"> Setor B</label>
+                    <label class="opcoes"><input type="checkbox" name="novo-setor" value="Setor C"> Setor C</label>
+                </div>
+                <label for="novo-senha">Senha inicial</label>
+                <input type="text" id="novo-senha" placeholder="Senha temporária">
+            </div>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-primary">Salvar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal modal--larga" id="modal-editar">
+        <div class="modal-conteudo">
+            <h2>Editar dados</h2>
+            <div class="form-stack">
+                <label for="edit-nome">Nome</label>
+                <input type="text" id="edit-nome" value="Nome Sobrenome">
+                <label for="edit-email">E-mail</label>
+                <input type="email" id="edit-email" value="email@dominio.com">
+                <label for="edit-telefone">Telefone</label>
+                <input type="tel" id="edit-telefone" value="(00) 00000-0000">
+                <label for="edit-cargos">Cargos</label>
+                <input type="text" id="edit-cargos" value="Cargo 1, Cargo 2">
+            </div>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-primary">Salvar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="modal-senha">
+        <div class="modal-conteudo">
+            <h2>Redefinir senha</h2>
+            <div class="form-stack">
+                <label for="senha-nova">Nova senha temporária</label>
+                <input type="text" id="senha-nova" placeholder="Digite a nova senha">
+            </div>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-primary">Redefinir</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="modal-desativar">
+        <div class="modal-conteudo">
+            <h2>Desativar (férias)</h2>
+            <p class="muted">O funcionário fica sem acesso ao sistema até você reativar manualmente.</p>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-perigo">Desativar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="modal-excluir">
+        <div class="modal-conteudo">
+            <h2>Excluir funcionário</h2>
+            <p class="muted">Esta ação não pode ser desfeita. Se for só uma ausência, use "Desativar (férias)".</p>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-perigo">Excluir</button>
+            </div>
+        </div>
+    </dialog>
+</body>
+</html>

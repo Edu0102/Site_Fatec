@@ -10,11 +10,11 @@
     <script src="js/menu-usuario.js"></script>
     <script src="js/header.js" defer></script>
 </head>
-<body>
+<body class="pagina-hub">
     <header class="header-padrao">
         <div class="header-logo">
             <span class="logo-circulo">LOGO</span>
-            <span class="logo-texto">F.R.Cont<br>(logo)</span>
+            <span class="logo-texto">F.R.Cont</span>
         </div>
 
         <h1 class="header-titulo">Hub Inicial</h1>
@@ -22,12 +22,15 @@
         <div class="header-usuario" id="header-usuario">
             <button type="button" class="usuario-botao" id="usuario-botao" aria-haspopup="true" aria-expanded="false" aria-controls="usuario-menu">
                 <span class="avatar" id="usuario-foto"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg></span>
-                <span class="usuario-nome" id="usuario-nome">Nome do funcionário</span>
+                <span class="usuario-info">
+                    <span class="usuario-nome" id="usuario-nome">Nome do funcionário</span>
+                    <span class="usuario-cargo" id="usuario-cargo">Cargo do funcionário</span>
+                </span>
                 <svg class="usuario-seta" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
             </button>
             <ul class="usuario-menu" id="usuario-menu" hidden>
                 <li><button type="button" id="menu-tema">Tema escuro</button></li>
-                <li><a href="html/guia.html">Guia</a></li>
+                <li><a href="#">Tutorial</a></li>
                 <li><a href="html/feedback.html">Feedback</a></li>
                 <li class="menu-separado"><a class="menu-sair" id="menu-sair" href="login.html">Logout</a></li>
             </ul>
@@ -35,36 +38,60 @@
     </header>
 
     <main class="container hub">
-        <div class="grupos-wrapper">
+        <div class="hub-intro">
+            <p class="eyebrow">Hub Inicial</p>
+            <h2 class="hub-saudacao">Olá, <span id="hub-nome">[Nome]</span></h2>
+            <p class="subtitle">Escolha um módulo para começar.</p>
+        </div>
 
-            <!-- Grupo esquerdo -->
-            <div class="card-grupo">
+        <section class="hub-modulos" aria-labelledby="hub-modulos-titulo">
+            <div class="hub-modulos-topo">
+                <h3 id="hub-modulos-titulo">Módulos</h3>
+                <span class="hub-modulos-total" id="hub-modulos-total">6 módulos</span>
+            </div>
+
+            <div class="grupos-wrapper">
                 <a href="html/checklist.html" class="quadrado">
                     <i class="bi bi-card-checklist icone" aria-hidden="true"></i>
-                    <span>Checklist</span>
+                    <span class="quadrado-titulo">Checklist</span>
+                    <span class="quadrado-descricao">Rotinas e conferências do dia a dia.</span>
+                    <i class="bi bi-arrow-right quadrado-seta" aria-hidden="true"></i>
+                </a>
+                <a href="html/centralpop.html" class="quadrado">
+                    <i class="bi bi-file-earmark-text icone" aria-hidden="true"></i>
+                    <span class="quadrado-titulo">POP's</span>
+                    <span class="quadrado-descricao">Procedimentos operacionais padrão.</span>
+                    <i class="bi bi-arrow-right quadrado-seta" aria-hidden="true"></i>
                 </a>
                 <a href="html/centrallink.html" class="quadrado">
                     <i class="bi bi-link-45deg icone" aria-hidden="true"></i>
-                    <span>Central Links</span>
+                    <span class="quadrado-titulo">Central Links</span>
+                    <span class="quadrado-descricao">Atalhos para os sistemas e sites usados.</span>
+                    <i class="bi bi-arrow-right quadrado-seta" aria-hidden="true"></i>
+                </a>
+                <a href="html/listatelefonica.html" class="quadrado">
+                    <i class="bi bi-telephone icone" aria-hidden="true"></i>
+                    <span class="quadrado-titulo">Lista telefônica</span>
+                    <span class="quadrado-descricao">Ramais e contatos da empresa.</span>
+                    <i class="bi bi-arrow-right quadrado-seta" aria-hidden="true"></i>
+                </a>
+                <a href="html/ferramentas.html" class="quadrado">
+                    <i class="bi bi-tools icone" aria-hidden="true"></i>
+                    <span class="quadrado-titulo">Ferramentas</span>
+                    <span class="quadrado-descricao">Utilitários de apoio ao trabalho.</span>
+                    <i class="bi bi-arrow-right quadrado-seta" aria-hidden="true"></i>
+                </a>
+                <a href="html/funcionarios.html" class="quadrado">
+                    <i class="bi bi-people icone" aria-hidden="true"></i>
+                    <span class="quadrado-titulo">Funcionários</span>
+                    <span class="quadrado-descricao">Consulta e gestão da equipe.</span>
+                    <i class="bi bi-arrow-right quadrado-seta" aria-hidden="true"></i>
                 </a>
             </div>
+        </section>
 
-            <!-- Grupo direito -->
-            <div class="card-grupo">
-                <a href="html/centralpop.html" class="quadrado">
-                    <i class="bi bi-file-earmark-text icone" aria-hidden="true"></i>
-                    <span>POP's</span>
-                </a>
-                <a href="html/guia.html" class="quadrado">
-                    <i class="bi bi-journal-bookmark icone" aria-hidden="true"></i>
-                    <span>Guia</span>
-                </a>
-            </div>
-
-        </div>
-
-        <!-- Botão de feedback inferior -->
-        <a href="html/feedback.html" class="button button-primary btn-feedback">
+        <!-- Botão de feedback inferior: oculto porque a imagem de referência não o mostra (Feedback segue no menu do funcionário) -->
+        <a href="html/feedback.html" class="button button-primary btn-feedback" hidden>
             <i class="bi bi-chat-dots" aria-hidden="true"></i>
             Feedback
         </a>

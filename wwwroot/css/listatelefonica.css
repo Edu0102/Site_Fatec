@@ -1,0 +1,127 @@
+/* ==========================================================================
+   listatelefonica.css — exclusivo de html/listatelefonica.html
+   Usa as variáveis e classes de style.css e paginas.css. Nada é sobrescrito.
+   Prefixo "tel-" para não colidir com outras páginas.
+   ========================================================================== */
+
+.tel-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--esp-4);
+    flex-wrap: wrap;
+}
+
+.tel-filtros {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 13rem auto;
+    align-items: center;
+    gap: var(--esp-3);
+    margin-bottom: var(--esp-4);
+}
+
+.tel-filtros .campo-pesquisa { width: 100%; }
+
+.tel-rolagem { overflow-x: auto; }
+
+.tel-tabela {
+    width: 100%;
+    min-width: 44rem;
+    border-collapse: collapse;
+}
+
+.tel-tabela th {
+    padding: var(--esp-3);
+    border-bottom: 1px solid var(--cor-borda);
+    color: var(--cor-texto-suave);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.tel-tabela td {
+    padding: var(--esp-3);
+    border-bottom: 1px solid var(--cor-borda);
+    font-size: 0.9375rem;
+    overflow-wrap: anywhere;
+    vertical-align: middle;
+}
+
+.tel-tabela tbody tr:last-child td { border-bottom: 0; }
+.tel-tabela tbody tr:hover { background: var(--cor-destaque); }
+
+.tel-nome { color: var(--cor-titulo); font-weight: 700; }
+.tel-ramal { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--cor-link); }
+.tel-vazio { color: var(--cor-texto-suave); }
+
+.tel-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--esp-1);
+    white-space: nowrap;
+}
+
+.tel-icone {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: var(--raio-sm);
+    background: transparent;
+    color: var(--cor-texto-suave);
+    font-size: 1rem;
+}
+
+.tel-icone:hover { background: var(--cor-destaque); color: var(--cor-link); }
+.tel-icone--perigo:hover { background: var(--cor-perigo-suave); color: var(--cor-perigo); }
+
+/* Botão de perigo (mesmo padrão usado em Funcionários) */
+.button-perigo {
+    background: var(--cor-perigo);
+    color: #fff;
+}
+
+.button-perigo:hover:not(:disabled) { filter: brightness(0.9); }
+
+.modal--larga { width: min(30rem, calc(100% - 2rem)); }
+.modal-conteudo .muted { font-size: 0.9375rem; }
+
+/* Telas pequenas: cada linha vira um bloco com rótulo */
+@media (max-width: 40rem) {
+    .tel-filtros { grid-template-columns: 1fr; }
+    .tel-topo .button { width: 100%; }
+
+    .tel-tabela { min-width: 0; }
+    .tel-tabela thead { display: none; }
+
+    .tel-tabela tr {
+        display: grid;
+        gap: var(--esp-1);
+        padding: var(--esp-3) 0;
+        border-bottom: 1px solid var(--cor-borda);
+    }
+
+    .tel-tabela tbody tr:last-child { border-bottom: 0; }
+
+    .tel-tabela td {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--esp-3);
+        padding: var(--esp-1) 0;
+        border: 0;
+        text-align: right;
+    }
+
+    .tel-tabela td[data-label]::before {
+        content: attr(data-label);
+        color: var(--cor-texto-suave);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .tel-tabela td.tel-celula-acoes { justify-content: flex-end; }
+}

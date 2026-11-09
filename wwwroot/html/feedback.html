@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feedback</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/paginas.css">
     <script src="../js/menu-usuario.js"></script>
     <script src="../js/header.js" defer></script>
 </head>
-<body>
+<body class="pagina-feedback">
     <header class="header-padrao">
         <div class="header-logo">
             <span class="logo-circulo">LOGO</span>
@@ -40,15 +41,29 @@
         </a>
 
         <form class="formulario">
-            <h2>Gostaria de sugerir alguma mudança ou adição?</h2>
+            <div class="formulario-topo">
+                <span class="formulario-icone" aria-hidden="true"><i class="bi bi-chat-heart"></i></span>
+                <p class="eyebrow">FEEDBACK</p>
+                <h2>Gostaria de sugerir alguma mudança ou adição?</h2>
+                <p class="subtitle">Sua sugestão ajuda a melhorar o sistema.</p>
+            </div>
 
-            <label for="assunto">Assunto</label>
-            <input type="text" id="assunto" name="assunto" required>
+            <div class="campo-feedback">
+                <label for="assunto">Assunto</label>
+                <input type="text" id="assunto" name="assunto" required>
+            </div>
 
-            <label for="motivo">Motivo e Função</label>
-            <textarea id="motivo" name="motivo" placeholder="Digite aqui..." required></textarea>
+            <div class="campo-feedback">
+                <label for="motivo">Motivo e Função</label>
+                <textarea id="motivo" name="motivo" placeholder="Digite aqui..." required></textarea>
+            </div>
 
-            <button type="submit">Enviar</button>
+            <div class="formulario-rodape">
+                <span class="formulario-dica">Todos os campos são obrigatórios.</span>
+                <button type="submit" class="button button-primary">
+                    <i class="bi bi-send" aria-hidden="true"></i> Enviar
+                </button>
+            </div>
         </form>
     </main>
 
