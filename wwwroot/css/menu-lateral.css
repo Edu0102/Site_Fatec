@@ -1,0 +1,293 @@
+/* ==========================================================================
+   menu-lateral.css — menu lateral do Hub Inicial (index.html)
+   Carregar DEPOIS de style.css e paginas.css.
+   Usa somente as variáveis de style.css (tema claro/escuro continuam valendo).
+
+   Sumário
+    1. Estrutura da página
+    2. Menu lateral
+    3. Usuário no rodapé do menu
+    4. Conteúdo do hub
+    5. Celular (menu recolhível)
+   ========================================================================== */
+
+
+/* 1. ESTRUTURA DA PÁGINA -------------------------------------------------- */
+.pagina-hub { flex-direction: row; }
+
+.pagina-hub .hub {
+    margin-inline: 0;
+    max-width: 72rem;
+    padding-top: var(--esp-6);
+}
+
+.topo-mobile,
+.menu-fundo { display: none; }
+
+
+/* 2. MENU LATERAL --------------------------------------------------------- */
+.menu-lateral {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 16rem;
+    height: 100vh;
+    padding: var(--esp-4);
+    border-right: 1px solid var(--cor-borda);
+    background: var(--cor-superficie);
+}
+
+.menu-marca {
+    padding: var(--esp-2) var(--esp-2) var(--esp-5);
+    color: var(--cor-titulo);
+    font-size: 1.125rem;
+    text-decoration: none;
+}
+
+.menu-lateral .logo-circulo {
+    border-color: var(--cor-primaria);
+    color: var(--cor-primaria);
+}
+
+.menu-lateral .logo-texto { display: inline; }
+
+.menu-nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.menu-lista {
+    display: grid;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.menu-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--esp-2);
+    padding: 0.625rem var(--esp-3);
+    border-radius: var(--raio-sm);
+    color: var(--cor-texto);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.menu-link:hover,
+.menu-link[aria-current="page"] {
+    background: var(--cor-destaque);
+    color: var(--cor-link);
+}
+
+/* Marca da página atual: barra na lateral esquerda */
+.menu-link[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    left: 0;
+    width: 0.25rem;
+    border-radius: var(--raio-pill);
+    background: var(--cor-primaria);
+}
+
+.menu-contador {
+    padding: 0 0.5rem;
+    border-radius: var(--raio-pill);
+    background: var(--cor-destaque);
+    color: var(--cor-link);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+
+/* 3. USUÁRIO NO RODAPÉ DO MENU -------------------------------------------- */
+/* Sobrescreve as cores do botão, que antes ficava sobre o header azul */
+.menu-usuario {
+    padding-top: var(--esp-3);
+    border-top: 1px solid var(--cor-borda);
+}
+
+.menu-lateral .header-usuario { justify-self: stretch; }
+
+.menu-lateral .usuario-botao {
+    width: 100%;
+    padding: var(--esp-2);
+    border: 1px solid transparent;
+    border-radius: var(--raio-md);
+    background: transparent;
+    color: var(--cor-texto);
+}
+
+.menu-lateral .usuario-botao:hover,
+.menu-lateral .usuario-botao[aria-expanded="true"] {
+    background: var(--cor-destaque);
+}
+
+.menu-lateral .usuario-botao:focus-visible { outline-color: var(--cor-foco); }
+
+.menu-lateral .avatar {
+    border: 0.125rem solid var(--cor-primaria);
+    background-color: var(--cor-destaque);
+    color: var(--cor-primaria);
+}
+
+.menu-lateral .usuario-nome,
+.menu-lateral .usuario-cargo { max-width: 8.5rem; }
+
+.menu-lateral .usuario-nome { font-size: 0.90625rem; }
+
+.menu-lateral .usuario-cargo { color: var(--cor-texto-suave); }
+
+.menu-lateral .usuario-seta { margin-left: auto; }
+
+/* O dropdown abre para cima, ocupando a largura do menu */
+.menu-lateral .usuario-menu {
+    top: auto;
+    right: 0;
+    bottom: calc(100% + var(--esp-2));
+    left: 0;
+    min-width: 0;
+}
+
+
+/* 4. CONTEÚDO DO HUB ------------------------------------------------------ */
+.hub-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--esp-4);
+}
+
+.hub-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-1);
+    padding: var(--esp-4) var(--esp-5);
+    border: 1px solid var(--cor-borda);
+    border-top: 3px solid var(--cor-primaria);
+    border-radius: var(--raio-md);
+    background: var(--cor-superficie);
+    color: var(--cor-texto);
+    text-decoration: none;
+    transition: box-shadow 0.2s;
+}
+
+.hub-stat:hover { box-shadow: var(--sombra-md); }
+
+.hub-stat-numero {
+    color: var(--cor-titulo);
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.hub-stat-rotulo {
+    color: var(--cor-texto-suave);
+    font-size: 0.875rem;
+}
+
+.hub-colunas {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--esp-6);
+}
+
+.hub-bloco h3 {
+    margin-bottom: var(--esp-3);
+    padding-bottom: var(--esp-2);
+    border-bottom: 1px solid var(--cor-borda-forte);
+    color: var(--cor-texto-suave);
+    font-size: 0.875rem;
+}
+
+.hub-lista,
+.hub-chips {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.hub-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-2);
+}
+
+.hub-vazio {
+    color: var(--cor-texto-suave);
+    font-size: 0.9375rem;
+}
+
+
+/* 5. CELULAR (MENU RECOLHÍVEL) -------------------------------------------- */
+@media (max-width: 48rem) {
+    .pagina-hub { flex-direction: column; }
+
+    .topo-mobile {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        gap: var(--esp-3);
+        padding: var(--esp-2) var(--margem-lateral);
+        background: var(--cor-header);
+        color: #fff;
+    }
+
+    .menu-toggle {
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border: 0;
+        border-radius: var(--raio-sm);
+        background: transparent;
+        color: #fff;
+    }
+
+    .menu-toggle:hover { background: rgb(255 255 255 / 16%); }
+    .menu-toggle:focus-visible { outline-color: #fff; }
+    .menu-toggle svg { width: 1.5rem; height: 1.5rem; }
+
+    .menu-lateral {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(18rem, 85vw);
+        visibility: hidden;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease, visibility 0s linear 0.25s;
+    }
+
+    .menu-lateral.aberto {
+        visibility: visible;
+        transform: none;
+        transition: transform 0.25s ease;
+    }
+
+    .menu-fundo {
+        position: fixed;
+        inset: 0;
+        z-index: 55;
+        display: block;
+        background: rgb(10 20 45 / 60%);
+    }
+
+    .pagina-hub .hub { padding-top: var(--esp-5); }
+
+    .hub-colunas { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 40rem) {
+    .hub-stats { grid-template-columns: 1fr; }
+}
