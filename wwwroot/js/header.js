@@ -1,22 +1,23 @@
+/*
+ * header.js — dados do funcionário no header.
+ *
+ * O header agora é HTML fixo em cada página (não é mais criado aqui).
+ * Este arquivo só preenche o nome e a foto:
+ *
+ *   definirUsuario({ nome: "Maria Silva", foto: "https://..." });
+ *
+ * O menu, o modal da foto e o tema escuro ficam em menu-usuario.js.
+ */
+window.definirUsuario = function (usuario) {
+    usuario = usuario || {};
 
-const header = document.createElement("header");
+    var nome = document.getElementById("usuario-nome");
+    if (nome && usuario.nome) nome.textContent = usuario.nome;
 
-header.className = "header-padrao";
-
-header.innerHTML = `
-    <div class="header-logo">
-        <div class="logo-circulo">LOGO</div>
-        <span>F.R.Cont<br>(logo)</span>
-    </div>
-
-    <h1></h1>
-
-    <div class="header-funcionario dado-js" id="usuario-logado"></div>
-`;
-
-header.querySelector("h1").textContent = document.title;
-
-document.body.prepend(header);
+    if (usuario.foto && window.definirFotoUsuario) {
+        window.definirFotoUsuario(usuario.foto);
+    }
+};
 
 fetch("/api/auth/me")
     .then(function (response) {

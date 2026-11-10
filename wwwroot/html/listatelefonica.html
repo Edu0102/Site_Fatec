@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista telefônica</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/paginas.css">
+    <script src="../js/menu-usuario.js"></script>
+    <script src="../js/header.js" defer></script>
+    <script src="../js/menu-lateral.js" defer></script>
+    <script src="../js/listatelefonica.js" defer></script>
+</head>
+<body class="pagina-telefones com-menu">
+
+    <!-- Barra superior: só aparece no celular -->
+    <div class="topo-mobile">
+        <button type="button" class="menu-toggle" id="menu-abrir" aria-controls="menu-lateral" aria-expanded="false" aria-label="Abrir menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <span class="topo-titulo">Lista telefônica</span>
+    </div>
+    <div class="menu-fundo" id="menu-fundo" hidden></div>
+
+    <aside class="menu-lateral" id="menu-lateral">
+        <a class="header-logo menu-marca" href="../index.html">
+            <span class="logo-circulo">LOGO</span>
+            <span class="logo-texto">F.R.Cont</span>
+        </a>
+
+        <nav class="menu-nav" aria-label="Principal">
+            <ul class="menu-lista">
+                <li><a class="menu-link" href="../index.html">Início</a></li>
+                <li><a class="menu-link" href="checklist.html">Checklist <span class="menu-contador" id="nav-contador-checklist" hidden></span></a></li>
+                <li><a class="menu-link" href="centralpop.html">POP's <span class="menu-contador" id="nav-contador-pops" hidden></span></a></li>
+                <li><a class="menu-link" href="centrallink.html">Central Links</a></li>
+                <li><a class="menu-link" href="listatelefonica.html" aria-current="page">Lista telefônica</a></li>
+                <li><a class="menu-link" href="ferramentas.html">Ferramentas</a></li>
+                <li><a class="menu-link" href="funcionarios.html">Funcionários</a></li>
+            </ul>
+        </nav>
+
+        <!-- Usuário no rodapé do menu (o dropdown abre para cima) -->
+        <div class="menu-usuario">
+            <div class="header-usuario" id="header-usuario">
+                <button type="button" class="usuario-botao" id="usuario-botao" aria-haspopup="true" aria-expanded="false" aria-controls="usuario-menu">
+                    <span class="avatar" id="usuario-foto"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg></span>
+                    <span class="usuario-info">
+                        <span class="usuario-nome" id="usuario-nome">Nome do funcionário</span>
+                    </span>
+                    <svg class="usuario-seta" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <ul class="usuario-menu" id="usuario-menu" hidden>
+                    <li><button type="button" id="menu-tema">Tema escuro</button></li>
+                    <li><a href="#">Tutorial</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                    <li class="menu-separado"><a class="menu-sair" id="menu-sair" href="../login.html">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <main class="container">
+
+        <div class="tel-topo">
+            <div class="page-heading">
+                <p class="eyebrow">04 / LISTA TELEFÔNICA</p>
+                <h2>Ramais e contatos</h2>
+                <p class="subtitle">Ramais e contatos da empresa.</p>
+            </div>
+            <button type="button" class="button button-primary" id="btn-adicionar-contato">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar contato
+            </button>
+        </div>
+
+        <div class="pesquisa">
+            <label class="sr-only" for="busca-contato">Buscar contato</label>
+            <input type="search" id="busca-contato" placeholder="Buscar por nome, ramal ou telefone" autocomplete="off">
+        </div>
+
+        <div class="conteudo">
+            <aside class="filtros-lateral">
+                <h3>Departamentos</h3>
+                <div id="filtro-setor-contato" role="group" aria-label="Filtrar por departamento"></div>
+            </aside>
+
+            <section>
+                <p class="tel-total"><span class="count-tag" id="total-contatos">0 contatos</span></p>
+                <div class="tel-lista" id="lista-contatos"></div>
+
+                <div class="empty-state" id="contatos-vazio">
+                    <i class="bi bi-telephone empty-icon" aria-hidden="true"></i>
+                    <strong>Nenhum contato cadastrado</strong>
+                    <p>Os contatos adicionados aparecem aqui.</p>
+                </div>
+                <div class="empty-state" id="contatos-sem-resultado" hidden>
+                    <i class="bi bi-search empty-icon" aria-hidden="true"></i>
+                    <strong>Nenhum contato encontrado</strong>
+                    <p>Tente outra busca ou desmarque os departamentos.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <dialog class="modal modal--larga" id="modal-contato">
+        <div class="modal-conteudo">
+            <h2 id="modal-contato-titulo">Adicionar contato</h2>
+            <div class="form-stack">
+                <input type="hidden" id="contato-id">
+                <label for="contato-nome">Nome</label>
+                <input type="text" id="contato-nome" placeholder="Nome do contato" autocomplete="off">
+                <label for="contato-setor">Departamento</label>
+                <select id="contato-setor"></select>
+                <label for="contato-ramal">Ramal</label>
+                <input type="text" id="contato-ramal" inputmode="numeric" placeholder="Ramal" autocomplete="off">
+                <label for="contato-telefone">Telefone</label>
+                <input type="tel" id="contato-telefone" placeholder="(00) 00000-0000" autocomplete="off">
+                <label for="contato-email">E-mail</label>
+                <input type="email" id="contato-email" placeholder="nome@empresa.com" autocomplete="off">
+                <p class="form-message" id="contato-mensagem" role="alert"></p>
+            </div>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-primary" id="contato-salvar">Salvar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="modal-contato-excluir">
+        <div class="modal-conteudo">
+            <h2>Excluir contato</h2>
+            <p class="muted">Esta ação não pode ser desfeita.</p>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-perigo" id="contato-confirmar-exclusao">Excluir</button>
+            </div>
+        </div>
+    </dialog>
+</body>
+</html>

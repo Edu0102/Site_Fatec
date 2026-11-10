@@ -9,8 +9,8 @@ const tarefasIniciais = [
   { id: 4, texto: "Conferir documentos antes de finalizar o atendimento", concluida: false }
 ];
 
-const usuarioAtual = document.getElementById("usuario-atual");
-const painelAdm = document.getElementById("painel-adm");
+// TODO banco: trocar pela chave (id) do usuário logado
+const MINHA_CHAVE = "funcionario";
 const funcionarioConsulta = document.getElementById("funcionario-consulta");
 const formTarefa = document.getElementById("form-tarefa");
 const campoTarefa = document.getElementById("nova-tarefa");
@@ -28,14 +28,19 @@ function carregarDados() {
 
 let dados = carregarDados();
 
+// O adm está consultando outro funcionário (só leitura)?
+function consultando() {
+  return !!(funcionarioConsulta && funcionarioConsulta.value);
+}
+
 function chaveFuncionario() {
-  return usuarioAtual && usuarioAtual.value === "adm" ? funcionarioConsulta.value : (usuarioAtual ? usuarioAtual.value : "funcionario");
+  return consultando() ? funcionarioConsulta.value : MINHA_CHAVE;
 }
 
 function tarefasDoFuncionario() {
   const chave = chaveFuncionario();
   if (!Array.isArray(dados[chave])) {
-    dados[chave] = chave === "funcionario" ? tarefasIniciais.map(t => ({ ...t })) : [];
+    dados[chave] = chave === MINHA_CHAVE ? tarefasIniciais.map(t => ({ ...t })) : [];
   }
   return dados[chave];
 }
@@ -72,16 +77,16 @@ function atualizarResumo(tarefas) {
     
   const btnDesmarcar = document.getElementById("desmarcar-todas");
   if (btnDesmarcar) {
-    btnDesmarcar.disabled = concluidas === 0 || (usuarioAtual && usuarioAtual.value === "adm");
+    btnDesmarcar.disabled = concluidas === 0 || consultando();
   }
 }
 
 function renderizar() {
   const tarefas = tarefasDoFuncionario();
-  const adminVisualizando = usuarioAtual && usuarioAtual.value === "adm";
+  const adminVisualizando = consultando();
   
   document.getElementById("titulo-lista").textContent = adminVisualizando
-    ? "Checklist de " + (funcionarioConsulta.value === "funcionario" ? "Funcionário de demonstração" : "Segundo funcionário")
+    ? "Checklist de " + funcionarioConsulta.options[funcionarioConsulta.selectedIndex].text
     : "Minhas tarefas";
     
   document.getElementById("subtitulo-lista").textContent = adminVisualizando
@@ -142,7 +147,7 @@ function renderizar() {
 
 formTarefa.addEventListener("submit", evento => {
   evento.preventDefault();
-  if (usuarioAtual && usuarioAtual.value === "adm") return;
+  if (consultando()) return;
 
   const texto = campoTarefa.value.trim().replace(/\s+/g, " ");
   if (!texto) {
@@ -162,22 +167,17 @@ formTarefa.addEventListener("submit", evento => {
 
 campoTarefa.addEventListener("input", () => { mensagemForm.textContent = ""; });
 
-if (usuarioAtual) {
-  usuarioAtual.addEventListener("change", () => {
-    painelAdm.hidden = usuarioAtual.value !== "adm";
+if (funcionarioConsulta) {
+  funcionarioConsulta.addEventListener("change", () => {
     mensagemForm.textContent = "";
     renderizar();
   });
 }
 
-if (funcionarioConsulta) {
-  funcionarioConsulta.addEventListener("change", renderizar);
-}
-
 const btnDesmarcarTodas = document.getElementById("desmarcar-todas");
 if (btnDesmarcarTodas) {
   btnDesmarcarTodas.addEventListener("click", () => {
-    if (usuarioAtual && usuarioAtual.value === "adm") return;
+    if (consultando()) return;
     tarefasDoFuncionario().forEach(t => { t.concluida = false; });
     salvarDados();
     renderizar();
@@ -192,24 +192,3 @@ window.addEventListener("storage", evento => {
 });
 
 renderizar();
-
-// VISUALIZAÇÃO TEMPORARIA PARA TESTES, TORCA DE JANELA FUNCIONARIO E ADMINISTRADOR
-// Alternador de Visão para Teste (Temporário)
-const btnTogglePerfil = document.getElementById("btn-toggle-perfil");
-const selectUsuarioAtual = document.getElementById("usuario-atual");
-
-if (btnTogglePerfil && selectUsuarioAtual) {
-  btnTogglePerfil.addEventListener("click", () => {
-    if (selectUsuarioAtual.value === "funcionario") {
-      selectUsuarioAtual.value = "adm";
-      btnTogglePerfil.textContent = "Modo: Administrador";
-      btnTogglePerfil.classList.add("modo-admin");
-    } else {
-      selectUsuarioAtual.value = "funcionario";
-      btnTogglePerfil.textContent = "Modo: Funcionário";
-      btnTogglePerfil.classList.remove("modo-admin");
-    }
-    // Dispara o evento para atualizar o painel adm e a listagem automaticamente
-    selectUsuarioAtual.dispatchEvent(new Event("change"));
-  });
-}
