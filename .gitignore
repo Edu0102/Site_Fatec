@@ -1,3 +1,7 @@
-database/bin/
-database/obj/
-database/.db*/
+*/*.db*
+*.db-journal
+.env
+database.db
+.venv/
+.superpowers/
+__pycache__/

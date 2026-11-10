@@ -1,15 +1,8 @@
 # Site Fatec
 
-## Login local com ASP.NET e SQLite
+## Backend (Flask + SQLite)
 
-O portal também pode ser executado como uma aplicação ASP.NET Core, que protege as páginas existentes com uma sessão por cookie e valida o login em um banco SQLite local. Execute:
-
-```powershell
-cd database
-dotnet run
-```
-
-Abra o endereço mostrado no terminal (normalmente `http://localhost:5293`). Na primeira execução, o arquivo local `portal.db` é criado e recebe o usuário inicial `admin@teste.com` com a senha `Senha123`. Altere ou remova essa conta de demonstração antes de publicar o sistema.
+A API fica em `backend/` (Python + Flask). Como instalar, criar os logins de teste (`python seed.py`) e rodar está em [backend/README.md](backend/README.md). O servidor sobe em `http://127.0.0.1:5000` e todas as rotas ficam sob `/api`.
 
 Portal interno desenvolvido com HTML, CSS e JavaScript para reunir ferramentas e materiais de consulta da equipe.
 

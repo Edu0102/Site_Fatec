@@ -19,23 +19,29 @@ window.definirUsuario = function (usuario) {
     }
 };
 
-/*
 fetch("/api/auth/me")
     .then(function (response) {
         if (!response.ok) throw new Error("Sessão não encontrada");
         return response.json();
     })
     .then(function (user) {
-        definirUsuario({ nome: user.name });
+        var area = header.querySelector("#usuario-logado");
+        area.textContent = user.name;
+        var logout = document.createElement("button");
+        if (user.role === "admin") {
+            var register = document.createElement("a");
+            register.className = "botao-cadastrar-usuario";
+            register.href = "/html/cadastro.html";
+            register.textContent = "Cadastrar usuário";
+            area.append(" ", register);
+        }
+        logout.type = "button";
+        logout.className = "botao-sair";
+        logout.textContent = "Sair";
+        logout.onclick = async function () {
+            await fetch("/api/auth/logout", { method: "POST" });
+            window.location.href = "/login.html";
+        };
+        area.append(" ", logout);
     })
     .catch(function () { window.location.href = "/login.html"; });
-
-var sair = document.getElementById("menu-sair");
-if (sair) {
-    sair.addEventListener("click", async function (evento) {
-        evento.preventDefault();
-        await fetch("/api/auth/logout", { method: "POST" });
-        window.location.href = "/login.html";
-    });
-}
-*/
