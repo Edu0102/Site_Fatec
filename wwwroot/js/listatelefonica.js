@@ -2,6 +2,8 @@
    Nada é salvo: o banco deve ser ligado pelos pontos abaixo.
 
    ENTRADA  : window.listaTelefonica.renderizar([{ id, nome, setor, ramal, telefone, email }])
+              window.listaTelefonica.definirDepartamentos(["Fiscal", "Pessoal", ...])
+              ("setor" guarda o nome do departamento; o nome do campo foi mantido por causa do banco)
    SAÍDAS   : eventos no document
               'contato:salvar'  -> detail = { id (vazio se novo), nome, setor, ramal, telefone, email }
               'contato:excluir' -> detail = { id }
@@ -11,9 +13,11 @@
 
     var $ = function (s) { return document.querySelector(s); };
     var contatos = [];
+    // TODO banco: substituir pela lista de departamentos cadastrada (a mesma da Central de POP's)
+    var departamentos = ['Fiscal', 'Pessoal', 'Financeiro', 'Contábil', 'Regularização'];
     var idParaExcluir = null;
 
-    var corpo = $('#lista-contatos'), tabela = $('#tabela-contatos');
+    var lista = $('#lista-contatos');
     var busca = $('#busca-contato'), filtroSetor = $('#filtro-setor-contato');
     var vazio = $('#contatos-vazio'), semResultado = $('#contatos-sem-resultado');
     var modal = $('#modal-contato'), modalExcluir = $('#modal-contato-excluir');
@@ -23,78 +27,107 @@
     };
     var mensagem = $('#contato-mensagem');
 
-    function celula(texto, classe, rotulo) {
-        var td = document.createElement('td');
-        if (rotulo) td.dataset.label = rotulo;
-        if (classe) td.className = classe;
-        if (texto) { td.textContent = texto; }
-        else { td.textContent = '—'; td.classList.add('tel-vazio'); }
-        return td;
+    function el(tag, classe, texto) {
+        var e = document.createElement(tag);
+        if (classe) e.className = classe;
+        if (texto) e.textContent = texto;
+        return e;
     }
 
-    function botao(icone, rotulo, classe, acao, id) {
-        var b = document.createElement('button');
+    function botao(icone, rotulo, perigo, acao, id) {
+        var b = el('button', 'botao-icone' + (perigo ? ' botao-icone--perigo' : ''));
         b.type = 'button';
-        b.className = 'tel-icone ' + (classe || '');
         b.dataset.acao = acao;
         b.dataset.id = id;
         b.setAttribute('aria-label', rotulo);
         b.title = rotulo;
-        b.innerHTML = '<i class="bi ' + icone + '" aria-hidden="true"></i>';
+        var i = el('i', 'bi ' + icone);
+        i.setAttribute('aria-hidden', 'true');
+        b.appendChild(i);
         return b;
     }
 
-    function atualizarSetores() {
-        var atual = filtroSetor.value;
-        var setores = contatos.map(function (c) { return c.setor; })
+    // Departamentos cadastrados + os que já aparecem nos contatos
+    function todosDepartamentos() {
+        return departamentos.concat(contatos.map(function (c) { return c.setor; }))
             .filter(function (s, i, a) { return s && a.indexOf(s) === i; })
             .sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); });
-        filtroSetor.innerHTML = '<option value="">Todos os setores</option>';
-        setores.forEach(function (s) {
-            var o = document.createElement('option');
-            o.value = o.textContent = s;
-            filtroSetor.appendChild(o);
+    }
+
+    function marcados() {
+        return Array.prototype.map.call(filtroSetor.querySelectorAll('input:checked'), function (i) { return i.value; });
+    }
+
+    function atualizarSetores() {
+        var antes = marcados();
+        filtroSetor.innerHTML = '';
+        campos.setor.innerHTML = '';
+        todosDepartamentos().forEach(function (s) {
+            var label = el('label', 'filtro');
+            var input = el('input');
+            input.type = 'checkbox';
+            input.value = s;
+            input.checked = antes.indexOf(s) > -1;
+            label.append(input, document.createTextNode(' ' + s));
+            filtroSetor.appendChild(label);
+
+            var o = el('option', '', s);
+            o.value = s;
+            campos.setor.appendChild(o);
         });
-        filtroSetor.value = setores.indexOf(atual) > -1 ? atual : '';
+    }
+
+    function card(c) {
+        var art = el('article', 'tel-card');
+        art.dataset.id = c.id;
+
+        var topo = el('div', 'tel-card-topo');
+        topo.appendChild(el('h3', 'tel-nome', c.nome));
+        if (c.ramal) topo.appendChild(el('span', 'tel-ramal', 'Ramal ' + c.ramal));
+        var acoes = el('div', 'acoes-icone');
+        acoes.append(botao('bi-pencil', 'Editar contato', false, 'editar', c.id),
+                     botao('bi-trash', 'Excluir contato', true, 'excluir', c.id));
+        topo.appendChild(acoes);
+
+        var info = el('p', 'tel-info');
+        [c.telefone, c.email].filter(Boolean).forEach(function (t, i) {
+            if (i) info.appendChild(document.createTextNode(' · '));
+            info.appendChild(document.createTextNode(t));
+        });
+
+        art.append(topo, info);
+        if (c.setor) {
+            var tags = el('div', 'tags');
+            tags.appendChild(el('span', 'tag', c.setor));
+            art.appendChild(tags);
+        }
+        return art;
     }
 
     function desenhar() {
-        var q = busca.value.trim().toLowerCase(), setor = filtroSetor.value;
-        var lista = contatos.filter(function (c) {
+        var q = busca.value.trim().toLowerCase(), setores = marcados();
+        var visiveis = contatos.filter(function (c) {
             var texto = [c.nome, c.setor, c.ramal, c.telefone, c.email].join(' ').toLowerCase();
-            return (!q || texto.indexOf(q) > -1) && (!setor || c.setor === setor);
+            return (!q || texto.indexOf(q) > -1) && (!setores.length || setores.indexOf(c.setor) > -1);
         }).sort(function (a, b) { return (a.nome || '').localeCompare(b.nome || '', 'pt-BR'); });
 
-        corpo.innerHTML = '';
-        lista.forEach(function (c) {
-            var tr = document.createElement('tr');
-            tr.dataset.id = c.id;
-            tr.appendChild(celula(c.nome, 'tel-nome', 'Nome'));
-            tr.appendChild(celula(c.setor, '', 'Setor'));
-            tr.appendChild(celula(c.ramal, 'tel-ramal', 'Ramal'));
-            tr.appendChild(celula(c.telefone, '', 'Telefone'));
-            tr.appendChild(celula(c.email, '', 'E-mail'));
-            var td = document.createElement('td');
-            td.className = 'tel-celula-acoes';
-            var div = document.createElement('div');
-            div.className = 'tel-acoes';
-            div.appendChild(botao('bi-pencil', 'Editar contato', '', 'editar', c.id));
-            div.appendChild(botao('bi-trash', 'Excluir contato', 'tel-icone--perigo', 'excluir', c.id));
-            td.appendChild(div);
-            tr.appendChild(td);
-            corpo.appendChild(tr);
-        });
+        lista.innerHTML = '';
+        visiveis.forEach(function (c) { lista.appendChild(card(c)); });
 
         $('#total-contatos').textContent = contatos.length + (contatos.length === 1 ? ' contato' : ' contatos');
-        tabela.hidden = contatos.length === 0 || lista.length === 0;
         vazio.hidden = contatos.length > 0;
-        semResultado.hidden = contatos.length === 0 || lista.length > 0;
+        semResultado.hidden = contatos.length === 0 || visiveis.length > 0;
     }
 
     /* Ponto de entrada para o banco */
     window.listaTelefonica = {
-        renderizar: function (lista) {
-            contatos = Array.isArray(lista) ? lista : [];
+        renderizar: function (novaLista) {
+            contatos = Array.isArray(novaLista) ? novaLista : [];
+            atualizarSetores();
+            desenhar();
+        },
+        definirDepartamentos: function (nomes) {
+            departamentos = Array.isArray(nomes) ? nomes : [];
             atualizarSetores();
             desenhar();
         }
@@ -104,16 +137,18 @@
         mensagem.textContent = '';
         $('#modal-contato-titulo').textContent = contato ? 'Editar contato' : 'Adicionar contato';
         campos.id.value = contato ? contato.id : '';
-        ['nome', 'setor', 'ramal', 'telefone', 'email'].forEach(function (k) {
+        ['nome', 'ramal', 'telefone', 'email'].forEach(function (k) {
             campos[k].value = contato ? (contato[k] || '') : '';
         });
+        campos.setor.selectedIndex = 0;
+        if (contato && contato.setor) campos.setor.value = contato.setor;
         modal.showModal();
         campos.nome.focus();
     }
 
     $('#btn-adicionar-contato').addEventListener('click', function () { abrirModal(null); });
 
-    corpo.addEventListener('click', function (e) {
+    lista.addEventListener('click', function (e) {
         var b = e.target.closest('button[data-acao]');
         if (!b) return;
         var contato = contatos.filter(function (c) { return String(c.id) === b.dataset.id; })[0];
@@ -128,7 +163,7 @@
         document.dispatchEvent(new CustomEvent('contato:salvar', { detail: {
             id: campos.id.value,
             nome: campos.nome.value.trim(),
-            setor: campos.setor.value.trim(),
+            setor: campos.setor.value,
             ramal: campos.ramal.value.trim(),
             telefone: campos.telefone.value.trim(),
             email: campos.email.value.trim()
@@ -148,6 +183,7 @@
     });
 
     busca.addEventListener('input', desenhar);
-    filtroSetor.addEventListener('input', desenhar);
+    filtroSetor.addEventListener('change', desenhar);
+    atualizarSetores();
     desenhar();
 })();

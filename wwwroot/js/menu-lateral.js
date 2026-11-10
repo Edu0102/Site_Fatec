@@ -1,6 +1,6 @@
-/* menu-lateral.js — menu lateral do Hub Inicial (index.html)
+/* menu-lateral.js — menu lateral (todas as páginas)
    Faz só duas coisas, sem depender do banco de dados:
-   1. Preenche a data de hoje em #hub-data (ex.: "Terça-feira 10.11.2026").
+   1. Preenche a data de hoje em #hub-data, só no Hub (ex.: "Terça-feira 10.11.2026").
    2. Abre e fecha o menu no celular. */
 (function () {
     'use strict';

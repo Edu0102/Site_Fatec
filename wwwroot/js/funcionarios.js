@@ -7,7 +7,7 @@
     var $ = function (s, r) { return (r || document).querySelector(s); };
     var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-    /* Abas Funcionários / Setores */
+    /* Abas Funcionários / Departamentos */
     $$('.aba').forEach(function (aba) {
         aba.addEventListener('click', function () {
             $$('.aba').forEach(function (a) {
@@ -53,19 +53,18 @@
     });
 
     /* Filtros da lista */
-    var busca = $('#busca-funcionario'), fSetor = $('#filtro-setor'), fStatus = $('#filtro-status');
+    var busca = $('#busca-funcionario'), fSetor = $('#filtro-setor');
     function filtrar() {
         var q = busca.value.trim().toLowerCase(), visiveis = 0;
         $$('#lista-funcionarios tr').forEach(function (tr) {
             var ok = (!q || tr.textContent.toLowerCase().indexOf(q) > -1) &&
-                     (!fSetor.value || tr.dataset.setores.split('|').indexOf(fSetor.value) > -1) &&
-                     (!fStatus.value || tr.dataset.status === fStatus.value);
+                     (!fSetor.value || tr.dataset.setores.split('|').indexOf(fSetor.value) > -1);
             tr.hidden = !ok;
             if (ok) visiveis++;
         });
         $('#lista-vazia').hidden = visiveis > 0;
     }
-    [busca, fSetor, fStatus].forEach(function (el) { el.addEventListener('input', filtrar); });
+    [busca, fSetor].forEach(function (el) { el.addEventListener('input', filtrar); });
 
     /* Acesso temporário: atalhos de período */
     var inicio = $('#temp-inicio'), fim = $('#temp-fim'), msg = $('#temp-mensagem');
@@ -84,7 +83,7 @@
         });
     });
     $('#temp-conceder').addEventListener('click', function () {
-        if (!$('#temp-setor').value) { msg.textContent = 'Escolha um setor.'; return; }
+        if (!$('#temp-setor').value) { msg.textContent = 'Escolha um departamento.'; return; }
         if (!inicio.value || !fim.value) { msg.textContent = 'Defina o período do acesso.'; return; }
         if (fim.value < inicio.value) { msg.textContent = 'A data final não pode ser antes da inicial.'; return; }
         msg.textContent = '';
