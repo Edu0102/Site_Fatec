@@ -1,180 +1,25 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Seguro</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #101827, #253b67);
-            padding: 20px;
-            color: #fff;
-        }
-
-        .container {
-            background: #ffffff;
-            color: #222;
-            width: 100%;
-            max-width: 400px;
-            padding: 35px;
-            border-radius: 18px;
-            box-shadow: 0 15px 40px #0005;
-        }
-
-        .mensagem-erro {
-            color: #d93025;
-        }
-
-        .mensagem-sucesso {
-            color: #188038;
-        }
-
-        .icone {
-            background: #e5edff;
-            color: #315bd6;
-            width: 65px;
-            height: 65px;
-            border-radius: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            margin: 0 auto 20px;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .descricao {
-            text-align: center;
-            color: #777;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        input {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            outline: none;
-            font-size: 15px;
-            margin-bottom: 20px;
-        }
-
-        input:focus {
-            border-color: #315bd6;
-            box-shadow: 0 0 0 3px #315bd620;
-        }
-
-        .senha {
-            display: flex;
-            gap: 5px;
-        }
-
-        .senha input {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .mostrar {
-            height: 44px;
-            padding: 0 10px;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            background: #f4f6fa;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .opcoes {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            margin-bottom: 22px;
-            color: #555;
-        }
-
-        .opcoes input {
-            width: auto;
-            margin: 0;
-        }
-
-        .botao {
-            width: 100%;
-            padding: 14px;
-            background: #315bd6;
-            color: white;
-            border: none;
-            border-radius: 9px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .botao:hover {
-            background: #2446ae;
-            transform: translateY(-1px);
-        }
-
-        #mensagem {
-            text-align: center;
-            font-size: 14px;
-            margin-top: 18px;
-            line-height: 1.5;
-        }
-
-        .rodape {
-            text-align: center;
-            margin-top: 25px;
-            color: #888;
-            font-size: 12px;
-        }
-
-        @media (max-width: 450px) {
-            .container {
-                padding: 25px 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/paginas.css">
 </head>
+<body class="auth">
 
-<body>
+    <div class="auth-card" id="telaLogin">
 
-    <div class="container" id="telaLogin">
+        <div class="auth-icone" aria-hidden="true">🔐</div>
 
-        <div class="icone">🔐</div>
-
-        <h1>Bem-vindo!</h1>
-        <p class="descricao">
+        <h1>F.R.Cont WorkFlow</h1>
+        <p class="auth-descricao">
             Entre com seus dados para acessar o sistema.
         </p>
 
-        <form id="formLogin">
+        <form id="formLogin" class="form-stack">
 
             <label for="usuario">E-mail</label>
             <input
@@ -199,33 +44,31 @@
 
                 <button
                     type="button"
-                    class="mostrar"
+                    class="botao-icone senha-olho"
                     id="botaoMostrar"
                     aria-label="Mostrar senha"
-                >Mostrar</button>
+                    title="Mostrar senha"
+                ><i class="bi bi-eye" aria-hidden="true"></i></button>
             </div>
 
             <div class="opcoes">
                 <input type="checkbox" id="lembrar">
-                <label for="lembrar" style="margin: 0;">
-                    Lembrar meu e-mail
-                </label>
+                <label for="lembrar">Lembrar meu e-mail</label>
             </div>
 
-            <button type="submit" class="botao">
+            <button type="submit" class="button button-primary button-bloco">
                 Entrar no sistema
             </button>
 
         </form>
 
-        <p id="mensagem" role="status" aria-live="polite"></p>
+        <p id="mensagem" class="auth-mensagem" role="status" aria-live="polite"></p>
 
-        <div class="rodape">
-            Sistema de autenticação
-        </div>
+        <p class="auth-rodape">Sistema de autenticação</p>
 
     </div>
 
+    <script src="/js/api.js"></script>
     <script>
         var form = document.getElementById("formLogin");
         var mensagem = document.getElementById("mensagem");
@@ -236,40 +79,33 @@
 
             if (campoSenha.type == "password") {
                 campoSenha.type = "text";
-                this.innerHTML = "Esconder";
+                this.innerHTML = '<i class="bi bi-eye-slash" aria-hidden="true"></i>';
                 this.setAttribute("aria-label", "Esconder senha");
+                this.title = "Esconder senha";
             } else {
                 campoSenha.type = "password";
-                this.innerHTML = "Mostrar";
+                this.innerHTML = '<i class="bi bi-eye" aria-hidden="true"></i>';
                 this.setAttribute("aria-label", "Mostrar senha");
+                this.title = "Mostrar senha";
             }
         };
 
         // Verificar o login
         form.onsubmit = async function(event) {
             event.preventDefault();
-
             try {
-                // "Lembrar" só guarda o e-mail neste navegador; a sessão sempre dura 8 h desde o último uso
-                var resposta = await fetch("/api/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        email: document.getElementById("usuario").value.trim(),
-                        password: document.getElementById("senha").value
-                    })
+                await api("POST", "/api/auth/login", {
+                    email: document.getElementById("usuario").value.trim(),
+                    password: document.getElementById("senha").value
                 });
-                if (!resposta.ok) throw new Error("Credenciais inválidas");
-                mensagem.classList.remove("mensagem-erro");
-                mensagem.textContent = "";
                 window.location.href = "/";
             } catch (erro) {
                 mensagem.classList.add("mensagem-erro");
-                mensagem.textContent = "E-mail ou senha incorretos!";
+                mensagem.textContent = "E-mail ou senha inválidos.";
             }
         };
 
-        // Verificar se já existe uma sessão nesta aba
+        // Já existe uma sessão? Vai direto para o Hub
         fetch("/api/auth/me").then(function(resposta) {
             if (resposta.ok) window.location.href = "/";
         });

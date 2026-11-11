@@ -128,3 +128,24 @@ CREATE TABLE IF NOT EXISTS "UserPhoto" (
     "updated_at_utc" TEXT,
     FOREIGN KEY ("user_id") REFERENCES "User"("user_id")
 );
+CREATE TABLE IF NOT EXISTS "Tool" (
+    "tool_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "created_by" INTEGER NOT NULL,
+    "tool_name" TEXT NOT NULL,
+    "tool_description" TEXT,
+    "tool_url" TEXT NOT NULL,
+    "tool_category" TEXT,
+    "tool_icon" TEXT,
+    "created_at_utc" TEXT,
+    "updated_at_utc" TEXT,
+    FOREIGN KEY ("created_by") REFERENCES "User"("user_id")
+);
+CREATE TABLE IF NOT EXISTS "ToolUsage" (
+    "user_id" INTEGER NOT NULL,
+    "tool_id" INTEGER NOT NULL,
+    "open_count" INTEGER NOT NULL DEFAULT 0,
+    "last_opened_at_utc" TEXT,
+    PRIMARY KEY ("user_id", "tool_id"),
+    FOREIGN KEY ("user_id") REFERENCES "User"("user_id"),
+    FOREIGN KEY ("tool_id") REFERENCES "Tool"("tool_id")
+);

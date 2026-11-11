@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferramentas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/paginas.css">
+    <script src="../js/menu-usuario.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="../js/header.js" defer></script>
+    <script src="../js/menu-lateral.js" defer></script>
+    <script src="../js/ferramentas.js" defer></script>
+    <script src="/js/ferramentas-api.js" defer></script>
+</head>
+<body class="pagina-ferramentas com-menu">
+
+    <!-- Barra superior: só aparece no celular -->
+    <div class="topo-mobile">
+        <button type="button" class="menu-toggle" id="menu-abrir" aria-controls="menu-lateral" aria-expanded="false" aria-label="Abrir menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <span class="topo-titulo">Ferramentas</span>
+    </div>
+    <div class="menu-fundo" id="menu-fundo" hidden></div>
+
+    <aside class="menu-lateral" id="menu-lateral">
+        <a class="header-logo menu-marca" href="../index.html">
+            <img class="logo-img" src="/assets/Logo.svg" alt="F.R.Cont">
+        </a>
+
+        <nav class="menu-nav" aria-label="Principal">
+            <ul class="menu-lista">
+                <li><a class="menu-link" href="../index.html">Início</a></li>
+                <li><a class="menu-link" href="checklist.html">Checklist <span class="menu-contador" id="nav-contador-checklist" hidden></span></a></li>
+                <li><a class="menu-link" href="centralpop.html">POP's <span class="menu-contador" id="nav-contador-pops" hidden></span></a></li>
+                <li><a class="menu-link" href="centrallink.html">Central Links</a></li>
+                <li><a class="menu-link" href="listatelefonica.html">Lista telefônica</a></li>
+                <li><a class="menu-link" href="ferramentas.html" aria-current="page">Ferramentas</a></li>
+                <li data-so-admin><a class="menu-link" href="funcionarios.html">Colaboradores</a></li>
+            </ul>
+        </nav>
+
+        <!-- Usuário no rodapé do menu (o dropdown abre para cima) -->
+        <div class="menu-usuario">
+            <div class="header-usuario" id="header-usuario">
+                <button type="button" class="usuario-botao" id="usuario-botao" aria-haspopup="true" aria-expanded="false" aria-controls="usuario-menu">
+                    <span class="avatar" id="usuario-foto"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg></span>
+                    <span class="usuario-info">
+                        <span class="usuario-nome" id="usuario-nome">Nome do colaborador</span>
+                    </span>
+                    <svg class="usuario-seta" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <ul class="usuario-menu" id="usuario-menu" hidden>
+                    <li><button type="button" id="menu-tema">Tema escuro</button></li>
+                    <li><button type="button" id="menu-senha">Alterar senha</button></li>
+                    <li><a href="#">Tutorial</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                    <li class="menu-separado"><a class="menu-sair" id="menu-sair" href="../login.html">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <main class="container">
+
+        <div class="ferr-topo">
+            <div class="page-heading">
+                <p class="eyebrow">05 / FERRAMENTAS</p>
+                <h2>Utilitários de apoio</h2>
+                <p class="subtitle">Calculadoras, sites úteis e atalhos para o dia a dia.</p>
+            </div>
+            <button type="button" class="button button-primary" id="btn-adicionar-ferramenta">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar ferramenta
+            </button>
+        </div>
+
+        <div class="pesquisa">
+            <label class="sr-only" for="busca-ferramenta">Buscar ferramenta</label>
+            <input type="search" id="busca-ferramenta" placeholder="Buscar ferramenta por nome ou descrição" autocomplete="off">
+        </div>
+
+        <section class="ferr-secao" aria-labelledby="titulo-recentes">
+            <div class="ferr-secao-topo">
+                <h3 id="titulo-recentes"><i class="bi bi-clock-history" aria-hidden="true"></i> Recentes</h3>
+                <span class="ferr-nota">suas mais usadas</span>
+            </div>
+            <div class="ferr-grade" id="lista-recentes"></div>
+            <div class="ferr-vazio" id="recentes-vazio">Suas ferramentas mais usadas aparecem aqui.</div>
+        </section>
+
+        <section class="ferr-secao" aria-labelledby="titulo-todas">
+            <div class="ferr-secao-topo">
+                <h3 id="titulo-todas">Todas as ferramentas</h3>
+                <span class="ferr-nota" id="total-ferramentas">0 ferramentas</span>
+            </div>
+            <div class="ferr-filtros" id="filtros-categoria" role="group" aria-label="Filtrar por categoria"></div>
+            <div class="ferr-grade" id="lista-ferramentas"></div>
+            <div class="empty-state" id="ferramentas-vazio">
+                <i class="bi bi-tools empty-icon" aria-hidden="true"></i>
+                <strong>Nenhuma ferramenta cadastrada</strong>
+                <p>As ferramentas adicionadas aparecem aqui.</p>
+            </div>
+            <div class="empty-state" id="ferramentas-sem-resultado" hidden>
+                <i class="bi bi-search empty-icon" aria-hidden="true"></i>
+                <strong>Nenhuma ferramenta encontrada</strong>
+                <p>Tente outra busca ou escolha outra categoria.</p>
+            </div>
+        </section>
+    </main>
+
+    <dialog class="modal modal--larga" id="modal-ferramenta">
+        <div class="modal-conteudo">
+            <h2 id="modal-ferramenta-titulo">Adicionar ferramenta</h2>
+            <div class="form-stack">
+                <input type="hidden" id="ferramenta-id">
+                <label for="ferramenta-nome">Nome</label>
+                <input type="text" id="ferramenta-nome" placeholder="Nome da ferramenta" autocomplete="off">
+                <label for="ferramenta-descricao">Descrição curta</label>
+                <input type="text" id="ferramenta-descricao" placeholder="Para que serve" maxlength="120" autocomplete="off">
+                <label for="ferramenta-link">Endereço (link)</label>
+                <input type="url" id="ferramenta-link" placeholder="https://" autocomplete="off">
+                <label for="ferramenta-categoria">Categoria</label>
+                <select id="ferramenta-categoria">
+                    <option value="Calculadoras">Calculadoras</option>
+                    <option value="Sites úteis">Sites úteis</option>
+                </select>
+                <label for="ferramenta-icone">Ícone</label>
+                <select id="ferramenta-icone">
+                    <option value="bi-tools">Ferramenta</option>
+                    <option value="bi-calculator">Calculadora</option>
+                    <option value="bi-globe2">Site</option>
+                    <option value="bi-file-earmark-text">Documento</option>
+                    <option value="bi-calendar3">Calendário</option>
+                    <option value="bi-table">Tabela</option>
+                    <option value="bi-currency-dollar">Dinheiro</option>
+                    <option value="bi-search">Pesquisa</option>
+                </select>
+                <p class="form-message" id="ferramenta-mensagem" role="alert"></p>
+            </div>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-primary" id="ferramenta-salvar">Salvar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal" id="modal-ferramenta-excluir">
+        <div class="modal-conteudo">
+            <h2>Excluir ferramenta</h2>
+            <p class="muted">Esta ação não pode ser desfeita.</p>
+            <div class="modal-acoes">
+                <button type="button" class="button button-light" data-fechar>Cancelar</button>
+                <button type="button" class="button button-perigo" id="ferramenta-confirmar-exclusao">Excluir</button>
+            </div>
+        </div>
+    </dialog>
+</body>
+</html>

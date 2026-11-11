@@ -4,52 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hub Inicial</title>
-    <link rel="stylesheet" href="css/header.css">
-    <script src="js/header.js?v=2" defer></script>
-    <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/paginas.css">
+    <script src="js/menu-usuario.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="js/header.js" defer></script>
+    <script src="js/menu-lateral.js" defer></script>
+    <script src="/js/hub-api.js" defer></script>
 </head>
-<body>
+<body class="pagina-hub com-menu">
 
- <main class="hub-container">
-    <div class="grupos-wrapper">
-        
-        <!-- Grupo Esquerdo -->
-        <div class="card-grupo">
-            <a href="html/checklist.html" class="quadrado">
-                <i class="bi bi-card-checklist icone"></i>
-                <span>Checklist</span>
-            </a>
-            <a href="html/centrallink.html" class="quadrado">
-                <i class="bi bi-link-45deg icone"></i>
-                <span>Central Links</span>
-            </a>
-        </div>
-
-        <!-- Grupo Direito -->
-        <div class="card-grupo">
-            <a href="html/centralpop.html" class="quadrado">
-                <i class="bi bi-file-earmark-text icone"></i>
-                <span>POP's</span>
-            </a>
-            <a href="html/guia.html" class="quadrado">
-                <i class="bi bi-journal-bookmark icone"></i>
-                <span>Guia</span>
-            </a>
-        </div>
-
+    <!-- Barra superior: só aparece no celular -->
+    <div class="topo-mobile">
+        <button type="button" class="menu-toggle" id="menu-abrir" aria-controls="menu-lateral" aria-expanded="false" aria-label="Abrir menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <span class="topo-titulo">Início</span>
     </div>
+    <div class="menu-fundo" id="menu-fundo" hidden></div>
 
-    <!-- Botão de Feedback Inferior -->
-    <div class="feedback-container">
-        <a href="html/feedback.html" class="btn-feedback">
-            <i class="bi bi-chat-dots"></i>
-            FEEDBACK
+    <aside class="menu-lateral" id="menu-lateral">
+        <a class="header-logo menu-marca" href="index.html">
+            <img class="logo-img" src="/assets/Logo.svg" alt="F.R.Cont">
         </a>
-    </div>
-</main>
 
-  <script src="js/abaguia.js" defer></script>
+        <nav class="menu-nav" aria-label="Principal">
+            <ul class="menu-lista">
+                <li><a class="menu-link" href="index.html" aria-current="page">Início</a></li>
+                <li><a class="menu-link" href="html/checklist.html">Checklist <span class="menu-contador" id="nav-contador-checklist" hidden></span></a></li>
+                <li><a class="menu-link" href="html/centralpop.html">POP's <span class="menu-contador" id="nav-contador-pops" hidden></span></a></li>
+                <li><a class="menu-link" href="html/centrallink.html">Central Links</a></li>
+                <li><a class="menu-link" href="html/listatelefonica.html">Lista telefônica</a></li>
+                <li><a class="menu-link" href="html/ferramentas.html">Ferramentas</a></li>
+                <li data-so-admin><a class="menu-link" href="html/funcionarios.html">Colaboradores</a></li>
+            </ul>
+        </nav>
+
+        <!-- Usuário no rodapé do menu (o dropdown abre para cima) -->
+        <div class="menu-usuario">
+            <div class="header-usuario" id="header-usuario">
+                <button type="button" class="usuario-botao" id="usuario-botao" aria-haspopup="true" aria-expanded="false" aria-controls="usuario-menu">
+                    <span class="avatar" id="usuario-foto"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.2-8 5v1h16v-1c0-2.8-3.6-5-8-5Z"/></svg></span>
+                    <span class="usuario-info">
+                        <span class="usuario-nome" id="usuario-nome">Nome do colaborador</span>
+                    </span>
+                    <svg class="usuario-seta" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <ul class="usuario-menu" id="usuario-menu" hidden>
+                    <li><button type="button" id="menu-tema">Tema escuro</button></li>
+                    <li><button type="button" id="menu-senha">Alterar senha</button></li>
+                    <li><a href="#">Tutorial</a></li>
+                    <li><a href="html/feedback.html">Feedback</a></li>
+                    <li class="menu-separado"><a class="menu-sair" id="menu-sair" href="login.html">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <main class="container hub">
+        <h1 class="header-titulo">Hub Inicial</h1>
+
+        <div class="hub-intro">
+            <p class="eyebrow">00 / Início · <span id="hub-data"></span></p>
+            <h2 class="hub-saudacao"><span id="hub-nome">Nome do colaborador</span></h2>
+            <p class="subtitle"><span id="hub-departamentos">departamentos</span></p>
+        </div>
+
+        <section class="hub-stats" aria-label="Resumo">
+            <a class="hub-stat" href="html/checklist.html">
+                <span class="hub-stat-numero" id="stat-checklists">–</span>
+                <span class="hub-stat-rotulo">Checklists em andamento</span>
+            </a>
+            <a class="hub-stat" href="html/centralpop.html">
+                <span class="hub-stat-numero" id="stat-pops">–</span>
+                <span class="hub-stat-rotulo">POPs disponíveis</span>
+            </a>
+            <a class="hub-stat" href="html/centrallink.html">
+                <span class="hub-stat-numero" id="stat-links">–</span>
+                <span class="hub-stat-rotulo">Links cadastrados</span>
+            </a>
+        </section>
+
+        <div class="hub-colunas">
+            <section class="panel hub-bloco" aria-labelledby="titulo-pops-recentes">
+                <h3 id="titulo-pops-recentes">Atualizados recentemente</h3>
+                <ul class="hub-lista" id="lista-pops-recentes">
+                    <li class="hub-vazio">Nenhum POP atualizado recentemente.</li>
+                </ul>
+            </section>
+
+            <section class="panel hub-bloco" aria-labelledby="titulo-continuar">
+                <h3 id="titulo-continuar">Continuar</h3>
+                <ul class="hub-lista" id="lista-continuar">
+                    <li class="hub-vazio">Nenhum checklist em andamento.</li>
+                </ul>
+            </section>
+        </div>
+
+        <section class="panel hub-bloco" aria-labelledby="titulo-ferramentas-recentes">
+            <h3 id="titulo-ferramentas-recentes">Ferramentas recentes</h3>
+            <ul class="hub-chips" id="lista-ferramentas-recentes">
+                <li class="hub-vazio">Nenhuma ferramenta usada recentemente.</li>
+            </ul>
+        </section>
+    </main>
 
 </body>
 </html>

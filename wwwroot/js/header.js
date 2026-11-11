@@ -1,46 +1,42 @@
+/*
+ * header.js — dados do funcionário no header.
+ *
+ * O header agora é HTML fixo em cada página (não é mais criado aqui).
+ * Este arquivo só preenche o nome e a foto:
+ *
+ *   definirUsuario({ nome: "Maria Silva", foto: "https://..." });
+ *
+ * O menu, o modal da foto e o tema escuro ficam em menu-usuario.js.
+ */
+window.definirUsuario = function (usuario) {
+    usuario = usuario || {};
 
-const header = document.createElement("header");
+    var nome = document.getElementById("usuario-nome");
+    if (nome && usuario.nome) nome.textContent = usuario.nome;
 
-header.className = "header-padrao";
+    if (usuario.foto && window.definirFotoUsuario) {
+        window.definirFotoUsuario(usuario.foto);
+    }
+};
 
-header.innerHTML = `
-    <div class="header-logo">
-        <div class="logo-circulo">LOGO</div>
-        <span>F.R.Cont<br>(logo)</span>
-    </div>
+// Quem está logado (api.js leva para o login se a sessão acabou). Outros scripts usam: window.usuario.then(...)
+window.usuario = api("GET", "/api/auth/me");
 
-    <h1></h1>
+window.usuario.then(function (user) {
+    document.documentElement.dataset.papel = user.role; // mostra itens [data-so-admin] para admin
+    definirUsuario({ nome: user.name });
+    // Sem foto o backend responde 404: só troca o ícone padrão se a imagem carregar
+    var foto = new Image();
+    foto.onload = function () { window.definirFotoUsuario(foto.src); };
+    foto.src = "/api/users/" + user.id + "/photo?v=" + Date.now();
+}).catch(function () {});
 
-    <div class="header-funcionario dado-js" id="usuario-logado"></div>
-`;
-
-header.querySelector("h1").textContent = document.title;
-
-document.body.prepend(header);
-
-fetch("/api/auth/me")
-    .then(function (response) {
-        if (!response.ok) throw new Error("Sessão não encontrada");
-        return response.json();
-    })
-    .then(function (user) {
-        var area = header.querySelector("#usuario-logado");
-        area.textContent = user.name;
-        var logout = document.createElement("button");
-        if (user.role === "admin") {
-            var register = document.createElement("a");
-            register.className = "botao-cadastrar-usuario";
-            register.href = "/html/cadastro.html";
-            register.textContent = "Cadastrar usuário";
-            area.append(" ", register);
-        }
-        logout.type = "button";
-        logout.className = "botao-sair";
-        logout.textContent = "Sair";
-        logout.onclick = async function () {
-            await fetch("/api/auth/logout", { method: "POST" });
+var sair = document.getElementById("menu-sair");
+if (sair) {
+    sair.addEventListener("click", function (evento) {
+        evento.preventDefault();
+        api("POST", "/api/auth/logout").catch(function () {}).then(function () {
             window.location.href = "/login.html";
-        };
-        area.append(" ", logout);
-    })
-    .catch(function () { window.location.href = "/login.html"; });
+        });
+    });
+}
