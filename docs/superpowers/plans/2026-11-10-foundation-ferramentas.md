@@ -1,5 +1,7 @@
 # Foundation + Ferramentas Implementation Plan
 
+> **Status (2026-11-11):** done and committed (`b3990d2`); follow-ups done, not yet committed. Roadmap below; current state in `docs/superpowers/HANDOFF.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 > **First step on approval:** copy this file to `docs/superpowers/plans/2026-11-10-foundation-ferramentas.md` (plan mode only allowed writing here). Do **not** commit anything until Eduardo reviews and says yes (standing rule); the "Commit" steps below mean "stage and show the diff, wait for a yes".
@@ -233,7 +235,7 @@ html[data-papel="admin"] [data-so-admin] { display: revert; }
 - **Plan 2, Colaboradores:** rename page/file; cleaner layout; basic users see their own department(s); fix the broken line under the department filter; "delete" = deactivate (`is_active = 0`). Open team question: do collaborators have a phone number? (`User` has no phone column today.)
 - **Plan 3, Central Links + Lista telefônica:** extend `Link`/`PhoneNumber` with the design's fields; shared tag storage for both pages; add/delete filters on both pages; who may create/delete filters (team: "tirar opções de adicionar filtros" for collaborators).
 - **Plan 4, POPs:** file upload; add/archive; store and show the date a POP was added (`created_at_utc` exists); remove the category filter (Protocolo, Manual…) from the floating panel; feedback button under each POP (`POST /api/feedback` already takes `popId`); clear path for a collaborator with no POP: create one or request it via feedback. Also covers ER tables that no page uses yet: a "Links e contatos deste POP" section in the POP view/form, backed by `PopLink` and `PopPhone` (routes `/api/pop-links`, `/api/pop-phones` already exist; needs a layout from the front team), and admin management of the POP's standard checks (`StandardCheck`, routes `/api/pops/<id>/standard-checks` already exist) in the POP form, so POP checklists in plan 5 are not empty. Depends on plan 3's extended Link/PhoneNumber fields to show useful names.
-- **Plan 5, Checklist:** remove the "visão administrativa" bar; personal tasks plus POP checklists, with the option to link a POP's checklist to the personal list.
+- **Plan 5, Checklist:** layout (Eduardo, 2026-11-11): the page loads the user's checklists; those from a POP go in the **right** column titled POP title + custom text, personal ones in the **left** column with their own title. Remove the "visão administrativa" bar; personal tasks plus POP checklists, with the option to link a POP's checklist to the personal list.
 - **Plan 6, Tutorial:** site-wide tutorial plus a tutorial POP (menu "Tutorial" link stays `#` until then).
 - Cross-cutting team guidelines (icons and short words, page standardization) are applied page by page in the plan that touches each page.
 - Updating the ER diagram image: add `Tool` (many-to-one to `User` via `created_by`) and `ToolUsage` (junction `User` × `Tool`) when you next edit it.

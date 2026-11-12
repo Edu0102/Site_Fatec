@@ -4,7 +4,10 @@
     'use strict';
 
     // shortcut: erros aparecem em alert(); a página não tem área de mensagem. Trocar se o design ganhar uma.
-    function avisar(erro) { alert(erro.message); }
+    var AJUDA_LINK = 'Endereço inválido. No Chrome, abra o site, clique na barra de endereço no topo, copie o link (Ctrl+C) e cole aqui (Ctrl+V).';
+    function avisar(erro) {
+        alert(/web address/.test(erro.message) ? AJUDA_LINK : erro.message);
+    }
 
     function carregar() {
         return api('GET', '/api/tools').then(function (lista) {

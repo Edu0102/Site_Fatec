@@ -149,3 +149,41 @@ def test_checklist_delete(app, client):
     client.post(f"/api/pops/{pop}/checklists", json={})
     login_admin(app, client, email="admin@test.com")
     assert client.delete("/api/checklists/3").status_code == 404  # only the owner deletes
+
+
+# ---------- name and email ----------
+
+def test_admin_edits_name_and_email(app, client):
+    two_users(app, client)
+    r = client.put("/api/users/2", json={"name": "  Beatriz ", "email": " BEA@test.com "})
+    assert r.status_code == 200 and r.json == {"message": "User updated."}
+    bia = [u for u in client.get("/api/admin/users").json if u["id"] == 2][0]
+    assert (bia["name"], bia["email"]) == ("Beatriz", "bea@test.com")
+    assert login(app.test_client(), "bea@test.com").status_code == 200
+
+
+def test_edit_validation(app, client):
+    two_users(app, client)
+    for body, error in [({"name": "  "}, "Name can't be empty."), ({"email": " "}, "Enter a valid email."),
+                        ({"email": "abc"}, "Enter a valid email."), ({"name": 5}, "Name can't be empty.")]:
+        r = client.put("/api/users/2", json=body)
+        assert r.status_code == 400 and r.json == {"error": error}, body
+
+
+def test_edit_email_conflict(app, client):
+    two_users(app, client)
+    r = client.put("/api/users/1", json={"email": " BIA@test.com "})
+    assert r.status_code == 409 and r.json == {"error": "This email is already registered."}
+    emails = sorted(u["email"] for u in client.get("/api/admin/users").json)
+    assert emails == ["ana@test.com", "bia@test.com"]
+
+
+def test_edit_missing_user(app, client):
+    two_users(app, client)
+    r = client.put("/api/users/999", json={"name": "X"})
+    assert r.status_code == 404 and r.json == {"error": "User not found."}
+
+
+def test_basic_cannot_edit_profile(app, client):
+    login_basic(client)
+    assert client.put("/api/users/1", json={"name": "X"}).status_code == 403

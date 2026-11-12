@@ -38,7 +38,7 @@
                 <li><a class="menu-link" href="centrallink.html">Central Links</a></li>
                 <li><a class="menu-link" href="listatelefonica.html">Lista telefônica</a></li>
                 <li><a class="menu-link" href="ferramentas.html" aria-current="page">Ferramentas</a></li>
-                <li data-so-admin><a class="menu-link" href="funcionarios.html">Colaboradores</a></li>
+                <li><a class="menu-link" href="colaboradores.html">Colaboradores</a></li>
             </ul>
         </nav>
 
@@ -116,11 +116,11 @@
             <div class="form-stack">
                 <input type="hidden" id="ferramenta-id">
                 <label for="ferramenta-nome">Nome</label>
-                <input type="text" id="ferramenta-nome" placeholder="Nome da ferramenta" autocomplete="off">
+                <input type="text" id="ferramenta-nome" placeholder="Nome da ferramenta" maxlength="100" autocomplete="off">
                 <label for="ferramenta-descricao">Descrição curta</label>
                 <input type="text" id="ferramenta-descricao" placeholder="Para que serve" maxlength="120" autocomplete="off">
                 <label for="ferramenta-link">Endereço (link)</label>
-                <input type="url" id="ferramenta-link" placeholder="https://" autocomplete="off">
+                <input type="url" id="ferramenta-link" placeholder="https://" maxlength="2000" autocomplete="off">
                 <label for="ferramenta-categoria">Categoria</label>
                 <select id="ferramenta-categoria">
                     <option value="Calculadoras">Calculadoras</option>

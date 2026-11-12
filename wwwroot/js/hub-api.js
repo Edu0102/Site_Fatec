@@ -26,7 +26,7 @@
 
     window.usuario.then(function (user) {
         $('hub-nome').textContent = user.name;
-    });
+    }).catch(function () {}); // sem sessão: api.js já levou para o login
 
     api('GET', '/api/me/departments').then(function (deps) {
         $('hub-departamentos').textContent = deps.length
@@ -34,7 +34,7 @@
     }).catch(function () {});
 
     api('GET', '/api/pops').then(function (pops) {
-        var ativos = pops.filter(function (p) { return p.status !== 'archived'; });
+        var ativos = pops.filter(function (p) { return p.status === 'published'; }); // admin também recebe rascunhos
         $('stat-pops').textContent = ativos.length;
         var recentes = ativos.slice().sort(function (a, b) {
             return (b.updatedAtUtc || '').localeCompare(a.updatedAtUtc || '');

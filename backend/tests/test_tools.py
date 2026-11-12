@@ -33,13 +33,15 @@ def test_create_and_list(client):
 def test_create_validation(client):
     login_basic(client)
     name_err = {"error": "Name is required (max 100 characters)."}
-    url_err = {"error": "URL must start with http:// or https://."}
+    url_err = {"error": "Enter a valid web address starting with http:// or https://."}
     cases = [({**TOOL, "name": "  "}, name_err), ({**TOOL, "name": "x" * 101}, name_err),
              ({**TOOL, "name": 5}, name_err),
              ({**TOOL, "description": "x" * 121}, {"error": "Description must have at most 120 characters."}),
              ({**TOOL, "category": "x" * 51}, {"error": "Category must have at most 50 characters."}),
              ({**TOOL, "url": "https://" + "a" * 2000}, url_err)]
-    cases += [({**TOOL, "url": u}, url_err) for u in ("javascript:alert(1)", "data:text/html,x", "ftp://a", "", 123)]
+    cases += [({**TOOL, "url": u}, url_err) for u in ("javascript:alert(1)", "data:text/html,x", "ftp://a", "", 123, "https://", "http:// a.com",
+                                                               "https://@", "http://a b", "https:///path",
+                                                               "https://a.com/x y", "https://a..com")]
     for body, error in cases:
         resp = client.post("/api/tools", json=body)
         assert resp.status_code == 400, body
@@ -119,3 +121,10 @@ def test_delete_tool_with_usage(app, client):
     con = sqlite3.connect(app.config["DATABASE"])
     assert con.execute('SELECT COUNT(*) FROM "ToolUsage"').fetchone() == (0,)
     con.close()
+
+
+def test_real_addresses_accepted(client):
+    login_basic(client)
+    for url in ("https://www.gov.br/receitafederal/pt-br?x=1#y", "http://localhost:5000/a", "HTTPS://A.COM",
+                "https://acentuação.com.br", "https://sub-dominio.exemplo.com:8443/caminho%20com%20espaco"):
+        assert client.post("/api/tools", json={**TOOL, "url": url}).status_code == 200, url

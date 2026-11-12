@@ -101,7 +101,8 @@
                 window.location.href = "/";
             } catch (erro) {
                 mensagem.classList.add("mensagem-erro");
-                mensagem.textContent = "E-mail ou senha inválidos.";
+                // O backend responde "Not authenticated." para qualquer credencial errada
+                mensagem.textContent = erro.message === "Not authenticated." ? "E-mail ou senha inválidos." : erro.message;
             }
         };
 

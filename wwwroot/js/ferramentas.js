@@ -16,6 +16,7 @@
     'use strict';
 
     var QTD_RECENTES = 4;
+    var AJUDA_LINK = 'Endereço inválido. No Chrome, abra o site, clique na barra de endereço no topo, copie o link (Ctrl+C) e cole aqui (Ctrl+V).';
     var $ = function (s) { return document.querySelector(s); };
     var itens = [], categoriaAtiva = '', idParaExcluir = null;
 
@@ -159,7 +160,11 @@
         campos.link.value = f ? f.link || '' : '';
         campos.categoria.selectedIndex = 0;
         campos.icone.selectedIndex = 0;
-        if (f && f.categoria) campos.categoria.value = f.categoria;
+        if (f && f.categoria) {
+            // Categoria fora da lista (ex.: cadastrada pela API): cria a opção para não perdê-la ao salvar
+            if (categorias().indexOf(f.categoria) < 0) campos.categoria.add(new Option(f.categoria, f.categoria));
+            campos.categoria.value = f.categoria;
+        }
         if (f && f.icone) campos.icone.value = f.icone;
         modal.showModal();
         campos.nome.focus();
@@ -200,7 +205,7 @@
         if (!nome) { mensagem.textContent = 'Informe o nome da ferramenta.'; campos.nome.focus(); return; }
         if (!link) { mensagem.textContent = 'Informe o endereço da ferramenta.'; campos.link.focus(); return; }
         if (!/^https?:\/\//i.test(link)) link = 'https://' + link;
-        if (linkSeguro(link) === '#') { mensagem.textContent = 'Confira o endereço informado.'; campos.link.focus(); return; }
+        if (linkSeguro(link) === '#' || /\s/.test(link)) { mensagem.textContent = AJUDA_LINK; campos.link.focus(); return; }
         mensagem.textContent = '';
         document.dispatchEvent(new CustomEvent('ferramenta:salvar', { detail: {
             id: campos.id.value, nome: nome, descricao: campos.descricao.value.trim(),

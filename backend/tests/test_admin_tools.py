@@ -10,8 +10,9 @@ def test_admin_user_list(app, client):
     run_sql(app, 'UPDATE "User" SET is_active = 0 WHERE user_email = ?', ("bia@test.com",))
     r = client.get("/api/admin/users")
     assert r.status_code == 200
-    assert r.json == [{"id": 1, "name": "Ana", "email": "ana@test.com", "role": "admin", "isActive": True},
-                      {"id": 2, "name": "Bia", "email": "bia@test.com", "role": "basic", "isActive": False}]
+    assert r.json == [{"id": 1, "name": "Ana", "email": "ana@test.com", "role": "admin", "isActive": True, "departments": []},
+                      {"id": 2, "name": "Bia", "email": "bia@test.com", "role": "basic", "isActive": False,
+                       "departments": []}]
     login_basic(client, email="c@test.com")
     assert client.get("/api/admin/users").status_code == 403
 

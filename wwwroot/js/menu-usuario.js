@@ -221,24 +221,24 @@
                 '<div class="modal-conteudo">' +
                     '<h2 id="modal-senha-titulo">Alterar senha</h2>' +
                     '<div class="form-stack">' +
-                        '<label for="senha-atual">Senha atual</label>' +
-                        '<input type="password" id="senha-atual" autocomplete="current-password">' +
-                        '<label for="senha-nova">Nova senha</label>' +
-                        '<input type="password" id="senha-nova" minlength="8" autocomplete="new-password">' +
-                        '<p class="form-message" id="senha-erro" role="alert"></p>' +
+                        '<label for="minha-senha-atual">Senha atual</label>' +
+                        '<input type="password" id="minha-senha-atual" autocomplete="current-password">' +
+                        '<label for="minha-senha-nova">Nova senha</label>' +
+                        '<input type="password" id="minha-senha-nova" minlength="8" autocomplete="new-password">' +
+                        '<p class="form-message" id="minha-senha-erro" role="alert"></p>' +
                     '</div>' +
                     '<div class="modal-acoes">' +
-                        '<button type="button" class="button button-light" id="senha-cancelar">Cancelar</button>' +
-                        '<button type="button" class="button button-primary" id="senha-salvar">Salvar</button>' +
+                        '<button type="button" class="button button-light" id="minha-senha-cancelar">Cancelar</button>' +
+                        '<button type="button" class="button button-primary" id="minha-senha-salvar">Salvar</button>' +
                     '</div>' +
                 '</div>';
             document.body.appendChild(modalSenha);
 
-            var atual = modalSenha.querySelector("#senha-atual");
-            var nova = modalSenha.querySelector("#senha-nova");
-            var erroSenha = modalSenha.querySelector("#senha-erro");
+            var atual = modalSenha.querySelector("#minha-senha-atual");
+            var nova = modalSenha.querySelector("#minha-senha-nova");
+            var erroSenha = modalSenha.querySelector("#minha-senha-erro");
 
-            modalSenha.querySelector("#senha-cancelar").addEventListener("click", function () { modalSenha.close(); });
+            modalSenha.querySelector("#minha-senha-cancelar").addEventListener("click", function () { modalSenha.close(); });
             modalSenha.addEventListener("click", function (evento) {
                 if (evento.target === modalSenha) modalSenha.close();
             });
@@ -247,7 +247,7 @@
                 nova.value = "";
                 erroSenha.textContent = "";
             });
-            modalSenha.querySelector("#senha-salvar").addEventListener("click", function () {
+            modalSenha.querySelector("#minha-senha-salvar").addEventListener("click", function () {
                 if (nova.value.length < 8) {
                     erroSenha.textContent = "A nova senha precisa de pelo menos 8 caracteres.";
                     return;
@@ -255,8 +255,11 @@
                 api("PUT", "/api/me/password", { currentPassword: atual.value, newPassword: nova.value })
                     .then(function () { modalSenha.close(); })
                     .catch(function (falha) {
-                        erroSenha.textContent = falha.message === "Current password is wrong."
-                            ? "Senha atual incorreta." : "A nova senha precisa de pelo menos 8 caracteres.";
+                        var traducao = {
+                            "Current password is wrong.": "Senha atual incorreta.",
+                            "Password must have at least 8 characters.": "A nova senha precisa de pelo menos 8 caracteres."
+                        };
+                        erroSenha.textContent = traducao[falha.message] || falha.message;
                     });
             });
         }

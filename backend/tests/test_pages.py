@@ -5,7 +5,7 @@ def test_root_serves_portal(client):
 
 
 def test_pages_and_assets_are_served(client):
-    for path, mimetype in [("/login.html", "text/html"), ("/html/ferramentas.html", "text/html"),
+    for path, mimetype in [("/login.html", "text/html"), ("/html/ferramentas.html", "text/html"), ("/html/colaboradores.html", "text/html"),
                            ("/css/style.css", "text/css"), ("/js/header.js", "text/javascript"),
                            ("/js/api.js", "text/javascript"), ("/assets/Logo.svg", "image/svg+xml")]:
         r = client.get(path)
@@ -19,5 +19,5 @@ def test_no_files_outside_wwwroot(client):
 
 
 def test_old_pages_are_gone(client):
-    for path in ("/html/guia.html", "/html/abaguia.html", "/html/cadastro.html"):
+    for path in ("/html/guia.html", "/html/abaguia.html", "/html/cadastro.html", "/html/funcionarios.html"):
         assert client.get(path).status_code == 404, path

@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlsplit
 
 from flask import Blueprint, jsonify, session
 
@@ -11,6 +12,19 @@ bp = Blueprint("tools", __name__)
 NOT_FOUND = "Tool not found."
 
 
+def _valid_url(url):
+    """A real web address: http(s), a host made of dot-separated labels, no spaces. Blocks javascript:/data: links."""
+    if not url or len(url) > 2000 or re.search(r"\s", url):
+        return False
+    try:
+        parts = urlsplit(url)
+        host = parts.hostname
+        parts.port  # raises ValueError for a bad port
+    except ValueError:
+        return False
+    return parts.scheme.lower() in ("http", "https") and bool(host) and re.fullmatch(r"[\w-]+(\.[\w-]+)*", host) is not None
+
+
 def _read_tool():
     """Validated tool fields from the JSON body as (fields, None), or (None, error response)."""
     name = json_field("name").strip()
@@ -20,8 +34,8 @@ def _read_tool():
     icon = json_field("icon").strip()
     if not name or len(name) > 100:
         return None, (jsonify(error="Name is required (max 100 characters)."), 400)
-    if not re.match(r"https?://", url, re.IGNORECASE) or len(url) > 2000:  # blocks javascript:/data: links
-        return None, (jsonify(error="URL must start with http:// or https://."), 400)
+    if not _valid_url(url):
+        return None, (jsonify(error="Enter a valid web address starting with http:// or https://."), 400)
     if len(description) > 120:
         return None, (jsonify(error="Description must have at most 120 characters."), 400)
     if len(category) > 50:

@@ -38,7 +38,7 @@ def test_sign_up_needs_admin(app, client):
 def test_register_ok(app, client):
     as_root(app, client)
     r = sign_up(client)
-    assert r.status_code == 200 and r.json == {"message": "User registered."}
+    assert r.status_code == 200 and r.json["message"] == "User registered." and isinstance(r.json["id"], int)
 
 
 def test_register_duplicate(app, client):

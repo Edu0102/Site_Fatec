@@ -1280,11 +1280,16 @@
 .button-perigo-claro:hover:not(:disabled) { background: var(--cor-perigo-suave); }
 
 /* Menu ⋮ (details nativo, sem JS) */
+/* Célula de tabela continua table-cell (flex nela desalinhava a borda da linha) */
 .func-acoes {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: var(--esp-2);
+    text-align: right;
+    white-space: nowrap;
+}
+
+.func-acoes > * {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: var(--esp-2);
 }
 
 .menu-acoes { position: relative; }
@@ -1807,8 +1812,7 @@
 .logo-img { display: block; height: 3.25rem; width: auto; }
 
 /* Itens só para admin (o papel vem de /api/auth/me, em header.js) */
-[data-so-admin] { display: none; }
-html[data-papel="admin"] [data-so-admin] { display: revert; }
+html:not([data-papel="admin"]) [data-so-admin] { display: none; }
 
 [data-tema="escuro"] .logo-img { filter: invert(1); }
 

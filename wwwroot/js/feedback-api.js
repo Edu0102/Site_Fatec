@@ -71,5 +71,5 @@
     window.usuario.then(function (user) {
         admin = user.role === 'admin';
         carregar();
-    });
+    }).catch(function () {}); // sem sessão: api.js já levou para o login
 })();

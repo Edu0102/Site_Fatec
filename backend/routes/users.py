@@ -24,18 +24,25 @@ def create_user():
         return jsonify(error="Name, email and password are required."), 400
     if len(password) < 8:
         return jsonify(error="Password must have at least 8 characters."), 400
-    if users.add(name.strip(), email.strip().lower(), hash_password(password)):
-        return jsonify(message="User registered.")
+    new_id = users.add(name.strip(), email.strip().lower(), hash_password(password))
+    if new_id:
+        return jsonify(message="User registered.", id=new_id)
     return jsonify(error="This email is already registered."), 409
 
 
 @bp.put("/users/<int:user_id>")
 @role_required("admin")
 def update_user(user_id):
-    """Admins change a user's role, active flag or password; never their own role or active flag."""
+    """Admins change a user's name, email, role, active flag or password; never their own role or active flag."""
     body = json_body()
-    if not {"role", "isActive", "password"} & set(body):
+    if not {"name", "email", "role", "isActive", "password"} & set(body):
         return jsonify(error="Nothing to change."), 400
+    name = json_field("name").strip() if "name" in body else None
+    if name == "":
+        return jsonify(error="Name can't be empty."), 400
+    email = json_field("email").strip().lower() if "email" in body else None
+    if email is not None and "@" not in email:
+        return jsonify(error="Enter a valid email."), 400
     role = json_field("role").strip().lower() if "role" in body else None
     if role is not None and role not in ("admin", "basic"):
         return jsonify(error="Role must be admin or basic."), 400
@@ -47,6 +54,12 @@ def update_user(user_id):
         return jsonify(error="Password must have at least 8 characters."), 400
     if user_id == session["user_id"] and (role is not None or is_active is not None):
         return jsonify(error="You can't change your own role or active status."), 409
+    if name is not None or email is not None:
+        result = users.update_profile(user_id, name, email)
+        if result == "not_found":
+            return jsonify(error="User not found."), 404
+        if result == "conflict":
+            return jsonify(error="This email is already registered."), 409
     changed = users.update(user_id, role, None if is_active is None else int(is_active),
                            hash_password(password) if password else None, is_active is not None or password is not None)
     return (jsonify(message="User updated."), 200) if changed else (jsonify(error="User not found."), 404)
