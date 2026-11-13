@@ -1,3 +1,6 @@
+import re
+from urllib.parse import urlsplit
+
 from flask import request
 
 POP_UNAVAILABLE = {"error": "POP not found or not available."}
@@ -19,6 +22,27 @@ def json_field(name):
     except UnicodeEncodeError:
         return ""
     return value
+
+
+def json_tags():
+    """The body's "tags": trimmed names, empties and case-insensitive repeats dropped; [] when missing.
+    None when it isn't a list of strings, a name is over 40 characters, or there are more than 20."""
+    value = json_body().get("tags", [])
+    if not isinstance(value, list) or not all(isinstance(t, str) for t in value):
+        return None
+    try:
+        for t in value:
+            t.encode("utf-8")  # lone surrogates can't be stored
+    except UnicodeEncodeError:
+        return None
+    names, seen = [], set()
+    for t in (t.strip() for t in value):
+        if t and t.lower() not in seen:
+            seen.add(t.lower())
+            names.append(t)
+    if len(names) > 20 or any(len(t) > 40 for t in names):
+        return None
+    return names
 
 
 def json_int(name):
@@ -46,3 +70,16 @@ def to_http(result, ok_message, not_found_message, conflict_message="Conflict.")
     if result == "forbidden":
         return {"error": "Forbidden."}, 403
     raise ValueError(f"unknown write result: {result}")
+
+
+def valid_url(url):
+    """A real web address: http(s), a host made of dot-separated labels, no spaces. Blocks javascript:/data: links."""
+    if not url or len(url) > 2000 or re.search(r"\s", url):
+        return False
+    try:
+        parts = urlsplit(url)
+        host = parts.hostname
+        parts.port  # raises ValueError for a bad port
+    except ValueError:
+        return False
+    return parts.scheme.lower() in ("http", "https") and bool(host) and re.fullmatch(r"[\w-]+(\.[\w-]+)*", host) is not None

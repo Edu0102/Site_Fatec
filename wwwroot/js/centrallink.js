@@ -1,6 +1,7 @@
-/* centrallink.js — Central de Links (interface + lista em memória).
-   O banco deve ser ligado pelos eventos abaixo; enquanto isso, a lista vive só na página.
+/* centrallink.js — Central de Links (interface). Os dados vêm de centrallink-api.js.
 
+   ENTRADA: window.centralLinks.renderizar([{ id, titulo, descricao, url, assunto, tags, data }])
+            window.centralLinks.definirFiltros(["Federal", ...])
    SAÍDAS : eventos no document
             'link:salvar'    -> detail = { id (vazio se novo), titulo, descricao, url, assunto, tags, data }
             'link:excluir'   -> detail = { id }
@@ -10,27 +11,9 @@
    Filtros marcados: o link precisa ter TODAS as tags marcadas. */
 "use strict";
 
-let links = [
-    {
-        id: 1,
-        titulo: "Emissão de Comprovante de Inscrição e de Situação Cadastral",
-        descricao: "Permite emitir o Comprovante de Inscrição e de Situação Cadastral de Pessoa Jurídica.",
-        url: "https://www.gov.br/receitafederal/",
-        assunto: "Cadastral",
-        tags: ["Federal", "Consulta Pública"],
-        data: "30/09/2026"
-    }
-];
+let links = [];
 
-const filtrosPadrao = [
-    "Federal",
-    "Estadual",
-    "Municipal",
-    "Cadastral",
-    "Débitos",
-    "Certidões",
-    "Consulta Pública",
-];
+const filtrosPadrao = [];
 
 const modal = document.getElementById("modal-link");
 const modalExcluir = document.getElementById("modal-link-excluir");
@@ -83,7 +66,9 @@ function criarFiltros() {
         input.checked = marcados.includes(filtro);
         input.addEventListener("change", filtrarLinks);
         label.append(input, document.createTextNode(" " + filtro));
-        linha.append(label, botaoIcone("bi-x-lg", "Remover filtro " + filtro, true, "remover-filtro", filtro));
+        const remover = botaoIcone("bi-x-lg", "Remover filtro " + filtro, true, "remover-filtro", filtro);
+        remover.setAttribute("data-so-admin", "");
+        linha.append(label, remover);
         area.appendChild(linha);
     });
 }
@@ -116,6 +101,7 @@ function mostrarLinks(lista) {
 
         const detalhes = el("div", "detalhes");
         const acoes = el("div", "acoes-icone");
+        acoes.setAttribute("data-so-admin", "");
         acoes.append(botaoIcone("bi-pencil", "Editar link", false, "editar", link.id),
                      botaoIcone("bi-trash", "Excluir link", true, "excluir", link.id));
         const data = el("div", "data", "Atualizado em: " + link.data);
@@ -245,6 +231,19 @@ document.addEventListener("click", function (e) {
     if (e.target.closest("[data-fechar]")) e.target.closest("dialog").close();
     else if (e.target.tagName === "DIALOG") e.target.close();
 });
+
+/* Ponto de entrada para o banco (centrallink-api.js) */
+window.centralLinks = {
+    renderizar: function (lista) {
+        links = Array.isArray(lista) ? lista : [];
+        filtrarLinks();
+    },
+    definirFiltros: function (nomes) {
+        filtrosPadrao.splice(0, filtrosPadrao.length, ...(Array.isArray(nomes) ? nomes : []));
+        criarFiltros();
+        filtrarLinks();
+    }
+};
 
 criarFiltros();
 mostrarLinks(links);

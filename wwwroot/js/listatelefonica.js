@@ -18,9 +18,7 @@
 
     var $ = function (s) { return document.querySelector(s); };
     var contatos = [];
-    // TODO banco: substituir pela lista de departamentos cadastrada (a mesma da Central de POP's)
-    var departamentos = ['Fiscal', 'Pessoal', 'Financeiro', 'Contábil', 'Regularização'];
-    // TODO banco: preencher com os filtros (tags) cadastrados para a Lista Telefônica
+    var departamentos = []; // vêm de listatelefonica-api.js
     var filtros = [];
     var idParaExcluir = null;
 
@@ -66,6 +64,9 @@
     // Os departamentos agora só alimentam o campo "Departamento" do modal (não há mais filtro por departamento)
     function atualizarSetores() {
         campos.setor.innerHTML = '';
+        var nenhum = el('option', '', 'Sem departamento');
+        nenhum.value = '';
+        campos.setor.appendChild(nenhum);
         todosDepartamentos().forEach(function (s) {
             var o = el('option', '', s);
             o.value = s;
@@ -89,7 +90,9 @@
             input.value = f;
             input.checked = antes.indexOf(f) > -1;
             label.append(input, document.createTextNode(' ' + f));
-            linha.append(label, botao('bi-x-lg', 'Remover filtro ' + f, true, 'remover-filtro', f));
+            var remover = botao('bi-x-lg', 'Remover filtro ' + f, true, 'remover-filtro', f);
+            remover.setAttribute('data-so-admin', '');
+            linha.append(label, remover);
             areaFiltros.appendChild(linha);
         });
     }
@@ -104,6 +107,7 @@
         topo.appendChild(el('h3', 'tel-nome', c.nome));
         if (c.ramal) topo.appendChild(el('span', 'tel-ramal', 'Ramal ' + c.ramal));
         var acoes = el('div', 'acoes-icone');
+        acoes.setAttribute('data-so-admin', '');
         acoes.append(botao('bi-pencil', 'Editar contato', false, 'editar', c.id),
                      botao('bi-trash', 'Excluir contato', true, 'excluir', c.id));
         topo.appendChild(acoes);

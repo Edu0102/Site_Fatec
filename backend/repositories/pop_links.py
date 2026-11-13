@@ -1,15 +1,15 @@
 import sqlite3
 
 from db import get_db
-from repositories.links import _to_dict
+from repositories.links import to_dicts
 
 
 def list_for_pop(pop_id):
-    """Links assigned to a POP, by id."""
+    """Links assigned to a POP, by title."""
     rows = get_db().execute(
-        'SELECT l.* FROM "Link" l JOIN "PopLink" pl ON pl.link_id = l.link_id WHERE pl.pop_id = ? ORDER BY l.link_id',
+        'SELECT l.* FROM "Link" l JOIN "PopLink" pl ON pl.link_id = l.link_id WHERE pl.pop_id = ? ORDER BY l.link_title COLLATE NOCASE, l.link_id',
         (pop_id,)).fetchall()
-    return [_to_dict(r) for r in rows]
+    return to_dicts(rows)
 
 
 def assign(pop_id, link_id):

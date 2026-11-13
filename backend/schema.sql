@@ -46,15 +46,43 @@ CREATE TABLE IF NOT EXISTS "Pop" (
 );
 CREATE TABLE IF NOT EXISTS "Link" (
     "link_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "link_title" TEXT NOT NULL,
+    "link_description" TEXT NOT NULL DEFAULT '',
     "link_path" TEXT NOT NULL UNIQUE,
+    "link_subject" TEXT NOT NULL DEFAULT '',
     "created_at_utc" TEXT,
     "updated_at_utc" TEXT
 );
 CREATE TABLE IF NOT EXISTS "PhoneNumber" (
     "phone_id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "phone_number" TEXT NOT NULL UNIQUE,
+    "contact_name" TEXT NOT NULL,
+    "department_id" INTEGER,
+    "phone_extension" TEXT NOT NULL DEFAULT '',
+    "phone_number" TEXT NOT NULL DEFAULT '',
+    "contact_email" TEXT NOT NULL DEFAULT '',
     "created_at_utc" TEXT,
-    "updated_at_utc" TEXT
+    "updated_at_utc" TEXT,
+    FOREIGN KEY ("department_id") REFERENCES "Department"("department_id")
+);
+CREATE TABLE IF NOT EXISTS "Tag" (
+    "tag_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "tag_scope" TEXT NOT NULL CHECK ("tag_scope" IN ('link', 'phone')),
+    "tag_name" TEXT NOT NULL COLLATE NOCASE,
+    UNIQUE ("tag_scope", "tag_name")
+);
+CREATE TABLE IF NOT EXISTS "LinkTag" (
+    "link_id" INTEGER NOT NULL,
+    "tag_id" INTEGER NOT NULL,
+    PRIMARY KEY ("link_id", "tag_id"),
+    FOREIGN KEY ("link_id") REFERENCES "Link"("link_id"),
+    FOREIGN KEY ("tag_id") REFERENCES "Tag"("tag_id")
+);
+CREATE TABLE IF NOT EXISTS "PhoneTag" (
+    "phone_id" INTEGER NOT NULL,
+    "tag_id" INTEGER NOT NULL,
+    PRIMARY KEY ("phone_id", "tag_id"),
+    FOREIGN KEY ("phone_id") REFERENCES "PhoneNumber"("phone_id"),
+    FOREIGN KEY ("tag_id") REFERENCES "Tag"("tag_id")
 );
 CREATE TABLE IF NOT EXISTS "PopLink" (
     "pop_link_id" INTEGER PRIMARY KEY AUTOINCREMENT,

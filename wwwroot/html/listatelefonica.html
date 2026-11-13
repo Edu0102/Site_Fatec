@@ -12,6 +12,7 @@
     <script src="../js/header.js" defer></script>
     <script src="../js/menu-lateral.js" defer></script>
     <script src="../js/listatelefonica.js" defer></script>
+    <script src="../js/listatelefonica-api.js" defer></script>
 </head>
 <body class="pagina-telefones com-menu">
 
@@ -70,7 +71,7 @@
                 <h2>Ramais e contatos</h2>
                 <p class="subtitle">Ramais e contatos da empresa.</p>
             </div>
-            <button type="button" class="button button-primary" id="btn-adicionar-contato">
+            <button type="button" class="button button-primary" id="btn-adicionar-contato" data-so-admin>
                 <i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar contato
             </button>
         </div>
@@ -84,7 +85,7 @@
             <aside class="filtros-lateral">
                 <h3>Filtros</h3>
                 <div id="filtros-contato" role="group" aria-label="Filtrar por tag"></div>
-                <form class="filtro-novo" id="form-filtro-contato">
+                <form class="filtro-novo" id="form-filtro-contato" data-so-admin>
                     <label class="sr-only" for="novo-filtro-contato">Novo filtro</label>
                     <input type="text" id="novo-filtro-contato" placeholder="Novo filtro" maxlength="40" autocomplete="off">
                     <button type="submit" class="button button-light button-pequeno" aria-label="Adicionar filtro"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>

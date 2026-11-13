@@ -31,9 +31,9 @@ def create_app(test_config=None):
     db.init_db(app)
 
     from routes import (auth, checklists, departments, feedback, links, phones, photos, pop_departments, pop_links,
-                        pop_phones, pops, standard_checks, tools, user_departments, users)
+                        pop_phones, pops, standard_checks, tags, tools, user_departments, users)
     for module in (auth, users, departments, user_departments, pops, pop_departments, standard_checks, checklists,
-                   feedback, photos, links, pop_links, phones, pop_phones, tools):
+                   feedback, photos, links, pop_links, phones, pop_phones, tools, tags):
         app.register_blueprint(module.bp, url_prefix="/api")
 
     @app.errorhandler(413)

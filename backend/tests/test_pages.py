@@ -7,7 +7,9 @@ def test_root_serves_portal(client):
 def test_pages_and_assets_are_served(client):
     for path, mimetype in [("/login.html", "text/html"), ("/html/ferramentas.html", "text/html"), ("/html/colaboradores.html", "text/html"),
                            ("/css/style.css", "text/css"), ("/js/header.js", "text/javascript"),
-                           ("/js/api.js", "text/javascript"), ("/assets/Logo.svg", "image/svg+xml")]:
+                           ("/js/api.js", "text/javascript"), ("/js/centrallink-api.js", "text/javascript"),
+                           ("/js/listatelefonica-api.js", "text/javascript"), ("/html/centrallink.html", "text/html"),
+                           ("/html/listatelefonica.html", "text/html"),("/assets/Logo.svg", "image/svg+xml")]:
         r = client.get(path)
         assert r.status_code == 200 and r.mimetype == mimetype, path
 

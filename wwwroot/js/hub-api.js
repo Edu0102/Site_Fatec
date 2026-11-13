@@ -50,7 +50,9 @@
         }));
     }).catch(function () {});
 
-    // Links cadastrados: GET /api/links ainda é só para admin; o número fica "–" até o plano da Central de Links.
+    api('GET', '/api/links').then(function (links) {
+        $('stat-links').textContent = links.length;
+    }).catch(function () {});
 
     api('GET', '/api/tools').then(function (tools) {
         var usadas = tools.filter(function (t) { return t.opens > 0; })

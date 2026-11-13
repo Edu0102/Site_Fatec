@@ -12,6 +12,7 @@
     <script src="../js/header.js" defer></script>
     <script src="../js/menu-lateral.js" defer></script>
     <script src="../js/centrallink.js" defer></script>
+    <script src="../js/centrallink-api.js" defer></script>
 </head>
 <body class="com-menu">
 
@@ -69,7 +70,7 @@
                 <h2>Central de Links</h2>
                 <p class="subtitle">Sites e consultas usados no dia a dia.</p>
             </div>
-            <button type="button" class="button button-primary" onclick="mostrarFormulario()">
+            <button type="button" class="button button-primary" onclick="mostrarFormulario()" data-so-admin>
                 <i class="bi bi-plus-lg" aria-hidden="true"></i> Adicionar link
             </button>
         </div>
@@ -83,7 +84,7 @@
             <aside class="filtros-lateral">
                 <h3>Filtros</h3>
                 <div id="filtros"></div>
-                <form class="filtro-novo" id="form-filtro">
+                <form class="filtro-novo" id="form-filtro" data-so-admin>
                     <label class="sr-only" for="novo-filtro">Novo filtro</label>
                     <input type="text" id="novo-filtro" placeholder="Novo filtro" maxlength="40" autocomplete="off">
                     <button type="submit" class="button button-light button-pequeno" aria-label="Adicionar filtro"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>

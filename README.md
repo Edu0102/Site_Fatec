@@ -1,113 +1,90 @@
-# Site Fatec
+# F.R.Cont WorkFlow (Site Fatec)
 
-## Backend (Flask + SQLite)
-
-A API fica em `backend/` (Python + Flask). Como instalar, criar os logins de teste (`python seed.py`) e rodar está em [backend/README.md](backend/README.md). O servidor sobe em `http://127.0.0.1:5000` e todas as rotas ficam sob `/api`.
-
-Portal interno desenvolvido com HTML, CSS e JavaScript para reunir ferramentas e materiais de consulta da equipe.
+Portal interno da equipe: POPs, checklists, central de links, lista telefônica, ferramentas e colaboradores, com login e dados guardados no servidor.
 
 ## Sumário
 
-- [Visão geral](#visão-geral)
+- [Como rodar](#como-rodar)
 - [Estrutura do projeto](#estrutura-do-projeto)
-- [Funcionalidades](#funcionalidades)
-- [Como executar](#como-executar)
-- [Armazenamento e limitações](#armazenamento-e-limitações)
+- [Páginas e situação](#páginas-e-situação)
+- [Permissões](#permissões)
+- [Como o front fala com o backend](#como-o-front-fala-com-o-backend)
+- [Testes](#testes)
 - [Tecnologias](#tecnologias)
 
-## Visão geral
+## Como rodar
 
-O ponto de entrada é `index.html`, que apresenta atalhos para as páginas do portal. As páginas de conteúdo ficam em `html/`; os estilos ficam em `css/`; e os scripts de interação ficam em `js/`.
+Passo a passo completo em [backend/README.md](backend/README.md). Resumo:
+
+1. Em `backend/`, crie o ambiente virtual e instale `requirements.txt`.
+2. Crie `backend/.env` com `SECRET_KEY=<texto aleatório>`.
+3. `python seed.py` cria os logins de teste (só em desenvolvimento; senha `mypassword123`):
+   - `admin@test.com`: administrador
+   - `basic@test.com`: colaborador comum
+4. `python app.py` sobe o servidor em http://127.0.0.1:5000.
+
+O Flask serve as páginas de `wwwroot/` e a API em `/api/...`. O banco é SQLite (`backend/database.db`). Ele é criado a partir de `schema.sql` e, ao subir, um banco antigo é atualizado automaticamente (colunas e tabelas novas).
 
 ## Estrutura do projeto
 
 ```text
 Site_Fatec/
-├── index.html                 # Hub inicial com atalhos para as áreas
-├── login.html                 # Demonstração independente de login
-├── README.md                  # Documentação do projeto
-├── css/
-│   ├── centrallink.css         # Estilos da Central de Links
-│   ├── centralpop.css          # Estilos da Central de POPs
-│   ├── checklist.css           # Estilos do Checklist
-│   ├── feedback.css            # Estilos do formulário de feedback
-│   ├── guia.css                # Estilos da página de guias
-│   ├── header.css              # Estilos do cabeçalho compartilhado
-│   └── index.css               # Estilos do hub inicial
-├── html/
-│   ├── centrallink.html        # Pesquisa e cadastro de links
-│   ├── centralpop.html         # Consulta e gerenciamento local de documentos
-│   ├── checklist.html          # Lista de tarefas e acompanhamento de progresso
-│   ├── feedback.html           # Formulário de sugestões
-│   └── guia.html               # Consulta e cadastro local de guias
-└── js/
-    ├── centrallink.js          # Filtros e cadastro temporário de links
-    ├── centralpop.js           # Persistência e ações dos documentos
-    ├── checklist.js            # Tarefas, resumo e alternância de perfil de teste
-    ├── guia.js                 # Cadastro e exibição de guias
-    └── header.js               # Montagem do cabeçalho compartilhado
+├── backend/
+│   ├── app.py              # cria o app Flask e registra as rotas
+│   ├── schema.sql          # tabelas do banco
+│   ├── db.py               # conexão SQLite e migração de bancos antigos
+│   ├── auth.py / security.py  # sessão, papéis (admin/colaborador) e hash de senha
+│   ├── routes/             # validação de entrada e respostas HTTP (erros em inglês)
+│   ├── repositories/       # SQL
+│   ├── tests/              # pytest
+│   └── seed.py             # logins e dados de teste
+├── wwwroot/
+│   ├── index.html          # Hub inicial
+│   ├── login.html          # Login "F.R.Cont WorkFlow"
+│   ├── html/               # demais páginas
+│   ├── css/                # paginas.css, style.css
+│   ├── js/                 # <pagina>.js (interface do time de design) + <pagina>-api.js (ligação com o backend)
+│   └── assets/             # logo
+└── docs/superpowers/       # planos de implementação e HANDOFF.md (estado atual do trabalho)
 ```
 
-## Funcionalidades
+## Páginas e situação
 
-### Hub inicial
+| Página | Arquivos | Situação |
+|---|---|---|
+| Login | `login.html` | Ligada ao backend (sessão no servidor) |
+| Hub inicial | `index.html`, `hub-api.js` | Ligado: nome, departamentos, POPs recentes, checklists abertos, links cadastrados, ferramentas recentes |
+| Ferramentas | `ferramentas.html`, `ferramentas-api.js` | Ligada |
+| Colaboradores | `colaboradores.html`, `colaboradores-api.js` | Ligada (usuários, departamentos, acessos temporários) |
+| Central de Links | `centrallink.html`, `centrallink-api.js` | Ligada: busca, filtros por tag, cadastro pelo admin |
+| Lista telefônica | `listatelefonica.html`, `listatelefonica-api.js` | Ligada: contatos com departamento, ramal, telefone, e-mail e tags |
+| Feedback | `feedback.html`, `feedback-api.js` | Ligado |
+| Central de POPs | `centralpop.html` | **Ainda local** (IndexedDB do navegador). A API de POPs já existe; a ligação é o plano 4 |
+| Checklist | `checklist.html` | **Ainda local** (`localStorage`). A API existe; a ligação é o plano 5 |
 
-`index.html` direciona para Checklist, Central de Links, Central de POPs, Guia e Feedback. Os ícones do hub usam Bootstrap Icons carregado por CDN.
+## Permissões
 
-### Checklist
+- **Todos os logados:** leem links, contatos e ferramentas; criam ferramentas; veem os próprios departamentos e colegas.
+- **Admin:**
+  - cria, edita e exclui links e contatos, e gerencia os filtros (tags) de cada página;
+  - gerencia colaboradores e acessos.
+- **Ferramentas:** só quem criou ou um admin pode editar ou excluir.
+- **Na interface:** itens só de admin levam o atributo `data-so-admin` e ficam escondidos para os outros. A proteção de verdade está na API (403).
 
-Em `html/checklist.html`, é possível criar, concluir, remover e desmarcar tarefas, além de acompanhar totais e percentual concluído. O JavaScript cria tarefas iniciais para o funcionário de demonstração. A página também oferece uma alternância temporária entre funcionário e administrador para testar a visualização de consulta.
+## Como o front fala com o backend
 
-### Central de Links
+- `js/api.js` tem a função `api(método, url, corpo)`, que faz todas as chamadas. Erros viram `Error` com a mensagem do backend, e uma resposta 401 leva para o login.
+- `js/header.js` expõe `window.usuario` e marca `data-papel` no `<html>`.
+- Cada página tem o script do time de design (interface, eventos como `link:salvar`) e um `*-api.js` nosso, que carrega os dados e responde a esses eventos.
 
-Em `html/centrallink.html`, é possível pesquisar links por título, descrição, assunto ou tags, combinar filtros por tags e cadastrar novos links. Os links cadastrados durante o uso não são persistidos após recarregar ou fechar a página.
+## Testes
 
-### Central de POPs
+Em `backend/`: `python -m pytest` (214 testes; a suíte completa leva alguns minutos porque o hash de senha é lento de propósito).
 
-Em `html/centralpop.html`, os documentos são organizados por departamento (Fiscal, Pessoal, Financeiro, Contábil e Regularização). A página permite pesquisar documentos e, ao ativar o modo de gerenciamento, cadastrar arquivos, baixá-los ou removê-los. O armazenamento usa IndexedDB no navegador atual.
-
-### Guia
-
-Em `html/guia.html`, o modo temporário de administrador permite cadastrar e excluir guias com título e conteúdo. Os guias ficam salvos no `localStorage` do navegador atual.
-
-### Feedback
-
-Em `html/feedback.html`, há campos obrigatórios para assunto e descrição da sugestão. Atualmente, o formulário ainda não possui integração para enviar ou salvar as respostas.
-
-### Login de demonstração
-
-`login.html` é uma página independente do hub. Ela demonstra validação local de credenciais, exibição da senha, manutenção de sessão na aba e opção para lembrar o e-mail. As credenciais estão definidas no próprio código da página:
-
-- E-mail: `admin@teste.com`
-- Senha: `Senha123`
-
-Esse login é apenas ilustrativo: não autentica em servidor e não deve ser usado para proteger dados ou funcionalidades reais.
-
-## Como executar
-
-O projeto é estático e não exige instalação de dependências ou etapa de compilação.
-
-1. Abra a pasta do projeto no VS Code.
-2. Inicie um servidor estático local, por exemplo, com a extensão **Live Server**.
-3. Abra `index.html` pelo servidor. As páginas internas dependem dos caminhos relativos entre `index.html`, `html/`, `css/` e `js/`.
-
-Também é possível abrir `index.html` diretamente no navegador. Um servidor local costuma oferecer uma experiência mais consistente para recursos do navegador, como IndexedDB. É necessário acesso à internet para carregar Bootstrap Icons no hub.
-
-## Armazenamento e limitações
-
-- Checklist: usa `localStorage` com a chave `frcont-checklist-v1`.
-- Guias: usam `localStorage` com a chave `frcont-guias-v1`.
-- POPs: usam IndexedDB, no banco `CentralPOPsFatec`.
-- Central de Links: os links adicionados são mantidos apenas na memória da página.
-- Feedback: ainda não há envio ou persistência implementados.
-- Login e alternâncias de perfil: são demonstrações locais, sem autenticação ou autorização reais.
-
-Os dados armazenados no navegador não são compartilhados automaticamente entre pessoas, dispositivos ou navegadores. Para uso colaborativo, controle de acesso e armazenamento centralizado, será necessário implementar um backend com autenticação e persistência em servidor.
+O GitHub roda a mesma suíte sozinho a cada push e pull request (`.github/workflows/tests.yml`); o resultado aparece na aba **Actions** e no PR.
 
 ## Tecnologias
 
-- HTML5
-- CSS3
-- JavaScript sem framework
-- `localStorage` e IndexedDB para persistência local
-- Bootstrap Icons via CDN no hub inicial
+- Python 3.13, Flask, SQLite
+- HTML5, CSS3, JavaScript sem framework
+- Bootstrap Icons via CDN
